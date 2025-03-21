@@ -1,0 +1,212 @@
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
+const DashboardPage = () => {
+  const { user } = useAuth();
+
+  const stats = [
+    {
+      title: "Facilities",
+      value: "248",
+      change: "+12% from last month",
+      icon: <Building className="h-5 w-5 text-healthcare-600" />,
+      link: "/facilities",
+    },
+    {
+      title: "Active Seniors",
+      value: "14",
+      change: "+3 this week",
+      icon: <Users className="h-5 w-5 text-healthcare-600" />,
+      link: "/contacts",
+    },
+    {
+      title: "Placements",
+      value: "8",
+      change: "This month",
+      icon: <User className="h-5 w-5 text-healthcare-600" />,
+      link: "/contacts",
+    },
+    {
+      title: "Revenue",
+      value: "$24,500",
+      change: "Year to date",
+      icon: <DollarSign className="h-5 w-5 text-healthcare-600" />,
+      link: "/payments",
+    },
+  ];
+
+  const recentFacilities = [
+    {
+      id: "1",
+      name: "Sunset Senior Living",
+      type: "Assisted Living",
+      location: "San Francisco, CA",
+      lastContacted: "2 days ago",
+    },
+    {
+      id: "2",
+      name: "Golden Years Home",
+      type: "Memory Care",
+      location: "Oakland, CA",
+      lastContacted: "5 days ago",
+    },
+    {
+      id: "3",
+      name: "Serenity Care Center",
+      type: "Skilled Nursing",
+      location: "San Jose, CA",
+      lastContacted: "1 week ago",
+    },
+    {
+      id: "4",
+      name: "Riverside Retirement",
+      type: "Independent Living",
+      location: "Palo Alto, CA",
+      lastContacted: "2 weeks ago",
+    },
+  ];
+
+  const upcomingAppointments = [
+    {
+      id: "1",
+      title: "Facility Tour - Sunset Senior Living",
+      date: "Tomorrow, 10:00 AM",
+      client: "Robert Johnson",
+    },
+    {
+      id: "2",
+      title: "Family Meeting - Golden Years Home",
+      date: "Thursday, 2:30 PM",
+      client: "Maria Garcia",
+    },
+    {
+      id: "3",
+      title: "Assessment - Serenity Care Center",
+      date: "Friday, 11:00 AM",
+      client: "James Williams",
+    },
+  ];
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name}</h1>
+        <p className="text-muted-foreground">Here's an overview of your placement activities.</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
+          <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              {stat.icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
+              <Link 
+                to={stat.link} 
+                className="text-healthcare-600 text-sm font-medium inline-flex items-center mt-3 hover:underline"
+              >
+                View details
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </Link>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Recent Activity and Upcoming */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Facilities */}
+        <Card className="lg:col-span-2 glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Recent Facilities</CardTitle>
+                <CardDescription>Facilities you've recently interacted with</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/facilities">View all</Link>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-xs font-medium text-muted-foreground text-left p-3">Facility</th>
+                    <th className="text-xs font-medium text-muted-foreground text-left p-3">Type</th>
+                    <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Location</th>
+                    <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Last Contact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentFacilities.map((facility, i) => (
+                    <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
+                      <td className="p-3">
+                        <Link to={`/facilities/${facility.id}`} className="font-medium text-healthcare-700 hover:underline">
+                          {facility.name}
+                        </Link>
+                      </td>
+                      <td className="p-3 text-sm">{facility.type}</td>
+                      <td className="p-3 text-sm hidden sm:table-cell">
+                        <div className="flex items-center">
+                          <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
+                          {facility.location}
+                        </div>
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Upcoming Appointments */}
+        <Card className="glass-card animate-zoom-in" style={{ animationDelay: '500ms' }}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Upcoming Appointments</CardTitle>
+                <CardDescription>Your scheduled meetings</CardDescription>
+              </div>
+              <Button variant="outline" size="sm">
+                <Calendar className="h-3.5 w-3.5 mr-1" />
+                <span>Add</span>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {upcomingAppointments.map((appointment) => (
+                <div key={appointment.id} className="flex items-start gap-4 p-3 rounded-lg border">
+                  <div className="bg-healthcare-100 text-healthcare-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-sm">{appointment.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">{appointment.date}</p>
+                    <p className="text-xs mt-1">Client: {appointment.client}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPage;
