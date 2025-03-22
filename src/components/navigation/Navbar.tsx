@@ -39,11 +39,12 @@ const Navbar = () => {
       )}
     >
       <div className="container flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-md bg-healthcare-600 flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">HP</span>
-          </div>
-          <span className="font-semibold text-xl">HealthProAssist</span>
+        <Link to="/" className="flex items-center">
+          <img 
+            src="/lovable-uploads/833e17f2-9c98-45bd-b480-4bf61140209b.png" 
+            alt="HealthProAssist Logo" 
+            className="h-8 md:h-10" 
+          />
         </Link>
 
         {/* Desktop Menu */}

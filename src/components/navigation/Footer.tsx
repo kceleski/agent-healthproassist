@@ -9,11 +9,12 @@ const Footer = () => {
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-md bg-healthcare-600 flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">HP</span>
-              </div>
-              <span className="font-semibold text-xl">HealthProAssist</span>
+            <Link to="/" className="inline-block mb-4">
+              <img 
+                src="/lovable-uploads/833e17f2-9c98-45bd-b480-4bf61140209b.png" 
+                alt="HealthProAssist Logo" 
+                className="h-8" 
+              />
             </Link>
             <p className="text-sm text-muted-foreground">
               Empowering placement agents with powerful tools for senior care facilitation.
