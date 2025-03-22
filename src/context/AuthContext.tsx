@@ -5,7 +5,7 @@ type User = {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'agent';
+  role: 'placement_agent' | 'referral_partner';
   subscription: 'free' | 'basic' | 'premium' | null;
 };
 
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: '1',
         email,
         name: 'Demo User',
-        role: 'agent',
+        role: 'placement_agent',
         subscription: 'basic',
       };
       
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: '1',
         email,
         name,
-        role: 'agent',
+        role: 'placement_agent',
         subscription: 'free',
       };
       
