@@ -54,7 +54,7 @@ const Navbar = () => {
             className={cn(
               'text-sm font-medium transition-colors',
               location.pathname === '/'
-                ? 'text-healthcare-700'
+                ? 'text-primary'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
@@ -116,7 +116,7 @@ const Navbar = () => {
               className={cn(
                 'py-2 text-sm font-medium transition-colors',
                 location.pathname === '/'
-                  ? 'text-healthcare-700'
+                  ? 'text-primary'
                   : 'text-muted-foreground'
               )}
             >
