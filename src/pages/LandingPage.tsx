@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { CheckCircle, ArrowRight, Building, Contact, DollarSign, Search, ShieldCheck, UserCheck } from "lucide-react";
@@ -144,8 +143,8 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10 pointer-events-none h-20 bottom-0" />
             <div className="glass-card rounded-xl overflow-hidden shadow-xl animate-zoom-in max-w-5xl mx-auto">
               <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-                alt="HealthProAssist Dashboard" 
+                src="https://images.unsplash.com/photo-1573497161161-c3e73707e25c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                alt="Healthcare professional meeting with elderly client's family" 
                 className="w-full h-auto"
               />
             </div>
