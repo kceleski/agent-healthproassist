@@ -1,10 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { CheckCircle, ArrowRight, Building, Contact, DollarSign, Search, ShieldCheck, UserCheck, HandshakeIcon, Users, Home, Heart } from "lucide-react";
-import { useState } from "react";
+import { 
+  CheckCircle, 
+  ArrowRight, 
+  Building, 
+  Contact, 
+  DollarSign, 
+  Search, 
+  ShieldCheck, 
+  UserCheck, 
+  Users, 
+  Home, 
+  Heart, 
+  Star, 
+  ArrowUpRight, 
+  Calendar, 
+  FileText,
+  Sparkles,
+  CreditCard,
+  UserPlus
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 const LandingPage = () => {
   const [activeTab, setActiveTab] = useState<'monthly' | 'annual'>('monthly');
+  const [animationStarted, setAnimationStarted] = useState(false);
+
+  // Start animations when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimationStarted(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const features = [
     {
@@ -108,6 +137,22 @@ const LandingPage = () => {
     }
   ];
 
+  // Generate random positions for sparkles
+  const generateSparkles = (count) => {
+    const sparkles = [];
+    for (let i = 0; i < count; i++) {
+      sparkles.push({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        delay: Math.random() * 5
+      });
+    }
+    return sparkles;
+  };
+
+  const sparkles = generateSparkles(20);
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -139,75 +184,295 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="mt-16 relative max-w-5xl mx-auto">
-            <div className="glass-card rounded-xl p-8 shadow-xl overflow-hidden relative bg-white/90 animate-zoom-in">
-              <div className="animated-placement-scene">
-                <div className="animated-care-facility floating-element" style={{ animationDelay: "0.5s" }}>
-                  <Building className="w-12 h-12 text-healthcare-600" />
-                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Sunshine Manor</div>
-                </div>
-                <div className="animated-care-facility floating-element" style={{ animationDelay: "1.2s", right: "50px", top: "30px" }}>
-                  <Home className="w-10 h-10 text-healthcare-500" />
-                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Golden Years</div>
-                </div>
-                <div className="animated-care-facility floating-element" style={{ animationDelay: "0.8s", right: "150px", top: "10px" }}>
-                  <Building className="w-8 h-8 text-healthcare-700" />
-                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Comfort Living</div>
-                </div>
+          <div className="mt-16 relative max-w-6xl mx-auto">
+            <div className="glass-card rounded-xl p-4 md:p-8 shadow-xl overflow-hidden bg-white/90 animate-zoom-in">
+              {/* Interactive Animated Healthcare Placement Scene */}
+              <div className="health-placement-scene">
+                <div className="scene-background"></div>
                 
-                <div className="placement-agent">
-                  <div className="agent-avatar bg-healthcare-100 rounded-full p-3">
+                {/* Sparkles throughout the scene */}
+                {sparkles.map((sparkle) => (
+                  <div 
+                    key={sparkle.id}
+                    className="sparkle"
+                    style={{
+                      left: sparkle.left,
+                      top: sparkle.top,
+                      animationDelay: `${sparkle.delay}s`
+                    }}
+                  ></div>
+                ))}
+
+                {/* Agent Section - Left Side */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{left: '10%', bottom: '25%', animationDelay: '0.3s'}}>
+                  
+                  {/* Background pulse effect for agent */}
+                  <div className="burst-circle bg-healthcare-200" style={{width: '150px', height: '150px', left: '-35px', top: '-35px'}}></div>
+                  
+                  {/* Agent character */}
+                  <div className="relative">
+                    <div className="bg-white p-3 rounded-full shadow-lg mb-3 floating">
+                      <div className="bg-healthcare-600 p-3 rounded-full">
+                        <Users className="w-10 h-10 text-white" />
+                      </div>
+                      
+                      {/* Badge with notification */}
+                      <div className="absolute top-0 right-0">
+                        <div className="bg-healthcare-100 p-1 rounded-full">
+                          <CheckCircle className="w-5 h-5 text-healthcare-600" />
+                        </div>
+                        <div className="notification-ring" style={{left: '50%', top: '50%'}}></div>
+                      </div>
+                    </div>
+                    
+                    {/* Agent device showing app */}
+                    <div className="relative floating-delay-2">
+                      <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[150px]">
+                        <div className="bg-healthcare-50 rounded-md p-1 mb-2">
+                          <div className="flex items-center justify-between">
+                            <div className="w-4 h-4 rounded-full bg-healthcare-500"></div>
+                            <div className="w-10 h-1 bg-healthcare-200 rounded-full"></div>
+                          </div>
+                        </div>
+                        <div className="space-y-1 mb-1">
+                          <div className="w-full h-2 bg-healthcare-100 rounded-full"></div>
+                          <div className="w-3/4 h-2 bg-healthcare-100 rounded-full"></div>
+                        </div>
+                        <div className="flex justify-between">
+                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center">
+                            <Search className="w-3 h-3 text-healthcare-500" />
+                          </div>
+                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center">
+                            <Users className="w-3 h-3 text-healthcare-500" />
+                          </div>
+                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center relative">
+                            <DollarSign className="w-3 h-3 text-healthcare-500" />
+                            <div className="notification-badge">3</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Agent speech bubble */}
+                    <div className="absolute top-8 right-[-110px] floating-delay-1">
+                      <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
+                        <p className="text-sm">Finding you the <span className="text-healthcare-600 font-medium">perfect match!</span></p>
+                      </div>
+                      <div className="w-3 h-3 bg-white border-l border-b border-healthcare-100 absolute -left-1 top-3 transform rotate-45"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warm Leads Feature - Top */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{left: '50%', top: '5%', transform: 'translateX(-50%)', zIndex: 20, animationDelay: '0.5s'}}>
+                  <div className="bg-healthcare-600 text-white px-4 py-3 rounded-xl shadow-lg floating-delay-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Sparkles className="w-5 h-5 text-yellow-300" />
+                      <h3 className="font-bold">Warm Leads System</h3>
+                    </div>
+                    <p className="text-sm opacity-90 mb-2">Qualified prospects delivered straight to your dashboard</p>
+                    <div className="flex items-center gap-2 bg-white/20 rounded-lg p-2">
+                      <UserPlus className="w-5 h-5 text-healthcare-100" />
+                      <div className="text-xs">
+                        <div className="font-medium">New lead from <span className="text-yellow-300">San Francisco, CA</span></div>
+                        <div className="opacity-80">Memory care needed • High budget • Urgent</div>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 ml-auto" />
+                    </div>
+                  </div>
+                  <div className="h-24 w-2 bg-gradient-to-b from-healthcare-600 to-transparent mx-auto"></div>
+                </div>
+
+                {/* Family Group - Right Side */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{right: '10%', bottom: '25%', animationDelay: '0.6s'}}>
+                  
+                  {/* Background pulse effect for family */}
+                  <div className="burst-circle bg-healthcare-100" style={{width: '180px', height: '180px', left: '-50px', top: '-30px'}}></div>
+                  
+                  {/* Family group characters */}
+                  <div className="relative">
+                    <div className="flex items-end space-x-2 mb-3">
+                      <div className="bg-white p-2 rounded-full shadow-lg floating-delay-1">
+                        <div className="bg-healthcare-400 p-2 rounded-full">
+                          <Users className="w-7 h-7 text-white" />
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 rounded-full shadow-lg floating-delay-3 relative">
+                        <div className="bg-healthcare-300 p-2 rounded-full">
+                          <Users className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -top-1 -right-1">
+                          <Heart className="w-6 h-6 text-healthcare-500 fill-healthcare-500" />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Family speech bubble */}
+                    <div className="absolute top-6 left-[-140px] floating-delay-2">
+                      <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
+                        <p className="text-sm">We need <span className="text-healthcare-600 font-medium">compassionate care</span> for Mom.</p>
+                      </div>
+                      <div className="w-3 h-3 bg-white border-r border-b border-healthcare-100 absolute -right-1 top-3 transform rotate-45"></div>
+                    </div>
+                    
+                    {/* Family checklist */}
+                    <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[160px] floating-delay-4">
+                      <div className="text-xs font-semibold text-healthcare-700 mb-1 flex items-center">
+                        <FileText className="w-3 h-3 mr-1" />
+                        Care Preferences
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
+                          <span>Memory Care</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
+                          <span>Skilled Nursing</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
+                          <span>Near Family</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
+                          <span>Activities</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Facility Cluster - Top */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{right: '20%', top: '15%', zIndex: 5, animationDelay: '0.8s'}}>
+                  <div className="flex flex-col items-center floating-delay-1">
+                    <div className="bg-white p-2 rounded-full shadow-lg">
+                      <div className="bg-healthcare-100 p-1 rounded-full">
+                        <Building className="w-8 h-8 text-healthcare-700" />
+                      </div>
+                    </div>
+                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
+                      Willow Springs
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{right: '30%', top: '5%', zIndex: 5, animationDelay: '0.9s'}}>
+                  <div className="flex flex-col items-center floating-delay-2">
+                    <div className="bg-white p-2 rounded-full shadow-lg">
+                      <div className="bg-healthcare-100 p-1 rounded-full">
+                        <Home className="w-6 h-6 text-healthcare-600" />
+                      </div>
+                    </div>
+                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
+                      Evergreen
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{right: '10%', top: '12%', zIndex: 5, animationDelay: '1s'}}>
+                  <div className="flex flex-col items-center floating-delay-3">
+                    <div className="bg-white p-2 rounded-full shadow-lg relative">
+                      <div className="bg-healthcare-100 p-1 rounded-full">
+                        <Building className="w-7 h-7 text-healthcare-600" />
+                      </div>
+                      <div className="absolute -top-1 -right-1">
+                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                      </div>
+                    </div>
+                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
+                      Golden Oaks
+                    </div>
+                  </div>
+                </div>
+
+                {/* Matching Process - Center */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 15, animationDelay: '1.2s'}}>
+                  <div className="flex flex-col items-center justify-center">
+                    {/* Connection hub */}
                     <div className="relative">
-                      <div className="w-16 h-16 rounded-full bg-healthcare-500 flex items-center justify-center text-white">
-                        <Users className="w-8 h-8" />
+                      <div className="bg-healthcare-100 p-4 rounded-full shadow-lg pulsing">
+                        <div className="bg-healthcare-600 p-3 rounded-full relative spinning">
+                          <Users className="w-10 h-10 text-white" />
+                          <div className="absolute inset-0 rounded-full border-4 border-white border-dashed"></div>
+                        </div>
                       </div>
-                      <div className="badge-check absolute -bottom-1 -right-1 bg-healthcare-600 text-white rounded-full p-1">
-                        <CheckCircle className="w-4 h-4" />
+                      
+                      {/* Calendar/Appointments */}
+                      <div className="absolute -right-16 -top-16 floating-delay-1">
+                        <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
+                          <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
+                            <Calendar className="w-3 h-3" />
+                            <span>Tour</span>
+                          </div>
+                          <div className="text-[10px]">Tomorrow, 2PM</div>
+                          <div className="text-[10px] text-healthcare-600">Golden Oaks</div>
+                        </div>
+                      </div>
+                      
+                      {/* Payment/Commission */}
+                      <div className="absolute -left-20 -bottom-14 floating-delay-2">
+                        <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
+                          <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
+                            <CreditCard className="w-3 h-3" />
+                            <span>Commission</span>
+                          </div>
+                          <div className="text-xs font-bold text-healthcare-600">$2,400</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="agent-text bg-white shadow-sm rounded-lg px-3 py-2 text-sm text-healthcare-800 mt-3 border border-healthcare-100">
-                    I'll find the perfect placement!
+                    
+                    {/* Connector lines to characters */}
+                    <div className="absolute" style={{left: '-120px', top: '50%', width: '120px', height: '2px'}}>
+                      <div className="connector w-full">
+                        <div className="connector-dot"></div>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute" style={{right: '-120px', top: '50%', width: '120px', height: '2px'}}>
+                      <div className="connector w-full">
+                        <div className="connector-dot"></div>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute" style={{left: '50%', top: '-100px', height: '100px', width: '2px'}}>
+                      <div className="connector-vertical h-full">
+                        <div className="connector-dot-vertical"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="family-group">
-                  <div className="family-members">
-                    <div className="family-member bg-healthcare-200 rounded-full p-2">
-                      <div className="w-10 h-10 rounded-full bg-healthcare-400 flex items-center justify-center text-white">
-                        <Users className="w-6 h-6" />
-                      </div>
+                {/* Successful Placement Result - Bottom */}
+                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
+                    style={{left: '50%', bottom: '5%', transform: 'translateX(-50%)', zIndex: 25, animationDelay: '1.5s'}}>
+                  <div className="bg-white rounded-xl shadow-lg border border-healthcare-100 p-3 max-w-xs mx-auto text-center bouncing">
+                    <div className="bg-healthcare-50 p-2 rounded-lg mb-2">
+                      <div className="text-healthcare-700 font-medium">Successful Placement!</div>
+                      <div className="text-xs text-healthcare-600">Mrs. Johnson → Golden Oaks</div>
                     </div>
-                    <div className="senior-member bg-healthcare-200 rounded-full p-2 ml-4 relative">
-                      <div className="w-12 h-12 rounded-full bg-healthcare-300 flex items-center justify-center text-white">
-                        <Users className="w-7 h-7" />
+                    <div className="flex justify-around">
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground">Family</div>
+                        <div className="text-healthcare-600 font-medium">Happy</div>
                       </div>
-                      <div className="heart absolute -top-1 -right-1 text-healthcare-500">
-                        <Heart className="w-5 h-5 fill-healthcare-500" />
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground">Facility</div>
+                        <div className="text-healthcare-600 font-medium">Perfect Fit</div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="family-text bg-white shadow-sm rounded-lg px-3 py-2 text-sm text-healthcare-800 mt-3 border border-healthcare-100">
-                    We need help finding care!
-                  </div>
-                </div>
-                
-                <div className="connection-line">
-                  <div className="handshake-icon">
-                    <div className="p-3 bg-healthcare-100 rounded-full">
-                      <div className="bg-healthcare-600 text-white p-2 rounded-full">
-                        <HandshakeIcon className="w-6 h-6" />
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground">Agent</div>
+                        <div className="text-healthcare-600 font-medium">Paid</div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="warm-leads-bubble floating-element" style={{ animationDelay: "0.3s" }}>
-                  <div className="bg-healthcare-600 text-white px-3 py-2 rounded-lg">
-                    <div className="font-medium text-sm">Warm Leads</div>
-                    <div className="text-xs opacity-90">Get qualified leads directly to your inbox!</div>
-                  </div>
-                  <div className="warm-leads-arrow"></div>
                 </div>
               </div>
             </div>
@@ -387,62 +652,4 @@ const LandingPage = () => {
                 <Button asChild size="lg" className="bg-white text-healthcare-800 hover:bg-healthcare-50 text-md">
                   <Link to="/register">Get Started</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-md">
-                  <Link to="/login">Sign In</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-20 bg-healthcare-50">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4">Have Questions?</h2>
-            <p className="text-muted-foreground">
-              Our team is here to help. Reach out to us with any questions about HealthProAssist.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="w-12 h-12 rounded-full bg-healthcare-100 flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-healthcare-600">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                </svg>
-              </div>
-              <h3 className="font-medium mb-2">Call Us</h3>
-              <p className="text-muted-foreground">(800) 555-1234</p>
-            </div>
-            
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="w-12 h-12 rounded-full bg-healthcare-100 flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-healthcare-600">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </div>
-              <h3 className="font-medium mb-2">Email Us</h3>
-              <p className="text-muted-foreground">contact@healthproassist.com</p>
-            </div>
-            
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="w-12 h-12 rounded-full bg-healthcare-100 flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-healthcare-600">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-              </div>
-              <h3 className="font-medium mb-2">Visit Us</h3>
-              <p className="text-muted-foreground">123 Health Avenue, Suite 400<br />San Francisco, CA 94107</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default LandingPage;
+                <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-md
