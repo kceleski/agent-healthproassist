@@ -131,3 +131,104 @@
   opacity: 0;
   transition: opacity 300ms;
 }
+
+/* Animated Placement Scene Styles */
+.animated-placement-scene {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.animated-care-facility {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  right: 10px;
+  top: 10px;
+}
+
+.placement-agent {
+  position: absolute;
+  left: 10%;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.family-group {
+  position: absolute;
+  right: 10%;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.family-members {
+  display: flex;
+  align-items: flex-end;
+}
+
+.connection-line {
+  position: absolute;
+  left: 50%;
+  bottom: 50px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.connection-line:before {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100px;
+  background: linear-gradient(to right, rgba(0,0,0,0), theme('colors.healthcare.400'), rgba(0,0,0,0));
+  left: -50px;
+  top: 50%;
+}
+
+.connection-line:after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100px;
+  background: linear-gradient(to right, rgba(0,0,0,0), theme('colors.healthcare.400'), rgba(0,0,0,0));
+  left: 50px;
+  top: 50%;
+}
+
+.handshake-icon {
+  position: relative;
+  z-index: 30;
+}
+
+.warm-leads-bubble {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 40;
+}
+
+.warm-leads-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid theme('colors.healthcare.600');
+  bottom: -10px;
+  left: 20px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

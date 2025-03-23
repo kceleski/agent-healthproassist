@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { CheckCircle, ArrowRight, Building, Contact, DollarSign, Search, ShieldCheck, UserCheck } from "lucide-react";
+import { CheckCircle, ArrowRight, Building, Contact, DollarSign, Search, ShieldCheck, UserCheck, HandshakeIcon, Users, Home, Heart } from "lucide-react";
 import { useState } from "react";
 
 const LandingPage = () => {
@@ -139,14 +139,77 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="mt-16 relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10 pointer-events-none h-20 bottom-0" />
-            <div className="glass-card rounded-xl overflow-hidden shadow-xl animate-zoom-in max-w-5xl mx-auto">
-              <img 
-                src="https://images.unsplash.com/photo-1573497161161-c3e73707e25c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-                alt="Healthcare professional meeting with elderly client's family" 
-                className="w-full h-auto"
-              />
+          <div className="mt-16 relative max-w-5xl mx-auto">
+            <div className="glass-card rounded-xl p-8 shadow-xl overflow-hidden relative bg-white/90 animate-zoom-in">
+              <div className="animated-placement-scene">
+                <div className="animated-care-facility floating-element" style={{ animationDelay: "0.5s" }}>
+                  <Building className="w-12 h-12 text-healthcare-600" />
+                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Sunshine Manor</div>
+                </div>
+                <div className="animated-care-facility floating-element" style={{ animationDelay: "1.2s", right: "50px", top: "30px" }}>
+                  <Home className="w-10 h-10 text-healthcare-500" />
+                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Golden Years</div>
+                </div>
+                <div className="animated-care-facility floating-element" style={{ animationDelay: "0.8s", right: "150px", top: "10px" }}>
+                  <Building className="w-8 h-8 text-healthcare-700" />
+                  <div className="facility-name bg-healthcare-100 text-healthcare-600 text-xs font-medium px-2 py-1 rounded mt-2">Comfort Living</div>
+                </div>
+                
+                <div className="placement-agent">
+                  <div className="agent-avatar bg-healthcare-100 rounded-full p-3">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full bg-healthcare-500 flex items-center justify-center text-white">
+                        <Users className="w-8 h-8" />
+                      </div>
+                      <div className="badge-check absolute -bottom-1 -right-1 bg-healthcare-600 text-white rounded-full p-1">
+                        <CheckCircle className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="agent-text bg-white shadow-sm rounded-lg px-3 py-2 text-sm text-healthcare-800 mt-3 border border-healthcare-100">
+                    I'll find the perfect placement!
+                  </div>
+                </div>
+                
+                <div className="family-group">
+                  <div className="family-members">
+                    <div className="family-member bg-healthcare-200 rounded-full p-2">
+                      <div className="w-10 h-10 rounded-full bg-healthcare-400 flex items-center justify-center text-white">
+                        <Users className="w-6 h-6" />
+                      </div>
+                    </div>
+                    <div className="senior-member bg-healthcare-200 rounded-full p-2 ml-4 relative">
+                      <div className="w-12 h-12 rounded-full bg-healthcare-300 flex items-center justify-center text-white">
+                        <Users className="w-7 h-7" />
+                      </div>
+                      <div className="heart absolute -top-1 -right-1 text-healthcare-500">
+                        <Heart className="w-5 h-5 fill-healthcare-500" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="family-text bg-white shadow-sm rounded-lg px-3 py-2 text-sm text-healthcare-800 mt-3 border border-healthcare-100">
+                    We need help finding care!
+                  </div>
+                </div>
+                
+                <div className="connection-line">
+                  <div className="handshake-icon">
+                    <div className="p-3 bg-healthcare-100 rounded-full">
+                      <div className="bg-healthcare-600 text-white p-2 rounded-full">
+                        <HandshakeIcon className="w-6 h-6" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="warm-leads-bubble floating-element" style={{ animationDelay: "0.3s" }}>
+                  <div className="bg-healthcare-600 text-white px-3 py-2 rounded-lg">
+                    <div className="font-medium text-sm">Warm Leads</div>
+                    <div className="text-xs opacity-90">Get qualified leads directly to your inbox!</div>
+                  </div>
+                  <div className="warm-leads-arrow"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
