@@ -138,7 +138,7 @@ const LandingPage = () => {
   ];
 
   // Generate random positions for sparkles
-  const generateSparkles = (count) => {
+  const generateSparkles = (count: number) => {
     const sparkles = [];
     for (let i = 0; i < count; i++) {
       sparkles.push({
@@ -652,4 +652,16 @@ const LandingPage = () => {
                 <Button asChild size="lg" className="bg-white text-healthcare-800 hover:bg-healthcare-50 text-md">
                   <Link to="/register">Get Started</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-md
+                <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-md">
+                  <Link to="/login">Sign In</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default LandingPage;
