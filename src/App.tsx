@@ -17,6 +17,7 @@ import FacilityDetailPage from "./pages/FacilityDetailPage";
 import ContactsPage from "./pages/ContactsPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ProfilePage from "./pages/ProfilePage";
+import MapPage from "./pages/MapPage";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/map" element={<MapPage />} />
               </Route>
               
               {/* Protected routes */}
