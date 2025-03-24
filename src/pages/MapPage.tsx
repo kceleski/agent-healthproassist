@@ -59,58 +59,60 @@ const MapPage = () => {
       <div id="storepoint-container" data-map-id="1645a775a8a422"></div>
       
       {/* StorePoint Custom Styles */}
-      <style jsx global>{`
-        #storepoint-container {
-          height: 650px;
-          width: 100%;
-          border-radius: 10px;
-          box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-          margin: 20px auto;
-        }
-
-        .storepoint-map .marker {
-          transform: scale(1.2);
-        }
-
-        .gm-style-iw {
-          max-width: 350px !important;
-          padding: 16px !important;
-        }
-
-        .storepoint-list-item {
-          padding: 14px;
-          border-bottom: 1px solid #eee;
-          transition: background 0.2s ease;
-        }
-
-        .storepoint-list-item:hover {
-          background: #f7f7f7;
-        }
-
-        .storepoint-custom-control {
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          padding: 6px 12px;
-          margin: 5px;
-          cursor: pointer;
-          font-size: 14px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
+      <style>
+        {`
           #storepoint-container {
-            height: 500px;
+            height: 650px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+            margin: 20px auto;
           }
-        }
 
-        @media (max-width: 480px) {
-          #storepoint-container {
-            height: 400px;
+          .storepoint-map .marker {
+            transform: scale(1.2);
           }
-        }
-      `}</style>
+
+          .gm-style-iw {
+            max-width: 350px !important;
+            padding: 16px !important;
+          }
+
+          .storepoint-list-item {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+          }
+
+          .storepoint-list-item:hover {
+            background: #f7f7f7;
+          }
+
+          .storepoint-custom-control {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 12px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            #storepoint-container {
+              height: 500px;
+            }
+          }
+
+          @media (max-width: 480px) {
+            #storepoint-container {
+              height: 400px;
+            }
+          }
+        `}
+      </style>
       
       {/* StorePoint Script */}
       <Helmet>
