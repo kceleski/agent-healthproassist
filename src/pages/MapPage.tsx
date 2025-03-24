@@ -1,6 +1,8 @@
 
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useAuth } from "@/context/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 // Declare the global SP object that StorePoint provides
 declare global {
@@ -11,6 +13,8 @@ declare global {
 }
 
 const MapPage = () => {
+  const { user } = useAuth();
+  
   useEffect(() => {
     // This will run after the StorePoint script has loaded
     const checkSP = setInterval(function() {
@@ -50,7 +54,12 @@ const MapPage = () => {
 
   return (
     <div className="container py-10">
-      <h1 className="text-3xl font-bold tracking-tight mb-6">Find Senior Care Facilities</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Find Senior Care Facilities</h1>
+        <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1">
+          {user?.subscription || 'Basic'} Feature
+        </Badge>
+      </div>
       <p className="text-muted-foreground mb-6">
         Use the interactive map below to explore senior care facilities in your area. Click on a marker to see details about each location.
       </p>

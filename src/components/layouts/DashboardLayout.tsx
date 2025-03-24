@@ -20,7 +20,8 @@ import {
   Contact, 
   DollarSign,
   UserCog,
-  LogOut
+  LogOut,
+  Map
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,6 +39,7 @@ const DashboardLayout = () => {
   const menuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Facilities', path: '/facilities', icon: Building },
+    { title: 'Facility Map', path: '/map', icon: Map },
     { title: 'Contacts', path: '/contacts', icon: Contact },
     { title: 'Payments', path: '/payments', icon: DollarSign },
     { title: 'Profile', path: '/profile', icon: UserCog },

@@ -41,7 +41,6 @@ const App = () => (
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/map" element={<MapPage />} />
               </Route>
               
               {/* Protected routes */}
@@ -56,6 +55,7 @@ const App = () => (
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/map" element={<MapPage />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
