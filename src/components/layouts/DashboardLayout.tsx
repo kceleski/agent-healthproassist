@@ -49,11 +49,12 @@ const DashboardLayout = () => {
     <div className="min-h-screen flex w-full">
       <Sidebar>
         <SidebarHeader className="p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-healthcare-600 flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">HP</span>
-            </div>
-            <div className="font-semibold text-xl">HealthProAssist</div>
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/707d0553-01f0-4e69-9d13-66a5665635f9.png" 
+              alt="HealthProAssist Logo" 
+              className="h-8" 
+            />
           </div>
         </SidebarHeader>
         
