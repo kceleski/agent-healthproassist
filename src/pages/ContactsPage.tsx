@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   Building, 
@@ -458,5 +459,237 @@ const ContactsPage = () => {
             {filteredFacilities.length === 0 ? (
               <Card className="glass-card">
                 <CardContent className="flex flex-col items-center justify-center p-8">
-                  <Building
+                  <Building className="h-10 w-10 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-1">No facility contacts found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Try adjusting your search terms or add a new facility contact.
+                  </p>
+                  <Button onClick={() => setIsContactDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Facility Contact
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredFacilities.map((contact, index) => (
+                  <Card key={contact.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    <CardContent className="p-0">
+                      <div className="p-4 flex items-center gap-4">
+                        <Avatar className="h-16 w-16">
+                          <AvatarImage src={contact.image} />
+                          <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-lg truncate">{contact.name}</h3>
+                          <div className="flex items-center text-sm text-muted-foreground mt-0.5">
+                            <span className="truncate">{contact.title}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="px-4 pb-3">
+                        <Badge variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal mb-3">
+                          {contact.facilityType}
+                        </Badge>
+                        
+                        <div className="space-y-2 text-sm mb-4">
+                          <div className="flex items-start">
+                            <Building className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                            <span className="font-medium">{contact.facility}</span>
+                          </div>
+                          <div className="flex items-start">
+                            <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                            <span>{contact.location}</span>
+                          </div>
+                          <div className="flex items-start">
+                            <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                            <a 
+                              href={`mailto:${contact.email}`} 
+                              className="truncate hover:text-healthcare-600 transition-colors"
+                            >
+                              {contact.email}
+                            </a>
+                          </div>
+                          <div className="flex items-start">
+                            <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                            <a 
+                              href={`tel:${contact.phone}`} 
+                              className="hover:text-healthcare-600 transition-colors"
+                            >
+                              {contact.phone}
+                            </a>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between pt-3 border-t">
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <CalendarDays className="h-3 w-3 mr-1" />
+                            Last contact: {contact.lastContact}
+                          </div>
+                          <div className="flex gap-2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => openContactDetails(contact)}>
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                                <DropdownMenuItem>Log Interaction</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-destructive">
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-8"
+                              onClick={() => openContactDetails(contact)}
+                            >
+                              View
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      ) : (
+        /* Basic user view - only senior clients */
+        <div>
+          {filteredSeniors.length === 0 ? (
+            <Card className="glass-card">
+              <CardContent className="flex flex-col items-center justify-center p-8">
+                <Users className="h-10 w-10 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-1">No senior clients found</h3>
+                <p className="text-muted-foreground mb-4">
+                  Try adjusting your search terms or add a new senior client.
+                </p>
+                <Button onClick={() => setIsContactDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Senior Client
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredSeniors.map((senior, index) => (
+                <Card key={senior.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center gap-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={senior.image} />
+                        <AvatarFallback>{senior.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-lg truncate">{senior.name}</h3>
+                          <Badge 
+                            className={senior.status === "Active" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}
+                          >
+                            {senior.status}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground mt-1">
+                          <User className="h-3 w-3 mr-1" />
+                          <span>{senior.age} years old</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="px-4 pb-3">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {senior.careNeeds.map((need, i) => (
+                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal">
+                            {need}
+                          </Badge>
+                        ))}
+                      </div>
+                      
+                      <div className="space-y-2 text-sm mb-4">
+                        <div className="flex items-start">
+                          <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                          <span>{senior.location}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                          <a 
+                            href={`mailto:${senior.email}`} 
+                            className="truncate hover:text-healthcare-600 transition-colors"
+                          >
+                            {senior.email}
+                          </a>
+                        </div>
+                        <div className="flex items-start">
+                          <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                          <a 
+                            href={`tel:${senior.phone}`} 
+                            className="hover:text-healthcare-600 transition-colors"
+                          >
+                            {senior.phone}
+                          </a>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-3 border-t">
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <CalendarDays className="h-3 w-3 mr-1" />
+                          Last contact: {senior.lastContact}
+                        </div>
+                        <div className="flex gap-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => openContactDetails(senior)}>
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                              <DropdownMenuItem>Log Interaction</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-destructive">
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8"
+                            onClick={() => openContactDetails(senior)}
+                          >
+                            View
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ContactsPage;
 
