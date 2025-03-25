@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Building, 
@@ -288,6 +287,164 @@ const FacilitiesPage = () => {
     </Card>
   );
 
+  const renderBasicFacilityCard = (facility: any, index: number) => (
+    <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+      <CardContent className="p-0">
+        <div className="relative">
+          <img 
+            src={facility.image} 
+            alt={facility.name} 
+            className="h-48 w-full object-cover"
+          />
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
+              {facility.type}
+            </Badge>
+          </div>
+        </div>
+        
+        <div className="p-4">
+          <h3 className="font-medium text-lg">{facility.name}</h3>
+          
+          <div className="flex items-center gap-1 my-2">
+            <Globe className="h-3 w-3 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">{facility.location}</span>
+          </div>
+          
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">Recently viewed</p>
+          
+          <div className="border-t pt-3 mt-2">
+            <span className="text-sm text-muted-foreground">
+              Last viewed recently
+            </span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderProFacilityCard = (facility: any, index: number) => (
+    viewMode === "grid" ? (
+      <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+        <CardContent className="p-0">
+          <div className="relative">
+            <img 
+              src={facility.image} 
+              alt={facility.name} 
+              className="h-48 w-full object-cover"
+            />
+            <div className="absolute top-3 left-3 flex gap-2">
+              <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
+                {facility.type}
+              </Badge>
+              <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
+                {facility.price}
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="p-4">
+            <Link to={`/facilities/${facility.id}`}>
+              <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
+            </Link>
+            
+            <div className="flex items-center gap-1 my-2">
+              <Globe className="h-3 w-3 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{facility.location}</span>
+            </div>
+            
+            <div className="my-2">
+              {getRatingStars(facility.rating)}
+            </div>
+            
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{facility.description}</p>
+            
+            <div className="flex flex-wrap gap-2 mb-3">
+              {facility.amenities.slice(0, 3).map((amenity: string, i: number) => (
+                <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                  {amenity}
+                </Badge>
+              ))}
+              {facility.amenities.length > 3 && (
+                <Badge variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                  +{facility.amenities.length - 3} more
+                </Badge>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-between border-t pt-3">
+              <span className="text-sm">
+                <span className="font-medium">{facility.availableBeds}</span> beds available
+              </span>
+              <Button asChild size="sm" className="bg-healthcare-600">
+                <Link to={`/facilities/${facility.id}`}>View Details</Link>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    ) : (
+      <Card key={facility.id} className="glass-card overflow-hidden animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+        <CardContent className="p-0">
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-48 h-48 shrink-0">
+              <img 
+                src={facility.image} 
+                alt={facility.name} 
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="p-4 flex-1">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <div>
+                  <Link to={`/facilities/${facility.id}`}>
+                    <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
+                  </Link>
+                  
+                  <div className="flex items-center gap-1 my-1">
+                    <Globe className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{facility.location}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge className="bg-healthcare-100 text-healthcare-700">
+                    {facility.type}
+                  </Badge>
+                  <Badge className="bg-healthcare-100 text-healthcare-700">
+                    {facility.price}
+                  </Badge>
+                  <div className="ml-2">
+                    {getRatingStars(facility.rating)}
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-sm text-muted-foreground my-2">{facility.description}</p>
+              
+              <div className="flex flex-wrap gap-2 mb-3 mt-3">
+                {facility.amenities.map((amenity: string, i: number) => (
+                  <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                    {amenity}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between border-t pt-3 mt-2">
+                <span className="text-sm">
+                  <span className="font-medium">{facility.availableBeds}</span> beds available
+                </span>
+                <Button asChild size="sm" className="bg-healthcare-600">
+                  <Link to={`/facilities/${facility.id}`}>View Details</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  );
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -295,7 +452,7 @@ const FacilitiesPage = () => {
         <p className="text-muted-foreground">
           {isPro 
             ? "Browse and search for senior care facilities in our comprehensive database." 
-            : "View recently accessed facilities and find new ones."}
+            : "View recently accessed facilities."}
           {!isPro && (
             <span className="ml-2 text-healthcare-600">
               <Link to="/profile" className="hover:underline">Upgrade to Pro</Link> for advanced features.
@@ -308,20 +465,22 @@ const FacilitiesPage = () => {
       {renderFacilityMap()}
 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
-        {/* Mobile Filter Button */}
-        <Button
-          variant="outline"
-          onClick={() => setFilterOpen(true)}
-          className="w-full lg:hidden flex items-center justify-center gap-2"
-        >
-          <Filter className="h-4 w-4" />
-          <span>Filters</span>
-          {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
-            <Badge variant="secondary" className="ml-2">
-              {selectedTypes.length + selectedLocations.length}
-            </Badge>
-          )}
-        </Button>
+        {/* Mobile Filter Button - PRO ONLY */}
+        {isPro && (
+          <Button
+            variant="outline"
+            onClick={() => setFilterOpen(true)}
+            className="w-full lg:hidden flex items-center justify-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            <span>Filters</span>
+            {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
+              <Badge variant="secondary" className="ml-2">
+                {selectedTypes.length + selectedLocations.length}
+              </Badge>
+            )}
+          </Button>
+        )}
 
         {/* Search Form */}
         <div className="flex-1 w-full">
@@ -330,7 +489,9 @@ const FacilitiesPage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search facilities by name, type, or description..."
+                placeholder={isPro 
+                  ? "Search facilities by name, type, or description..." 
+                  : "Search recently viewed facilities..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-10"
@@ -342,7 +503,7 @@ const FacilitiesPage = () => {
           </form>
         </div>
 
-        {/* Desktop Filter Dropdown */}
+        {/* Desktop Filter Dropdown - PRO ONLY */}
         {isPro && (
           <div className="hidden lg:flex items-center gap-2">
             <DropdownMenu>
@@ -452,62 +613,64 @@ const FacilitiesPage = () => {
         )}
       </div>
 
-      {/* Filter Dialog (Mobile) */}
-      <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Filter Facilities</DialogTitle>
-            <DialogDescription>
-              Refine results by facility type and location.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <h3 className="text-sm font-medium mb-2">Facility Type</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {["Assisted Living", "Memory Care", "Skilled Nursing", "Independent Living"].map((type) => (
-                  <Button
-                    key={type}
-                    variant={selectedTypes.includes(type as FacilityType) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => toggleTypeSelection(type as FacilityType)}
-                    className={selectedTypes.includes(type as FacilityType) ? "bg-healthcare-600" : ""}
-                  >
-                    {type}
-                  </Button>
-                ))}
+      {/* Filter Dialog (Mobile) - PRO ONLY */}
+      {isPro && (
+        <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Filter Facilities</DialogTitle>
+              <DialogDescription>
+                Refine results by facility type and location.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Facility Type</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {["Assisted Living", "Memory Care", "Skilled Nursing", "Independent Living"].map((type) => (
+                    <Button
+                      key={type}
+                      variant={selectedTypes.includes(type as FacilityType) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleTypeSelection(type as FacilityType)}
+                      className={selectedTypes.includes(type as FacilityType) ? "bg-healthcare-600" : ""}
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium mb-2">Location</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {["San Francisco, CA", "Oakland, CA", "San Jose, CA", "Palo Alto, CA", "Los Angeles, CA"].map((location) => (
+                    <Button
+                      key={location}
+                      variant={selectedLocations.includes(location as Location) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleLocationSelection(location as Location)}
+                      className={selectedLocations.includes(location as Location) ? "bg-healthcare-600" : ""}
+                    >
+                      {location}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-between pt-4">
+                <Button variant="outline" onClick={handleFilterReset}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button onClick={handleFilterApply} className="bg-healthcare-600">
+                  Apply Filters
+                </Button>
               </div>
             </div>
-            <div>
-              <h3 className="text-sm font-medium mb-2">Location</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {["San Francisco, CA", "Oakland, CA", "San Jose, CA", "Palo Alto, CA", "Los Angeles, CA"].map((location) => (
-                  <Button
-                    key={location}
-                    variant={selectedLocations.includes(location as Location) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => toggleLocationSelection(location as Location)}
-                    className={selectedLocations.includes(location as Location) ? "bg-healthcare-600" : ""}
-                  >
-                    {location}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={handleFilterReset}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-              <Button onClick={handleFilterApply} className="bg-healthcare-600">
-                Apply Filters
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
 
-      {/* Active Filters Display */}
+      {/* Active Filters Display - PRO ONLY */}
       {isPro && (selectedTypes.length > 0 || selectedLocations.length > 0) && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm font-medium">Active Filters:</span>
@@ -599,156 +762,16 @@ const FacilitiesPage = () => {
           </Button>
         </div>
       ) : (
-        // Facilities Grid/List View
+        // Facilities Grid/List View - DIFFERENT FOR BASIC AND PRO
         <div className={
-          viewMode === "grid" 
+          viewMode === "grid" && isPro
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-            : "space-y-4"
+            : isPro ? "space-y-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         }>
           {filteredFacilities.map((facility, index) => (
-            viewMode === "grid" ? (
-              <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <CardContent className="p-0">
-                  <div className="relative">
-                    <img 
-                      src={facility.image} 
-                      alt={facility.name} 
-                      className="h-48 w-full object-cover"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                        {facility.type}
-                      </Badge>
-                      {isPro && (
-                        <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                          {facility.price}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="p-4">
-                    <Link to={`/facilities/${facility.id}`}>
-                      <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
-                    </Link>
-                    
-                    <div className="flex items-center gap-1 my-2">
-                      <Globe className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{facility.location}</span>
-                    </div>
-                    
-                    {isPro && (
-                      <div className="my-2">
-                        {getRatingStars(facility.rating)}
-                      </div>
-                    )}
-                    
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{facility.description}</p>
-                    
-                    {isPro && (
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {facility.amenities.slice(0, 3).map((amenity, i) => (
-                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                            {amenity}
-                          </Badge>
-                        ))}
-                        {facility.amenities.length > 3 && (
-                          <Badge variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                            +{facility.amenities.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center justify-between border-t pt-3">
-                      {isPro ? (
-                        <span className="text-sm">
-                          <span className="font-medium">{facility.availableBeds}</span> beds available
-                        </span>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          Last viewed recently
-                        </span>
-                      )}
-                      <Button asChild size="sm" className="bg-healthcare-600">
-                        <Link to={`/facilities/${facility.id}`}>View Details</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card key={facility.id} className="glass-card overflow-hidden animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-48 h-48 shrink-0">
-                      <img 
-                        src={facility.image} 
-                        alt={facility.name} 
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="p-4 flex-1">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                        <div>
-                          <Link to={`/facilities/${facility.id}`}>
-                            <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
-                          </Link>
-                          
-                          <div className="flex items-center gap-1 my-1">
-                            <Globe className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">{facility.location}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge className="bg-healthcare-100 text-healthcare-700">
-                            {facility.type}
-                          </Badge>
-                          {isPro && (
-                            <Badge className="bg-healthcare-100 text-healthcare-700">
-                              {facility.price}
-                            </Badge>
-                          )}
-                          {isPro && (
-                            <div className="ml-2">
-                              {getRatingStars(facility.rating)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground my-2">{facility.description}</p>
-                      
-                      {isPro && (
-                        <div className="flex flex-wrap gap-2 mb-3 mt-3">
-                          {facility.amenities.map((amenity, i) => (
-                            <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                              {amenity}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center justify-between border-t pt-3 mt-2">
-                        {isPro ? (
-                          <span className="text-sm">
-                            <span className="font-medium">{facility.availableBeds}</span> beds available
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            Last viewed recently
-                          </span>
-                        )}
-                        <Button asChild size="sm" className="bg-healthcare-600">
-                          <Link to={`/facilities/${facility.id}`}>View Details</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
+            isPro 
+              ? renderProFacilityCard(facility, index)
+              : renderBasicFacilityCard(facility, index)
           ))}
         </div>
       )}
