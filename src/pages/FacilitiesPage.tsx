@@ -10,7 +10,8 @@ import {
   RefreshCw, 
   Search, 
   Star,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Map as MapIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/context/AuthContext";
 
 // Facility Types
 type FacilityType = "Assisted Living" | "Memory Care" | "Skilled Nursing" | "Independent Living";
@@ -117,11 +119,24 @@ const facilitiesData = [
   },
 ];
 
+// Recently viewed facilities for basic tier
+const recentlyViewedFacilities = [
+  facilitiesData[0],
+  facilitiesData[2],
+  facilitiesData[3],
+];
+
 const FacilitiesPage = () => {
+  const { user } = useAuth();
+  const demoTier = user?.demoTier || user?.subscription || 'basic';
+  const isPro = demoTier === 'premium';
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<Location[]>([]);
-  const [filteredFacilities, setFilteredFacilities] = useState(facilitiesData);
+  const [filteredFacilities, setFilteredFacilities] = useState(
+    isPro ? facilitiesData : recentlyViewedFacilities
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -132,7 +147,7 @@ const FacilitiesPage = () => {
     
     // Simulate API call delay
     setTimeout(() => {
-      let results = facilitiesData;
+      let results = isPro ? facilitiesData : recentlyViewedFacilities;
       
       // Apply search filter
       if (searchQuery) {
@@ -204,12 +219,7 @@ const FacilitiesPage = () => {
     setSelectedTypes([]);
     setSelectedLocations([]);
     setSearchQuery("");
-    setFilteredFacilities(facilitiesData);
-  };
-
-  // Format price to dollar signs
-  const formatPrice = (price: string) => {
-    return price;
+    setFilteredFacilities(isPro ? facilitiesData : recentlyViewedFacilities);
   };
 
   // Get star rating display
@@ -236,14 +246,66 @@ const FacilitiesPage = () => {
     );
   };
 
+  const renderFacilityMap = () => (
+    <Card className="glass-card overflow-hidden mb-8 animate-zoom-in">
+      <CardContent className="p-0">
+        <div className="relative">
+          <div className="h-[400px] bg-muted rounded-t-lg overflow-hidden">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d100939.98555098464!2d-122.44761267845324!3d37.75781499602548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1625234961372!5m2!1sen!2sus" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen={true} 
+              loading="lazy"
+              title="Facility Map"
+            ></iframe>
+          </div>
+          <div className="absolute bottom-4 right-4">
+            <Button className="bg-white text-healthcare-700 hover:bg-white/90">
+              <MapIcon className="h-4 w-4 mr-2" />
+              Open Full Map
+            </Button>
+          </div>
+        </div>
+        
+        <div className="p-4 border-t">
+          <h3 className="font-medium mb-2">Find Facilities Near You</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            {isPro 
+              ? "Use the interactive map to explore senior care facilities in your area. Click on a marker to see details." 
+              : "Search for facilities near you. Upgrade to Pro for full interactive mapping capabilities."}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline" className="bg-healthcare-50">San Francisco, CA</Badge>
+            <Badge variant="outline" className="bg-healthcare-50">Oakland, CA</Badge>
+            <Badge variant="outline" className="bg-healthcare-50">San Jose, CA</Badge>
+            <Badge variant="outline" className="bg-healthcare-50">Palo Alto, CA</Badge>
+            <Badge variant="outline" className="bg-healthcare-50">Los Angeles, CA</Badge>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Facilities Directory</h1>
         <p className="text-muted-foreground">
-          Browse and search for senior care facilities in our comprehensive database.
+          {isPro 
+            ? "Browse and search for senior care facilities in our comprehensive database." 
+            : "View recently accessed facilities and find new ones."}
+          {!isPro && (
+            <span className="ml-2 text-healthcare-600">
+              <Link to="/profile" className="hover:underline">Upgrade to Pro</Link> for advanced features.
+            </span>
+          )}
         </p>
       </div>
+
+      {/* Facility Map (for both tiers) */}
+      {renderFacilityMap()}
 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Mobile Filter Button */}
@@ -281,111 +343,113 @@ const FacilitiesPage = () => {
         </div>
 
         {/* Desktop Filter Dropdown */}
-        <div className="hidden lg:flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4" />
-                <span>Filters</span>
-                {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
-                  <Badge variant="secondary" className="ml-2">
-                    {selectedTypes.length + selectedLocations.length}
-                  </Badge>
-                )}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[220px]">
-              <DropdownMenuLabel>Facility Type</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <ScrollArea className="h-[200px]">
-                <DropdownMenuCheckboxItem
-                  checked={selectedTypes.includes("Assisted Living")}
-                  onCheckedChange={() => toggleTypeSelection("Assisted Living")}
-                >
-                  Assisted Living
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedTypes.includes("Memory Care")}
-                  onCheckedChange={() => toggleTypeSelection("Memory Care")}
-                >
-                  Memory Care
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedTypes.includes("Skilled Nursing")}
-                  onCheckedChange={() => toggleTypeSelection("Skilled Nursing")}
-                >
-                  Skilled Nursing
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedTypes.includes("Independent Living")}
-                  onCheckedChange={() => toggleTypeSelection("Independent Living")}
-                >
-                  Independent Living
-                </DropdownMenuCheckboxItem>
-              </ScrollArea>
-
-              <DropdownMenuLabel className="mt-2">Location</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <ScrollArea className="h-[200px]">
-                <DropdownMenuCheckboxItem
-                  checked={selectedLocations.includes("San Francisco, CA")}
-                  onCheckedChange={() => toggleLocationSelection("San Francisco, CA")}
-                >
-                  San Francisco, CA
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedLocations.includes("Oakland, CA")}
-                  onCheckedChange={() => toggleLocationSelection("Oakland, CA")}
-                >
-                  Oakland, CA
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedLocations.includes("San Jose, CA")}
-                  onCheckedChange={() => toggleLocationSelection("San Jose, CA")}
-                >
-                  San Jose, CA
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedLocations.includes("Palo Alto, CA")}
-                  onCheckedChange={() => toggleLocationSelection("Palo Alto, CA")}
-                >
-                  Palo Alto, CA
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedLocations.includes("Los Angeles, CA")}
-                  onCheckedChange={() => toggleLocationSelection("Los Angeles, CA")}
-                >
-                  Los Angeles, CA
-                </DropdownMenuCheckboxItem>
-              </ScrollArea>
-
-              <div className="flex items-center justify-between pt-2 mt-2 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                  onClick={handleFilterReset}
-                >
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Reset
+        {isPro && (
+          <div className="hidden lg:flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  <span>Filters</span>
+                  {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
+                    <Badge variant="secondary" className="ml-2">
+                      {selectedTypes.length + selectedLocations.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
-                <Button size="sm" className="text-xs" onClick={handleFilterApply}>
-                  Apply Filters
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[220px]">
+                <DropdownMenuLabel>Facility Type</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <ScrollArea className="h-[200px]">
+                  <DropdownMenuCheckboxItem
+                    checked={selectedTypes.includes("Assisted Living")}
+                    onCheckedChange={() => toggleTypeSelection("Assisted Living")}
+                  >
+                    Assisted Living
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedTypes.includes("Memory Care")}
+                    onCheckedChange={() => toggleTypeSelection("Memory Care")}
+                  >
+                    Memory Care
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedTypes.includes("Skilled Nursing")}
+                    onCheckedChange={() => toggleTypeSelection("Skilled Nursing")}
+                  >
+                    Skilled Nursing
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedTypes.includes("Independent Living")}
+                    onCheckedChange={() => toggleTypeSelection("Independent Living")}
+                  >
+                    Independent Living
+                  </DropdownMenuCheckboxItem>
+                </ScrollArea>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="rounded-full"
-          >
-            <MoveHorizontal className="h-4 w-4" />
-          </Button>
-        </div>
+                <DropdownMenuLabel className="mt-2">Location</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <ScrollArea className="h-[200px]">
+                  <DropdownMenuCheckboxItem
+                    checked={selectedLocations.includes("San Francisco, CA")}
+                    onCheckedChange={() => toggleLocationSelection("San Francisco, CA")}
+                  >
+                    San Francisco, CA
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedLocations.includes("Oakland, CA")}
+                    onCheckedChange={() => toggleLocationSelection("Oakland, CA")}
+                  >
+                    Oakland, CA
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedLocations.includes("San Jose, CA")}
+                    onCheckedChange={() => toggleLocationSelection("San Jose, CA")}
+                  >
+                    San Jose, CA
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedLocations.includes("Palo Alto, CA")}
+                    onCheckedChange={() => toggleLocationSelection("Palo Alto, CA")}
+                  >
+                    Palo Alto, CA
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedLocations.includes("Los Angeles, CA")}
+                    onCheckedChange={() => toggleLocationSelection("Los Angeles, CA")}
+                  >
+                    Los Angeles, CA
+                  </DropdownMenuCheckboxItem>
+                </ScrollArea>
+
+                <div className="flex items-center justify-between pt-2 mt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={handleFilterReset}
+                  >
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Reset
+                  </Button>
+                  <Button size="sm" className="text-xs" onClick={handleFilterApply}>
+                    Apply Filters
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+              className="rounded-full"
+            >
+              <MoveHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Filter Dialog (Mobile) */}
@@ -444,7 +508,7 @@ const FacilitiesPage = () => {
       </Dialog>
 
       {/* Active Filters Display */}
-      {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
+      {isPro && (selectedTypes.length > 0 || selectedLocations.length > 0) && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm font-medium">Active Filters:</span>
           {selectedTypes.map(type => (
@@ -479,24 +543,28 @@ const FacilitiesPage = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing {filteredFacilities.length} facilities
+          {isPro 
+            ? `Showing ${filteredFacilities.length} facilities` 
+            : `Showing ${filteredFacilities.length} recently viewed facilities`}
         </p>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-healthcare-600">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Facility
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Facility</DialogTitle>
-              <DialogDescription>
-                This feature will be available in a future update.
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        {isPro && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-healthcare-600">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Facility
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Facility</DialogTitle>
+                <DialogDescription>
+                  This feature will be available in a future update.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {/* Loading State */}
@@ -551,9 +619,11 @@ const FacilitiesPage = () => {
                       <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
                         {facility.type}
                       </Badge>
-                      <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                        {formatPrice(facility.price)}
-                      </Badge>
+                      {isPro && (
+                        <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
+                          {facility.price}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   
@@ -567,29 +637,39 @@ const FacilitiesPage = () => {
                       <span className="text-sm text-muted-foreground">{facility.location}</span>
                     </div>
                     
-                    <div className="my-2">
-                      {getRatingStars(facility.rating)}
-                    </div>
+                    {isPro && (
+                      <div className="my-2">
+                        {getRatingStars(facility.rating)}
+                      </div>
+                    )}
                     
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{facility.description}</p>
                     
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {facility.amenities.slice(0, 3).map((amenity, i) => (
-                        <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                          {amenity}
-                        </Badge>
-                      ))}
-                      {facility.amenities.length > 3 && (
-                        <Badge variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                          +{facility.amenities.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
+                    {isPro && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {facility.amenities.slice(0, 3).map((amenity, i) => (
+                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                            {amenity}
+                          </Badge>
+                        ))}
+                        {facility.amenities.length > 3 && (
+                          <Badge variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                            +{facility.amenities.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="flex items-center justify-between border-t pt-3">
-                      <span className="text-sm">
-                        <span className="font-medium">{facility.availableBeds}</span> beds available
-                      </span>
+                      {isPro ? (
+                        <span className="text-sm">
+                          <span className="font-medium">{facility.availableBeds}</span> beds available
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">
+                          Last viewed recently
+                        </span>
+                      )}
                       <Button asChild size="sm" className="bg-healthcare-600">
                         <Link to={`/facilities/${facility.id}`}>View Details</Link>
                       </Button>
@@ -625,29 +705,41 @@ const FacilitiesPage = () => {
                           <Badge className="bg-healthcare-100 text-healthcare-700">
                             {facility.type}
                           </Badge>
-                          <Badge className="bg-healthcare-100 text-healthcare-700">
-                            {formatPrice(facility.price)}
-                          </Badge>
-                          <div className="ml-2">
-                            {getRatingStars(facility.rating)}
-                          </div>
+                          {isPro && (
+                            <Badge className="bg-healthcare-100 text-healthcare-700">
+                              {facility.price}
+                            </Badge>
+                          )}
+                          {isPro && (
+                            <div className="ml-2">
+                              {getRatingStars(facility.rating)}
+                            </div>
+                          )}
                         </div>
                       </div>
                       
                       <p className="text-sm text-muted-foreground my-2">{facility.description}</p>
                       
-                      <div className="flex flex-wrap gap-2 mb-3 mt-3">
-                        {facility.amenities.map((amenity, i) => (
-                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                            {amenity}
-                          </Badge>
-                        ))}
-                      </div>
+                      {isPro && (
+                        <div className="flex flex-wrap gap-2 mb-3 mt-3">
+                          {facility.amenities.map((amenity, i) => (
+                            <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
+                              {amenity}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                       
                       <div className="flex items-center justify-between border-t pt-3 mt-2">
-                        <span className="text-sm">
-                          <span className="font-medium">{facility.availableBeds}</span> beds available
-                        </span>
+                        {isPro ? (
+                          <span className="text-sm">
+                            <span className="font-medium">{facility.availableBeds}</span> beds available
+                          </span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">
+                            Last viewed recently
+                          </span>
+                        )}
                         <Button asChild size="sm" className="bg-healthcare-600">
                           <Link to={`/facilities/${facility.id}`}>View Details</Link>
                         </Button>

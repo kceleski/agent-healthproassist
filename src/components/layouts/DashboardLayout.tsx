@@ -21,22 +21,35 @@ import {
   DollarSign,
   UserCog,
   LogOut,
-  Map
+  Map,
+  Calendar
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { SubscriptionToggle } from '@/components/ui/subscription-toggle';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const demoTier = user?.demoTier || user?.subscription || 'basic';
+  const isPro = demoTier === 'premium';
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const menuItems = [
+  // Define menu items based on subscription tier
+  const basicMenuItems = [
+    { title: 'Dashboard', path: '/dashboard', icon: Home },
+    { title: 'Facilities', path: '/facilities', icon: Building },
+    { title: 'Clients', path: '/contacts', icon: Contact },
+    { title: 'Calendar', path: '/calendar', icon: Calendar },
+    { title: 'Profile', path: '/profile', icon: UserCog },
+  ];
+
+  const proMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Facilities', path: '/facilities', icon: Building },
     { title: 'Facility Map', path: '/map', icon: Map },
@@ -44,6 +57,8 @@ const DashboardLayout = () => {
     { title: 'Payments', path: '/payments', icon: DollarSign },
     { title: 'Profile', path: '/profile', icon: UserCog },
   ];
+
+  const menuItems = isPro ? proMenuItems : basicMenuItems;
 
   return (
     <div className="min-h-screen flex w-full">
@@ -110,8 +125,11 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col">
         <div className="p-4 border-b flex items-center justify-between">
           <SidebarTrigger />
-          <div className="text-sm font-medium">
-            Subscription: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{user?.subscription || 'None'}</span>
+          <div className="flex items-center gap-4">
+            <SubscriptionToggle />
+            <div className="text-sm font-medium">
+              Plan: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{isPro ? 'Pro' : 'Basic'}</span>
+            </div>
           </div>
         </div>
         

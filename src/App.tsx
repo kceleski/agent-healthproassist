@@ -18,6 +18,7 @@ import ContactsPage from "./pages/ContactsPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ProfilePage from "./pages/ProfilePage";
 import MapPage from "./pages/MapPage";
+import CalendarPage from "./pages/CalendarPage";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -56,6 +57,7 @@ const App = () => (
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/map" element={<MapPage />} />
+                <Route path="/calendar" element={<CalendarPage />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

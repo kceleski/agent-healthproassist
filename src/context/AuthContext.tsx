@@ -7,8 +7,9 @@ type User = {
   name: string;
   role: 'placement_agent' | 'referral_partner';
   subscription: 'free' | 'basic' | 'premium' | null;
-  warmLeadsEnabled: boolean; // New field to track if the user has paid for warm leads
-  warmLeadCredits: number; // Number of warm lead credits available
+  warmLeadsEnabled: boolean;
+  warmLeadCredits: number;
+  demoTier?: 'basic' | 'premium'; // New field to track demo tier
 };
 
 type AuthContextType = {
@@ -18,9 +19,10 @@ type AuthContextType = {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
-  enableWarmLeads: () => Promise<void>; // New function to enable warm leads
-  useWarmLeadCredit: () => Promise<boolean>; // New function to use a warm lead credit
-  purchaseWarmLeadCredits: (quantity: number) => Promise<void>; // New function to purchase lead credits
+  enableWarmLeads: () => Promise<void>;
+  useWarmLeadCredit: () => Promise<boolean>;
+  purchaseWarmLeadCredits: (quantity: number) => Promise<void>;
+  updateDemoTier: (tier: 'basic' | 'premium') => void; // New function to update demo tier
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,10 +35,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check if user is stored in localStorage
     const storedUser = localStorage.getItem('healthpro_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      // Initialize with demoTier if not present
+      if (!parsedUser.demoTier) {
+        parsedUser.demoTier = parsedUser.subscription || 'basic';
+      }
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
+
+  // New function to update demo tier
+  const updateDemoTier = (tier: 'basic' | 'premium') => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        demoTier: tier
+      };
+      setUser(updatedUser);
+      localStorage.setItem('healthpro_user', JSON.stringify(updatedUser));
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -56,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription: 'basic',
         warmLeadsEnabled: false,
         warmLeadCredits: 0,
+        demoTier: 'basic', // Initialize demo tier
       };
       
       setUser(mockUser);
@@ -86,6 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription: 'free',
         warmLeadsEnabled: false,
         warmLeadCredits: 0,
+        demoTier: 'basic', // Initialize demo tier
       };
       
       setUser(mockUser);
@@ -200,6 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         enableWarmLeads,
         useWarmLeadCredit,
         purchaseWarmLeadCredits,
+        updateDemoTier,
       }}
     >
       {children}
