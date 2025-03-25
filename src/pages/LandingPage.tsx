@@ -70,49 +70,40 @@ const LandingPage = () => {
 
   const plans = [
     {
-      name: "Free",
-      description: "Basic access for new agents",
-      monthlyPrice: 0,
-      annualPrice: 0,
-      features: [
-        "Limited facility directory access",
-        "Basic contact management",
-        "10 placements per month",
-        "Email support"
-      ],
-      cta: "Start Free",
-      popular: false
-    },
-    {
       name: "Basic",
-      description: "For growing placement agencies",
+      description: "Essential tools for placement agents",
       monthlyPrice: 49,
       annualPrice: 470,
       features: [
-        "Full facility directory access",
-        "Advanced contact management",
-        "50 placements per month",
-        "Payment tracking",
-        "Priority email support"
+        "Limited facility directory access",
+        "Basic contact management",
+        "Calendar integration",
+        "Simplified facility cards",
+        "Client management",
+        "Email support"
       ],
       cta: "Get Started",
-      popular: true
+      popular: false,
+      badge: "14-Day Pro Trial Included"
     },
     {
-      name: "Premium",
-      description: "For established agencies",
-      monthlyPrice: 99,
-      annualPrice: 950,
+      name: "Pro",
+      description: "Complete solution for growing agencies",
+      monthlyPrice: 250,
+      annualPrice: 2500,
       features: [
-        "Unlimited facility access",
+        "Full facility directory access",
         "Advanced contact management",
-        "Unlimited placements",
-        "Advanced analytics",
-        "White-label reports",
-        "24/7 phone support"
+        "Detailed facility information",
+        "Client medical record cards",
+        "Revenue & invoicing tools",
+        "QuickBooks integration",
+        "Document generation (PDF/Email/Fax)",
+        "Priority support"
       ],
-      cta: "Get Premium",
-      popular: false
+      cta: "Get Pro",
+      popular: true,
+      badge: "Most Popular"
     }
   ];
 
@@ -137,7 +128,6 @@ const LandingPage = () => {
     }
   ];
 
-  // Generate random positions for sparkles
   const generateSparkles = (count: number) => {
     const sparkles = [];
     for (let i = 0; i < count; i++) {
@@ -589,7 +579,7 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {plans.map((plan, index) => (
               <div
                 key={index}
@@ -599,9 +589,9 @@ const LandingPage = () => {
                     : 'border shadow-soft hover:shadow-md'
                 }`}
               >
-                {plan.popular && (
-                  <div className="bg-healthcare-500 text-white text-center py-2 text-sm font-medium">
-                    Most Popular
+                {plan.badge && (
+                  <div className={`text-white text-center py-2 text-sm font-medium ${plan.popular ? 'bg-healthcare-500' : 'bg-healthcare-600'}`}>
+                    {plan.badge}
                   </div>
                 )}
                 <div className="p-8">
@@ -612,7 +602,7 @@ const LandingPage = () => {
                       ${activeTab === 'monthly' ? plan.monthlyPrice : plan.annualPrice}
                     </span>
                     <span className="text-muted-foreground">
-                      {plan.monthlyPrice > 0 ? `/${activeTab === 'monthly' ? 'month' : 'year'}` : ''}
+                      /{activeTab === 'monthly' ? 'month' : 'year'}
                     </span>
                   </div>
                   <ul className="space-y-3 mb-8">
