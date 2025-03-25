@@ -44,6 +44,7 @@ const DashboardLayout = () => {
   const basicMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Facilities', path: '/facilities', icon: Building },
+    { title: 'Facility Map', path: '/map', icon: Map },  // Added map to basic tier
     { title: 'Clients', path: '/contacts', icon: Contact },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
