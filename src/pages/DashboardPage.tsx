@@ -1,9 +1,9 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -166,7 +166,6 @@ const DashboardPage = () => {
     },
   ];
 
-  // Renders calendar card for both basic and pro tiers
   const renderCalendarCard = () => (
     <Card className="glass-card animate-zoom-in" style={{ animationDelay: '500ms' }}>
       <CardHeader>
@@ -200,7 +199,6 @@ const DashboardPage = () => {
     </Card>
   );
 
-  // Renders notifications card for basic tier
   const renderNotificationsCard = () => (
     <Card className="glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
       <CardHeader>
@@ -238,7 +236,6 @@ const DashboardPage = () => {
     </Card>
   );
 
-  // Renders referrals card for both basic and pro tiers
   const renderReferralsCard = () => (
     <Card className="glass-card animate-zoom-in col-span-full" style={{ animationDelay: '600ms' }}>
       <CardHeader>
@@ -304,7 +301,6 @@ const DashboardPage = () => {
         </p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
@@ -329,10 +325,8 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      {/* Recent Activity and Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {isPro ? (
-          // Pro tier shows facilities and calendar
           <>
             <Card className="lg:col-span-2 glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
               <CardHeader>
@@ -383,7 +377,6 @@ const DashboardPage = () => {
             {renderCalendarCard()}
           </>
         ) : (
-          // Basic tier shows notifications and calendar
           <>
             {renderNotificationsCard()}
             {renderCalendarCard()}
@@ -391,7 +384,6 @@ const DashboardPage = () => {
         )}
       </div>
 
-      {/* Recent Referrals (shown for both tiers) */}
       <div className="grid grid-cols-1 gap-6">
         {renderReferralsCard()}
       </div>
