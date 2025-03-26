@@ -20,6 +20,7 @@ import ProfilePage from "./pages/ProfilePage";
 import MapPage from "./pages/MapPage";
 import CalendarPage from "./pages/CalendarPage";
 import AvaLogoDemo from "./pages/AvaLogoDemo";
+import AvaMapPage from "./pages/AvaMapPage";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -59,6 +60,7 @@ const App = () => (
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/map" element={<MapPage />} />
+                <Route path="/ava-map" element={<AvaMapPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
               </Route>
               
