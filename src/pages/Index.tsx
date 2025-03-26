@@ -64,36 +64,6 @@ const Index = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Load D-ID script after component mounts
-  useEffect(() => {
-    if (avatarContainerRef.current) {
-      // Clean up any previous script
-      const previousScript = document.querySelector('script[data-name="did-agent"]');
-      if (previousScript) {
-        previousScript.remove();
-      }
-
-      // Create new script
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = 'https://agent.d-id.com/v1/index.js';
-      script.dataset.name = 'did-agent';
-      script.dataset.mode = 'fabio';
-      script.dataset.clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4';
-      script.dataset.agentId = 'agt_xiZtjv1x';
-      script.dataset.monitor = 'true';
-      
-      document.body.appendChild(script);
-      
-      // Ensure we clean up when component unmounts
-      return () => {
-        if (script && document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      };
-    }
-  }, []);
-
   // Send message to OpenAI Assistant and animate the response with D-ID
   const handleSendMessage = async () => {
     if (!input.trim()) return;
