@@ -13,9 +13,9 @@ interface Message {
 }
 
 // Hardcoded API keys
-const OPENAI_API_KEY = "your_openai_api_key_here"; // Replace with your actual OpenAI API key
+const OPENAI_API_KEY = "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"; // Replace with your actual OpenAI API key
 const DID_API_KEY = "your_did_api_key_here"; // Replace with your actual D-ID API key
-const ASSISTANT_ID = "your_assistant_id_here"; // Replace with your actual OpenAI Assistant ID
+const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2"; // Replace with your actual OpenAI Assistant ID
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
