@@ -25,6 +25,14 @@ const AvaHeartbeatLogo: React.FC<{
             <feGaussianBlur stdDeviation="2.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+          
+          {/* Adding white outline effect */}
+          <filter id="white-outline" x="-10%" y="-10%" width="120%" height="120%">
+            <feFlood floodColor="white" floodOpacity="0.5" result="outlineColor"/>
+            <feComposite in="outlineColor" in2="SourceAlpha" operator="in" result="outlineImage"/>
+            <feGaussianBlur in="outlineImage" stdDeviation="2" result="outlineBlur"/>
+            <feComposite in="SourceGraphic" in2="outlineBlur" operator="over"/>
+          </filter>
         </defs>
         
         {/* The main path that will be animated */}
@@ -58,22 +66,24 @@ const AvaHeartbeatLogo: React.FC<{
           className="heartbeat-path"
         />
         
-        {/* The text AVA for reference */}
+        {/* The text AVA - made more prominent */}
         <text 
           x="150" 
-          y="90" 
+          y="75" 
           textAnchor="middle" 
           fill="#00b3ff" 
-          fontSize="12"
-          filter="url(#glow)"
+          fontSize="24"
+          fontWeight="bold"
+          filter="url(#white-outline)"
           className="text-ava"
         >
           AVA
         </text>
       </svg>
       
-      {/* Adding the CSS animation */}
-      <style jsx>{`
+      {/* Adding the CSS animation using standard style tag, not jsx */}
+      <style>
+        {`
         .heartbeat-path {
           stroke-dasharray: 1000;
           stroke-dashoffset: 1000;
@@ -103,7 +113,8 @@ const AvaHeartbeatLogo: React.FC<{
             opacity: 1;
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
