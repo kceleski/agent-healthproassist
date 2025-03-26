@@ -12,39 +12,31 @@ interface Message {
   content: string;
 }
 
+// Hardcoded API keys
+const OPENAI_API_KEY = "your_openai_api_key_here"; // Replace with your actual OpenAI API key
+const DID_API_KEY = "your_did_api_key_here"; // Replace with your actual D-ID API key
+const ASSISTANT_ID = "your_assistant_id_here"; // Replace with your actual OpenAI Assistant ID
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKeys, setApiKeys] = useState({
-    openai: localStorage.getItem('openai_api_key') || '',
-    did: localStorage.getItem('did_api_key') || '',
-  });
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Assistant thread management
   const [threadId, setThreadId] = useState<string | null>(localStorage.getItem('assistant_thread_id'));
   
-  // Handle API key changes
-  const handleApiKeyChange = (
-    type: 'openai' | 'did',
-    value: string
-  ) => {
-    setApiKeys({ ...apiKeys, [type]: value });
-    localStorage.setItem(`${type}_api_key`, value);
-  };
-
   // Create a new thread if we don't have one
   useEffect(() => {
     const createThread = async () => {
-      if (!threadId && apiKeys.openai) {
+      if (!threadId) {
         try {
           const response = await fetch('https://api.openai.com/v1/threads', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKeys.openai}`,
+              'Authorization': `Bearer ${OPENAI_API_KEY}`,
               'OpenAI-Beta': 'assistants=v1'
             },
             body: JSON.stringify({})
@@ -63,7 +55,7 @@ const Index = () => {
     };
     
     createThread();
-  }, [threadId, apiKeys.openai]);
+  }, [threadId]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -73,10 +65,6 @@ const Index = () => {
   // Send message to OpenAI Assistant and animate the response with D-ID
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-    if (!apiKeys.openai || !apiKeys.did) {
-      toast.error('Please enter your API keys first');
-      return;
-    }
 
     // Add user message to chat
     const userMessage = { role: 'user' as const, content: input };
@@ -90,7 +78,7 @@ const Index = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKeys.openai}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'OpenAI-Beta': 'assistants=v1'
         },
         body: JSON.stringify({
@@ -104,11 +92,11 @@ const Index = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKeys.openai}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'OpenAI-Beta': 'assistants=v1'
         },
         body: JSON.stringify({
-          assistant_id: "YOUR_ASSISTANT_ID", // Replace with your actual assistant ID
+          assistant_id: ASSISTANT_ID,
         })
       });
       
@@ -124,7 +112,7 @@ const Index = () => {
         
         const statusResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
           headers: {
-            'Authorization': `Bearer ${apiKeys.openai}`,
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
             'OpenAI-Beta': 'assistants=v1'
           }
         });
@@ -139,7 +127,7 @@ const Index = () => {
         // 4. Retrieve messages
         const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
           headers: {
-            'Authorization': `Bearer ${apiKeys.openai}`,
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
             'OpenAI-Beta': 'assistants=v1'
           }
         });
@@ -154,7 +142,7 @@ const Index = () => {
         const didResponse = await fetch('https://api.d-id.com/talks', {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${apiKeys.did}`,
+            'Authorization': `Basic ${DID_API_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -184,7 +172,7 @@ const Index = () => {
           
           const didStatusResponse = await fetch(`https://api.d-id.com/talks/${didData.id}`, {
             headers: {
-              'Authorization': `Basic ${apiKeys.did}`,
+              'Authorization': `Basic ${DID_API_KEY}`,
             }
           });
           
@@ -259,37 +247,6 @@ const Index = () => {
                 </Button>
               </div>
             </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>API Configuration</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">OpenAI API Key</label>
-                  <Input
-                    type="password"
-                    value={apiKeys.openai}
-                    onChange={(e) => handleApiKeyChange('openai', e.target.value)}
-                    placeholder="sk-..."
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">D-ID API Key</label>
-                  <Input
-                    type="password"
-                    value={apiKeys.did}
-                    onChange={(e) => handleApiKeyChange('did', e.target.value)}
-                    placeholder="Your D-ID API Key"
-                  />
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Your API keys are stored locally in your browser and not sent to our servers.
-                </div>
-              </div>
-            </CardContent>
           </Card>
         </div>
         
