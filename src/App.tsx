@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/context/AuthContext";
+import { Helmet } from "react-helmet";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
@@ -22,6 +22,7 @@ import CalendarPage from "./pages/CalendarPage";
 import AvaLogoDemo from "./pages/AvaLogoDemo";
 import AvaMapPage from "./pages/AvaMapPage";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
@@ -37,6 +38,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <SidebarProvider>
+          <Helmet>
+            <title>HealthProAssist - AI Health Assistant</title>
+          </Helmet>
           <BrowserRouter>
             <Routes>
               {/* Public routes */}
@@ -45,6 +49,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
+                <Route path="/index" element={<Index />} />
               </Route>
               
               {/* Protected routes */}

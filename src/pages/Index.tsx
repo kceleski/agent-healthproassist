@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -23,6 +24,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const avatarContainerRef = useRef<HTMLDivElement>(null);
 
   // Assistant thread management
   const [threadId, setThreadId] = useState<string | null>(localStorage.getItem('assistant_thread_id'));
@@ -61,6 +63,36 @@ const Index = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Load D-ID script after component mounts
+  useEffect(() => {
+    if (avatarContainerRef.current) {
+      // Clean up any previous script
+      const previousScript = document.querySelector('script[data-name="did-agent"]');
+      if (previousScript) {
+        previousScript.remove();
+      }
+
+      // Create new script
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = 'https://agent.d-id.com/v1/index.js';
+      script.dataset.name = 'did-agent';
+      script.dataset.mode = 'fabio';
+      script.dataset.clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4';
+      script.dataset.agentId = 'agt_xiZtjv1x';
+      script.dataset.monitor = 'true';
+      
+      document.body.appendChild(script);
+      
+      // Ensure we clean up when component unmounts
+      return () => {
+        if (script && document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
+  }, []);
 
   // Send message to OpenAI Assistant and animate the response with D-ID
   const handleSendMessage = async () => {
@@ -206,6 +238,7 @@ const Index = () => {
     <div className="min-h-screen pt-20 pb-10 flex flex-col items-center bg-slate-50">
       <div className="container max-w-6xl flex flex-col md:flex-row gap-6">
         <div className="w-full md:w-1/2 flex flex-col gap-4">
+          {/* Chat Interface */}
           <Card>
             <CardHeader>
               <CardTitle>AI Health Assistant</CardTitle>
@@ -262,20 +295,32 @@ const Index = () => {
                   <p className="mt-4 text-muted-foreground">Processing your request...</p>
                 </div>
               ) : (
-                <>
-                  <video 
-                    ref={videoRef}
-                    className="w-full max-w-md rounded-lg shadow-lg"
-                    controls
-                    autoPlay
-                    playsInline
-                  />
-                  {messages.length === 0 && (
-                    <div className="mt-6 text-center text-muted-foreground">
-                      Your assistant's video will appear here
-                    </div>
+                <div className="w-full h-full flex flex-col items-center">
+                  {/* D-ID Avatar Container */}
+                  <div 
+                    id="avatar-container" 
+                    ref={avatarContainerRef} 
+                    className="w-full h-[350px] rounded-lg bg-gray-100 flex items-center justify-center"
+                  >
+                    {messages.length === 0 && (
+                      <div className="text-center text-muted-foreground">
+                        Your assistant will appear here
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Fallback video player for D-ID API responses */}
+                  {videoRef.current && (
+                    <video 
+                      ref={videoRef}
+                      className="w-full max-w-md rounded-lg shadow-lg mt-4"
+                      controls
+                      autoPlay
+                      playsInline
+                      style={{ display: videoRef.current.src ? 'block' : 'none' }}
+                    />
                   )}
-                </>
+                </div>
               )}
             </CardContent>
           </Card>
