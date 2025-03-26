@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,10 +12,10 @@ interface Message {
   content: string;
 }
 
-// Hardcoded API keys
-const OPENAI_API_KEY = "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"; // Replace with your actual OpenAI API key
-const DID_API_KEY = "your_did_api_key_here"; // Replace with your actual D-ID API key
-const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2"; // Replace with your actual OpenAI Assistant ID
+// API keys
+const OPENAI_API_KEY = "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";
+const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4"; 
+const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);

@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,10 +13,12 @@ interface Message {
   content: string;
 }
 
-// Hardcoded API keys
-const OPENAI_API_KEY = "your_openai_api_key_here"; // Replace with your actual OpenAI API key
-const DID_API_KEY = "your_did_api_key_here"; // Replace with your actual D-ID API key
-const ASSISTANT_ID = "your_assistant_id_here"; // Replace with your actual OpenAI Assistant ID
+// API keys
+const OPENAI_API_KEY = "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";
+const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4";
+const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
+const GOOGLE_MAPS_API_KEY = "AIzaSyCxAU5BCCcICK4HdmkLfEDSQB3EvBwQQbE";
+const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268a51e793bae370";
 
 // Map filter types
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
@@ -488,6 +489,7 @@ const AvaMapPage = () => {
 
       {/* StorePoint Script */}
       <Helmet>
+        <script async src="https://cse.google.com/cse.js?cx=d5643f65b5a2e487f"></script>
         <script>
           {`
             (function(){
