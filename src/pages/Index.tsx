@@ -2,11 +2,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet';
+import HealthProAssistWidget from '@/components/HealthProAssistWidget';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -25,6 +25,7 @@ const Index = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatarContainerRef = useRef<HTMLDivElement>(null);
+  const [showWidget, setShowWidget] = useState(false);
 
   // Assistant thread management
   const [threadId, setThreadId] = useState<string | null>(localStorage.getItem('assistant_thread_id'));
@@ -280,6 +281,22 @@ const Index = () => {
                 </Button>
               </div>
             </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>External Widget</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setShowWidget(!showWidget)}
+                className="mb-4"
+              >
+                {showWidget ? 'Hide Widget' : 'Show Health Pro Assist Widget'}
+              </Button>
+              
+              {showWidget && <HealthProAssistWidget />}
+            </CardContent>
           </Card>
         </div>
         
