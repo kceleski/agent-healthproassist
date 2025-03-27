@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,17 +48,22 @@ const AvaMapPage = () => {
     const createThread = async () => {
       if (!threadId) {
         try {
+          console.log("Creating new thread with OpenAI Assistants v2 API");
           const response = await fetch('https://api.openai.com/v1/threads', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${OPENAI_API_KEY}`,
-              'OpenAI-Beta': 'assistants=v1'
+              'OpenAI-Beta': 'assistants=v2'  // Updated to v2
             },
             body: JSON.stringify({})
           });
           
-          if (!response.ok) throw new Error('Failed to create thread');
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Thread creation response:', errorData);
+            throw new Error(`Failed to create thread: ${errorData.error?.message || 'Unknown error'}`);
+          }
           
           const data = await response.json();
           setThreadId(data.id);
@@ -222,7 +228,7 @@ const AvaMapPage = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'OpenAI-Beta': 'assistants=v1'
+          'OpenAI-Beta': 'assistants=v2'  // Updated to v2
         },
         body: JSON.stringify({
           role: 'user',
@@ -236,7 +242,7 @@ const AvaMapPage = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'OpenAI-Beta': 'assistants=v1'
+          'OpenAI-Beta': 'assistants=v2'  // Updated to v2
         },
         body: JSON.stringify({
           assistant_id: ASSISTANT_ID,
@@ -244,7 +250,11 @@ const AvaMapPage = () => {
         })
       });
       
-      if (!runResponse.ok) throw new Error('Failed to run assistant');
+      if (!runResponse.ok) {
+        const errorData = await runResponse.json();
+        console.error('Run creation error:', errorData);
+        throw new Error(`Failed to run assistant: ${errorData.error?.message || 'Unknown error'}`);
+      }
       
       const runData = await runResponse.json();
       const runId = runData.id;
@@ -257,11 +267,15 @@ const AvaMapPage = () => {
         const statusResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
           headers: {
             'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'OpenAI-Beta': 'assistants=v1'
+            'OpenAI-Beta': 'assistants=v2'  // Updated to v2
           }
         });
         
-        if (!statusResponse.ok) throw new Error('Failed to check run status');
+        if (!statusResponse.ok) {
+          const errorData = await statusResponse.json();
+          console.error('Status check error:', errorData);
+          throw new Error(`Failed to check run status: ${errorData.error?.message || 'Unknown error'}`);
+        }
         
         const statusData = await statusResponse.json();
         runStatus = statusData.status;
@@ -272,15 +286,20 @@ const AvaMapPage = () => {
         const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
           headers: {
             'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'OpenAI-Beta': 'assistants=v1'
+            'OpenAI-Beta': 'assistants=v2'  // Updated to v2
           }
         });
         
-        if (!messagesResponse.ok) throw new Error('Failed to retrieve messages');
+        if (!messagesResponse.ok) {
+          const errorData = await messagesResponse.json();
+          console.error('Messages retrieval error:', errorData);
+          throw new Error(`Failed to retrieve messages: ${errorData.error?.message || 'Unknown error'}`);
+        }
         
         const messagesData = await messagesResponse.json();
         const lastMessage = messagesData.data[0];
-        const assistantResponse = lastMessage.content[0].text.value;
+        // Adjust for potential structure differences in v2 API
+        const assistantResponse = lastMessage.content[0].text?.value || 'I apologize, but I couldn\'t process your request at this time.';
         
         // 5. Process map commands in the response
         processMapCommands(assistantResponse);
@@ -306,7 +325,11 @@ const AvaMapPage = () => {
           })
         });
         
-        if (!didResponse.ok) throw new Error('Failed to create D-ID talk');
+        if (!didResponse.ok) {
+          const errorData = await didResponse.json();
+          console.error('D-ID error:', errorData);
+          throw new Error('Failed to create D-ID talk');
+        }
         
         const didData = await didResponse.json();
         
@@ -323,7 +346,11 @@ const AvaMapPage = () => {
             }
           });
           
-          if (!didStatusResponse.ok) throw new Error('Failed to check D-ID status');
+          if (!didStatusResponse.ok) {
+            const errorData = await didStatusResponse.json();
+            console.error('D-ID status error:', errorData);
+            throw new Error('Failed to check D-ID status');
+          }
           
           const didStatusData = await didStatusResponse.json();
           didStatus = didStatusData.status;
@@ -340,6 +367,9 @@ const AvaMapPage = () => {
           videoRef.current.src = resultUrl;
           videoRef.current.play();
         }
+      } else {
+        console.error('Run ended with status:', runStatus);
+        toast.error(`Assistant run ended with status: ${runStatus}`);
       }
     } catch (error) {
       console.error('Error in chat process:', error);
@@ -508,3 +538,4 @@ const AvaMapPage = () => {
 };
 
 export default AvaMapPage;
+
