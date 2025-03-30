@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +7,8 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet';
 import HealthProAssistWidget from '@/components/HealthProAssistWidget';
+import EmbeddableCareForm from '@/components/healthcare/EmbeddableCareForm';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -25,6 +28,7 @@ const Index = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [showWidget, setShowWidget] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('chat');
 
   // Assistant thread management
   const [threadId, setThreadId] = useState<string | null>(localStorage.getItem('assistant_thread_id'));
@@ -206,111 +210,140 @@ const Index = () => {
 
   return (
     <div className="min-h-screen pt-20 pb-10 flex flex-col items-center bg-slate-50">
-      <div className="container max-w-6xl flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-1/2 flex flex-col gap-4">
-          {/* Chat Interface */}
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Health Assistant</CardTitle>
-            </CardHeader>
-            <CardContent className="h-[400px] overflow-y-auto">
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">
-                    Start a conversation with your health assistant
-                  </div>
-                ) : (
-                  messages.map((message, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-lg ${
-                        message.role === 'user' 
-                          ? 'bg-primary text-primary-foreground ml-12' 
-                          : 'bg-muted mr-12'
-                      }`}
-                    >
-                      {message.content}
-                    </div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <div className="flex items-center w-full gap-2">
-                <Input
-                  placeholder="Ask about your health..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-                  disabled={isLoading}
-                />
-                <Button onClick={handleSendMessage} disabled={isLoading}>
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
+      <div className="container max-w-6xl flex flex-col gap-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-2 mb-6">
+            <TabsTrigger value="chat">AI Health Assistant</TabsTrigger>
+            <TabsTrigger value="care-form">Care Options</TabsTrigger>
+          </TabsList>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>External Widget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => setShowWidget(!showWidget)}
-                className="mb-4"
-              >
-                {showWidget ? 'Hide Widget' : 'Show Health Pro Assist Widget'}
-              </Button>
+          <TabsContent value="chat">
+            <div className="w-full flex flex-col md:flex-row gap-6">
+              <div className="w-full md:w-1/2 flex flex-col gap-4">
+                {/* Chat Interface */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Health Assistant</CardTitle>
+                  </CardHeader>
+                  <CardContent className="h-[400px] overflow-y-auto">
+                    <div className="space-y-4">
+                      {messages.length === 0 ? (
+                        <div className="text-center text-muted-foreground py-8">
+                          Start a conversation with your health assistant
+                        </div>
+                      ) : (
+                        messages.map((message, index) => (
+                          <div 
+                            key={index} 
+                            className={`p-3 rounded-lg ${
+                              message.role === 'user' 
+                                ? 'bg-primary text-primary-foreground ml-12' 
+                                : 'bg-muted mr-12'
+                            }`}
+                          >
+                            {message.content}
+                          </div>
+                        ))
+                      )}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <div className="flex items-center w-full gap-2">
+                      <Input
+                        placeholder="Ask about your health..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                        disabled={isLoading}
+                      />
+                      <Button onClick={handleSendMessage} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>External Widget</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      onClick={() => setShowWidget(!showWidget)}
+                      className="mb-4"
+                    >
+                      {showWidget ? 'Hide Widget' : 'Show Health Pro Assist Widget'}
+                    </Button>
+                    
+                    {showWidget && <HealthProAssistWidget />}
+                  </CardContent>
+                </Card>
+              </div>
               
-              {showWidget && <HealthProAssistWidget />}
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="w-full md:w-1/2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Health Assistant Avatar</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                  <p className="mt-4 text-muted-foreground">Processing your request...</p>
-                </div>
-              ) : (
-                <div className="w-full h-full flex flex-col items-center">
-                  {/* D-ID Avatar Container */}
-                  <div 
-                    id="avatar-container" 
-                    ref={avatarContainerRef} 
-                    className="w-full h-[350px] rounded-lg bg-gray-100 flex items-center justify-center"
-                  >
-                    {messages.length === 0 && (
-                      <div className="text-center text-muted-foreground">
-                        Your assistant will appear here
+              <div className="w-full md:w-1/2">
+                <Card className="h-full">
+                  <CardHeader>
+                    <CardTitle>Health Assistant Avatar</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center justify-center">
+                    {isLoading ? (
+                      <div className="flex flex-col items-center justify-center py-20">
+                        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                        <p className="mt-4 text-muted-foreground">Processing your request...</p>
+                      </div>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center">
+                        {/* D-ID Avatar Container */}
+                        <div 
+                          id="avatar-container" 
+                          ref={avatarContainerRef} 
+                          className="w-full h-[350px] rounded-lg bg-gray-100 flex items-center justify-center"
+                        >
+                          {messages.length === 0 && (
+                            <div className="text-center text-muted-foreground">
+                              Your assistant will appear here
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Fallback video player for D-ID API responses */}
+                        {videoRef.current && (
+                          <video 
+                            ref={videoRef}
+                            className="w-full max-w-md rounded-lg shadow-lg mt-4"
+                            controls
+                            autoPlay
+                            playsInline
+                            style={{ display: videoRef.current.src ? 'block' : 'none' }}
+                          />
+                        )}
                       </div>
                     )}
-                  </div>
-                  
-                  {/* Fallback video player for D-ID API responses */}
-                  {videoRef.current && (
-                    <video 
-                      ref={videoRef}
-                      className="w-full max-w-md rounded-lg shadow-lg mt-4"
-                      controls
-                      autoPlay
-                      playsInline
-                      style={{ display: videoRef.current.src ? 'block' : 'none' }}
-                    />
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="care-form">
+            <div className="w-full">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Find Senior Care Options</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <EmbeddableCareForm 
+                    initialParams={{
+                      role: "family",
+                      location: "San Francisco, CA"
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
