@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,11 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AvatarCircle } from '@/components/ui/avatar-circle';
-import { Loader2, Building, Brain, Home, Bed, Heart, Activity, Users, Book } from 'lucide-react';
+import { Loader2, Building, Brain, Home, Bed, Heart, Activity, Users, Book, MapPin } from 'lucide-react';
 import { apiRequest } from "@/lib/queryClient";
 import { FacilityDetailsModal } from "@/components/ui/facility-details-modal";
 
-// Define types for form data and facilities
 interface FormData {
   firstName: string;
   lastName: string;
@@ -51,7 +49,7 @@ interface Facility {
   imageUrl: string;
 }
 
-export interface CareType {
+interface CareType {
   id: string;
   title: string;
   icon: React.ReactNode;
@@ -72,7 +70,6 @@ interface FormState {
   facilities: Facility[];
 }
 
-// Define URL parameter types that match the API and Chat interface
 export type UserRole = "self" | "family" | "provider";
 export type CareTypeValue = "assisted_living" | "memory_care" | "nursing_home" | "independent_living" | "home_care" | "unsure";
 export type PaymentMethod = "private_pay" | "medicaid" | "veterans" | "insurance" | "unsure";
@@ -109,7 +106,6 @@ const initialFormData: FormData = {
   additionalInfo: ''
 };
 
-// Default care types if not provided
 const defaultCareTypes: CareType[] = [
   {
     id: 'assisted-living',
@@ -173,14 +169,12 @@ export const EmbeddableCareForm = ({
   });
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(null);
 
-  // Initialize form with URL parameters if provided
   useEffect(() => {
     if (Object.keys(initialParams).length > 0) {
       setFormData(prevData => ({
         ...prevData,
         relationshipToReceiver: initialParams.role || prevData.relationshipToReceiver,
         receiverLocation: initialParams.location || prevData.receiverLocation,
-        // Map careType to livingPreference
         livingPreference: initialParams.careType === 'home_care' 
           ? 'home' 
           : initialParams.careType === 'independent_living' || 
@@ -189,7 +183,6 @@ export const EmbeddableCareForm = ({
             initialParams.careType === 'nursing_home'
             ? 'community'
             : prevData.livingPreference,
-        // Map payment method to budget range
         budgetRange: initialParams.payment === 'private_pay'
           ? '4000-6000'
           : initialParams.payment === 'medicaid'
@@ -197,7 +190,6 @@ export const EmbeddableCareForm = ({
           : prevData.budgetRange
       }));
 
-      // If we have initial params, we might want to skip to results
       if (initialParams.location && initialParams.careType) {
         searchFacilities();
       }
@@ -237,9 +229,7 @@ export const EmbeddableCareForm = ({
     });
   };
 
-  // Convert form data to API params
   const mapFormDataToApiParams = useCallback(() => {
-    // Map living preference to care type
     const getCareType = (): CareTypeValue => {
       if (formData.cognitiveStatus === 'moderate' || formData.cognitiveStatus === 'severe') {
         return 'memory_care';
@@ -258,18 +248,14 @@ export const EmbeddableCareForm = ({
       }
     };
     
-    // Map budget range to payment method
     const getPaymentMethod = (): PaymentMethod => {
-      // If budget is low, assume they might need assistance
       if (formData.budgetRange === 'under-2000') {
         return 'medicaid';
       }
       
-      // Higher budgets likely mean private pay
       return 'private_pay';
     };
     
-    // Extract preferences from needs and other form fields
     const getPreferences = (): Preference[] => {
       const preferences: Preference[] = [];
       
@@ -296,8 +282,7 @@ export const EmbeddableCareForm = ({
       urgency: formData.urgency
     };
   }, [formData, initialParams]);
-  
-  // Search for facilities
+
   const searchFacilities = useCallback(async () => {
     setFormState(prev => ({ 
       ...prev, 
@@ -309,12 +294,10 @@ export const EmbeddableCareForm = ({
     try {
       const apiParams = mapFormDataToApiParams();
       
-      // Call API to search for facilities
       const response = await apiRequest("POST", "/api/facilities/search", apiParams);
       
       const data = await response.json();
       
-      // Update state with facilities
       setFormState(prev => ({ 
         ...prev, 
         facilities: data.facilities,
@@ -337,7 +320,6 @@ export const EmbeddableCareForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Validate form data
     if (!formData.receiverLocation && !initialParams.location) {
       setFormState(prev => ({ 
         ...prev,
@@ -346,21 +328,17 @@ export const EmbeddableCareForm = ({
       return;
     }
     
-    // Search for facilities
     searchFacilities();
   };
-  
-  // Handle facility selection
+
   const handleFacilitySelect = (facility: Facility) => {
     setSelectedFacilityId(facility.id);
   };
-  
-  // Handle closing the facility details modal
+
   const handleCloseFacilityModal = () => {
     setSelectedFacilityId(null);
   };
 
-  // Get icon based on care type (for results)
   const getCareTypeIcon = (type: string) => {
     switch(type) {
       case 'assisted_living':
@@ -384,7 +362,6 @@ export const EmbeddableCareForm = ({
     }
   };
 
-  // If hasResults is true, show facilities
   if (formState.hasResults) {
     return (
       <div className={`${embedded ? "w-full h-full" : "max-w-6xl mx-auto my-8"}`}>
@@ -481,13 +458,10 @@ export const EmbeddableCareForm = ({
           )}
         </div>
         
-        {/* Facility details modal */}
         <FacilityDetailsModal 
           facilityId={selectedFacilityId} 
           onClose={handleCloseFacilityModal}
           fetchAdditionalInfo={async (facility) => {
-            // This would fetch additional info from an API in a real implementation
-            // For now, return some mock data
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             return {
@@ -523,7 +497,6 @@ export const EmbeddableCareForm = ({
   return (
     <div className={`${embedded ? "w-full h-full" : "max-w-6xl mx-auto my-8"}`}>
       <div className={`${embedded ? "h-full flex flex-col" : ""}`}>
-        {/* Header with AVA for embedded mode */}
         {embedded && (
           <div className="bg-gradient-to-r from-blue-900/70 to-blue-800/50 p-2 relative">
             <div className="flex items-center before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-blue-400/50 before:to-transparent">
@@ -546,7 +519,6 @@ export const EmbeddableCareForm = ({
               </div>
             </div>
             
-            {/* System stats */}
             <div className="absolute top-0 right-0 m-1 flex flex-col items-end">
               <div className="flex items-center space-x-1">
                 <div className="hidden sm:block text-[6px] text-blue-300 bg-blue-900/40 border border-blue-800/60 rounded px-1 py-0.5">
