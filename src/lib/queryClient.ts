@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // Base API URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://healthproassist-api.example.com';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL || 'https://healthproassist-api.example.com';
 
 /**
  * Make an API request with standardized error handling
@@ -145,4 +145,4 @@ export const mockApiRequest = async (
 };
 
 // Use mock API in development
-export const useApiRequest = process.env.NODE_ENV === 'development' ? mockApiRequest : apiRequest;
+export const useApiRequest = import.meta.env.MODE === 'development' ? mockApiRequest : apiRequest;
