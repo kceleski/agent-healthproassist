@@ -1,17 +1,14 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import * as turf from '@turf/turf';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Search, X, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/badge';
 
-// Declare global mapboxgl typings
 declare global {
   interface Window {
     mapboxgl: typeof mapboxgl;
@@ -36,14 +33,12 @@ const FacilityMapbox = () => {
   const { user } = useAuth();
   const isPro = (user?.demoTier || user?.subscription) === 'premium';
   
-  // Configuration
   const mapboxAccessToken = 'pk.eyJ1IjoicGxhY2VtaW5kZXIiLCJhIjoiY2x1cTJreGxrMGlmOTJqcndyM2dvMmZicSJ9.4Y3n51DE-45lhB-anoiG0A';
   const facilitiesCSVUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ho57cEDv7YMk7Y557SIGx6rCs8C4Z5tLPOvAlMD4Ho4aXMW6At3NdWj5ATKTOkNR_-CxGHyeewz6/pub?output=csv';
   const searchRadiusMiles = 20;
-  const initialCoords = [-112.0740, 33.4484]; // Phoenix, AZ
+  const initialCoords = [-112.0740, 33.4484];
   const initialZoom = 9;
 
-  // Refs and state
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -57,11 +52,9 @@ const FacilityMapbox = () => {
   const [status, setStatus] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Initialize map
   useEffect(() => {
     if (!mapContainerRef.current) return;
     
-    // Set mapboxgl access token
     mapboxgl.accessToken = mapboxAccessToken;
     
     const map = new mapboxgl.Map({
@@ -74,10 +67,8 @@ const FacilityMapbox = () => {
       antialias: true
     });
     
-    // Save map instance to ref
     mapRef.current = map;
     
-    // Add map controls
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new mapboxgl.FullscreenControl());
     map.addControl(new mapboxgl.GeolocateControl({
@@ -86,7 +77,6 @@ const FacilityMapbox = () => {
       showUserHeading: true
     }));
     
-    // Add 3D terrain and sky
     map.on('style.load', () => {
       map.addSource('mapbox-dem', {
         'type': 'raster-dem',
@@ -108,7 +98,6 @@ const FacilityMapbox = () => {
       });
     });
     
-    // Optional: Add rotating globe effect
     const secondsPerRevolution = 240;
     const maxSpinZoom = 5;
     const slowSpinZoom = 3;
@@ -131,7 +120,6 @@ const FacilityMapbox = () => {
       }
     }
     
-    // Event listeners for interaction
     map.on('mousedown', () => {
       userInteracting = true;
     });
@@ -154,16 +142,13 @@ const FacilityMapbox = () => {
       spinGlobe();
     });
     
-    // Start the globe spinning
     spinGlobe();
     
-    // Clean up on unmount
     return () => {
       map.remove();
     };
   }, []);
 
-  // Load facility data from CSV
   useEffect(() => {
     const loadFacilityData = async () => {
       setIsLoading(true);
@@ -178,13 +163,11 @@ const FacilityMapbox = () => {
         const csvText = await response.text();
         const parsedData = parseCSV(csvText);
         
-        // Filter out entries without valid coordinates
         const validData = parsedData.filter(f => 
           f.Latitude && f.Longitude &&
           !isNaN(parseFloat(f.Latitude)) && !isNaN(parseFloat(f.Longitude))
         );
         
-        // Extract unique facility types
         const types = new Set<string>();
         validData.forEach(f => {
           if (f['Facility Type'] && f['Facility Type'].trim()) {
@@ -206,7 +189,6 @@ const FacilityMapbox = () => {
     loadFacilityData();
   }, []);
 
-  // Parse CSV text into array of objects
   const parseCSV = (text: string): Facility[] => {
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return [];
@@ -233,7 +215,6 @@ const FacilityMapbox = () => {
     return data;
   };
 
-  // Handle search submit
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -269,7 +250,6 @@ const FacilityMapbox = () => {
     }
   };
 
-  // Geocode location string to coordinates
   const geocodeLocation = async (locationString: string): Promise<[number, number] | null> => {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(locationString)}.json?access_token=${mapboxAccessToken}&limit=1&country=US`;
     
@@ -290,7 +270,6 @@ const FacilityMapbox = () => {
     }
   };
 
-  // Filter facilities by distance and type
   const filterAndDisplayFacilities = (centerCoords: [number, number], type: string) => {
     if (!allFacilities.length || !centerCoords) return;
     
@@ -315,7 +294,6 @@ const FacilityMapbox = () => {
       return typeMatch && distance <= searchRadiusMiles;
     });
     
-    // Sort by distance
     filtered.sort((a, b) => {
       const distA = turf.distance(
         centerPoint, 
@@ -334,7 +312,6 @@ const FacilityMapbox = () => {
     addMarkersToMap(filtered, centerPoint);
   };
 
-  // Add markers to the map
   const addMarkersToMap = (facilities: Facility[], centerPoint: turf.Feature<turf.Point>) => {
     clearMarkers();
     
@@ -344,7 +321,6 @@ const FacilityMapbox = () => {
       
       if (isNaN(lon) || isNaN(lat) || !mapRef.current) return;
       
-      // Calculate distance for display
       const distance = turf.distance(
         centerPoint, 
         turf.point([lon, lat]), 
@@ -383,13 +359,11 @@ const FacilityMapbox = () => {
     });
   };
 
-  // Clear all markers from the map
   const clearMarkers = () => {
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
   };
 
-  // Fly to a facility
   const flyToFacility = (coords: [number, number]) => {
     if (mapRef.current) {
       mapRef.current.flyTo({
@@ -400,7 +374,6 @@ const FacilityMapbox = () => {
     }
   };
 
-  // Select a facility from the list
   const handleFacilitySelect = (facility: Facility) => {
     flyToFacility([parseFloat(facility.Longitude), parseFloat(facility.Latitude)]);
     setSelectedFacility(facility);
@@ -409,11 +382,9 @@ const FacilityMapbox = () => {
   return (
     <div className="w-full h-full">
       <div className="flex flex-col lg:flex-row h-[calc(100vh-150px)] gap-4">
-        {/* Left panel: Search, filters, and results */}
         <div className="w-full lg:w-1/4 flex flex-col gap-4 lg:overflow-y-auto p-4 bg-white rounded-lg shadow">
           <h2 className="text-xl font-bold">Find Facilities</h2>
           
-          {/* Search form */}
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="location" className="text-sm font-medium">Location</label>
@@ -451,14 +422,12 @@ const FacilityMapbox = () => {
             </div>
           </form>
           
-          {/* Status message */}
           {status && (
             <div className="py-2 px-3 bg-blue-50 text-blue-700 rounded">
               {status}
             </div>
           )}
           
-          {/* Results list */}
           <div className="flex-grow overflow-y-auto">
             <h3 className="text-lg font-medium mb-2">
               {filteredFacilities.length > 0 
@@ -477,7 +446,6 @@ const FacilityMapbox = () => {
                 </li>
               ) : (
                 filteredFacilities.map((facility, index) => {
-                  // Calculate distance (would normally be done once during filtering)
                   return (
                     <li 
                       key={index}
@@ -503,7 +471,6 @@ const FacilityMapbox = () => {
             </ul>
           </div>
           
-          {/* Pro/Basic badge */}
           <div className="mt-auto pt-2 border-t">
             <Badge variant="outline" className={`${
               isPro ? 'bg-healthcare-100 text-healthcare-700' : 'bg-gray-100 text-gray-700'
@@ -519,11 +486,9 @@ const FacilityMapbox = () => {
           </div>
         </div>
         
-        {/* Main map area */}
         <div className="flex-grow relative">
           <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
           
-          {/* Selected facility details card */}
           {selectedFacility && (
             <Card className="absolute right-4 top-4 w-80 bg-white/95 backdrop-blur-sm shadow-lg">
               <CardHeader className="pb-2">
