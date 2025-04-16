@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   Select,
   SelectContent,
@@ -15,7 +16,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Search } from "lucide-react";
+import { MapPin, Search, Map } from "lucide-react";
 
 // Declare the global SP object that StorePoint provides
 declare global {
@@ -150,20 +151,30 @@ const MapPage = () => {
 
   return (
     <div className="container py-10">
+      <Helmet>
+        <title>Interactive Care Facility Map - HealthProAssist</title>
+        <meta name="description" content="Explore senior care facilities with our interactive map. Find assisted living, memory care, and more." />
+      </Helmet>
+      
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Senior Care Facility Map</h1>
-        <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1">
-          {isPro ? 'Pro' : 'Basic'} Feature
-        </Badge>
+        <div>
+          <div className="flex items-center gap-2">
+            <Map className="h-6 w-6 text-healthcare-600" />
+            <h1 className="text-3xl font-bold tracking-tight">Care Facility Map</h1>
+          </div>
+          <p className="text-muted-foreground mt-2">
+            View and explore locations of senior care facilities on our interactive map
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1">
+            {isPro ? 'Pro' : 'Basic'} Feature
+          </Badge>
+          <Button asChild variant="outline">
+            <Link to="/facility-search">Advanced Search</Link>
+          </Button>
+        </div>
       </div>
-      <p className="text-muted-foreground mb-6">
-        Find and explore senior care facilities across the country with our interactive map. Search by location and filter by facility type.
-        {!isPro && (
-          <span className="ml-2 text-healthcare-600">
-            Note: Basic tier has limited search options. <a href="/profile" className="underline">Upgrade to Pro</a> for advanced features.
-          </span>
-        )}
-      </p>
       
       {/* Search Controls */}
       <div className="bg-healthcare-50 p-6 rounded-lg shadow-sm mb-6">
@@ -214,7 +225,7 @@ const MapPage = () => {
               disabled={isSearching}
               className="w-full bg-healthcare-600 hover:bg-healthcare-700"
             >
-              {isSearching ? "Searching..." : "Search Map"}
+              {isSearching ? "Searching..." : "Update Map"}
             </Button>
           </div>
         </div>
@@ -242,6 +253,26 @@ const MapPage = () => {
             </div>
           </div>
         )}
+      </div>
+      
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-healthcare-600" />
+            Interactive Map
+          </h2>
+          {isPro ? (
+            <Badge className="bg-healthcare-600">Pro Map Features Enabled</Badge>
+          ) : (
+            <Badge variant="outline" className="text-healthcare-600">
+              <Link to="/profile" className="hover:underline">Upgrade to Pro</Link>
+            </Badge>
+          )}
+        </div>
+        <p className="text-muted-foreground">
+          Browse the map below to locate senior care facilities in your area. Click on a marker to view more details.
+          For more advanced search options, use our <Link to="/facility-search" className="text-healthcare-600 hover:underline">dedicated search page</Link>.
+        </p>
       </div>
       
       {isPro ? (
@@ -393,6 +424,29 @@ const MapPage = () => {
           </Helmet>
         </>
       )}
+
+      {/* Map key and explanation */}
+      <div className="mt-8 bg-healthcare-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-healthcare-700 mb-3">Map Features</h3>
+        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+          <li>Click on map markers to view facility details</li>
+          <li>Use the search box to find facilities in specific locations</li>
+          <li>Switch between map and list views</li>
+          {isPro && (
+            <>
+              <li>Filter by facility type and amenities (Pro feature)</li>
+              <li>Save favorite facilities for later reference (Pro feature)</li>
+            </>
+          )}
+        </ul>
+        <div className="mt-4">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/facility-search">
+              Go to Advanced Search
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
