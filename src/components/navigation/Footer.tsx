@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -74,8 +73,8 @@ const Footer = () => {
               </li>
               <li className="text-sm text-muted-foreground">
                 <span className="block">Phone:</span>
-                <a href="tel:+18005551234" className="text-healthcare-600 hover:underline">
-                  (800) 555-1234
+                <a href="tel:+1623-300-2065" className="text-healthcare-600 hover:underline">
+                  (623) 300-2065
                 </a>
               </li>
             </ul>
