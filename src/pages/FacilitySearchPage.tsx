@@ -14,8 +14,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-// API key for search service - using the provided key
-const API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
+// SerpAPI key
+const SERP_API_KEY = "b9365d165843e4d74619d8d0cfbcb81dd8f493c26c8413010b8ba1c0ad9f6493";
 
 // Facility type interface
 interface Facility {
@@ -93,16 +93,18 @@ const FacilitySearchPage = () => {
       if (selectedAmenities.length > 0) {
         const amenityLabels = selectedAmenities.map(id => 
           amenities.find(amenity => amenity.id === id)?.label
-        ).join(", ");
+        ).join(" ");
         query += ` ${amenityLabels}`;
       }
       
+      // Add "senior care facility" to make search more relevant
+      query += " senior care facility";
+      
       console.log("Searching for:", query);
 
-      // Format the API URL with all necessary parameters
-      const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${API_KEY}`;
+      // Call SerpAPI with Google Maps engine
+      const apiUrl = `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
       
-      // Make the actual API call
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
@@ -110,13 +112,29 @@ const FacilitySearchPage = () => {
       }
       
       const data = await response.json();
-      console.log("API response:", data);
+      console.log("SerpAPI response:", data);
       
-      // Transform API results into our facility format
-      // Check for both organic_results and local_results
-      const results = data.local_results || data.organic_results || [];
-      
-      if (!results || results.length === 0) {
+      // Process results
+      if (data.local_results && data.local_results.length > 0) {
+        const searchResults = data.local_results.map((item: any) => ({
+          id: item.place_id || Math.random().toString(36).substring(2),
+          name: item.title,
+          address: item.address || "",
+          rating: parseFloat(item.rating || 0),
+          description: item.description || item.type || "Senior care facility",
+          url: item.website || "#",
+          latitude: item.gps_coordinates?.latitude || 0,
+          longitude: item.gps_coordinates?.longitude || 0,
+        }));
+        
+        setFacilities(searchResults);
+        setIsLoading(false);
+        
+        toast({
+          title: "Search Complete",
+          description: `Found ${searchResults.length} facilities matching your criteria.`,
+        });
+      } else {
         setFacilities([]);
         setIsLoading(false);
         toast({
@@ -124,33 +142,7 @@ const FacilitySearchPage = () => {
           description: "No facilities found matching your criteria.",
           variant: "destructive",
         });
-        return;
       }
-      
-      const searchResults = results.map((result: any) => {
-        // Handle data from either local_results or organic_results format
-        const latitude = result.gps_coordinates?.latitude || result.latitude || 0;
-        const longitude = result.gps_coordinates?.longitude || result.longitude || 0;
-        
-        return {
-          id: result.place_id || result.data_id || Math.random().toString(36).substring(2),
-          name: result.title,
-          address: result.address || "",
-          rating: result.rating || 0,
-          description: result.description || result.review_text || "No description available.",
-          url: result.website || result.link || "#",
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        };
-      });
-      
-      setFacilities(searchResults);
-      setIsLoading(false);
-      
-      toast({
-        title: "Search Complete",
-        description: `Found ${searchResults.length} facilities matching your criteria.`,
-      });
     } catch (error) {
       console.error("Error fetching facilities:", error);
       toast({

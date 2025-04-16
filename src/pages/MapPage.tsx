@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
@@ -18,7 +17,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Search, Map } from "lucide-react";
 
-// Declare the global SP object that StorePoint provides
+const SERP_API_KEY = "b9365d165843e4d74619d8d0cfbcb81dd8f493c26c8413010b8ba1c0ad9f6493";
+
 declare global {
   interface Window {
     SP: any;
@@ -26,7 +26,6 @@ declare global {
   }
 }
 
-// Care type options
 const careTypes = [
   { id: "any", label: "Any Care Type" },
   { id: "assisted_living", label: "Assisted Living" },
@@ -35,7 +34,6 @@ const careTypes = [
   { id: "independent_living", label: "Independent Living" },
 ];
 
-// Amenity options
 const amenities = [
   { id: "dining", label: "Fine Dining" },
   { id: "transport", label: "Transportation" },
@@ -45,18 +43,28 @@ const amenities = [
   { id: "rehab", label: "Rehabilitation Services" },
 ];
 
+interface Facility {
+  id: string;
+  name: string;
+  address: string;
+  rating: number;
+  description?: string;
+  url?: string;
+  latitude: number;
+  longitude: number;
+}
+
 const MapPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const isPro = (user?.demoTier || user?.subscription) === 'premium';
   
-  // Search state
   const [location, setLocation] = useState<string>("");
   const [selectedCareType, setSelectedCareType] = useState<string>("any");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  
-  // Toggle amenity selection
+  const [searchResults, setSearchResults] = useState<Facility[]>([]);
+
   const toggleAmenity = (amenityId: string) => {
     setSelectedAmenities((current) => {
       if (current.includes(amenityId)) {
@@ -66,9 +74,8 @@ const MapPage = () => {
       }
     });
   };
-  
-  // Handle search submission
-  const handleSearch = () => {
+
+  const handleSearch = async () => {
     if (!location) {
       toast({
         title: "Location Required",
@@ -80,55 +87,119 @@ const MapPage = () => {
 
     setIsSearching(true);
     
-    // Construct the search query for StorePoint
-    let searchQuery = location;
-    
-    // Reset search after brief delay to simulate loading
-    setTimeout(() => {
-      // If we have access to the StorePoint API object
-      if (window.SP) {
-        // Set the location search
-        window.SP.map.setLocation(searchQuery);
-        
-        // Apply filters if they exist in the SP API
-        if (selectedCareType !== "any") {
-          // This would need to be adapted to how StorePoint filtering works
-          console.log("Filtering by care type:", selectedCareType);
-        }
-        
-        if (selectedAmenities.length > 0) {
-          console.log("Filtering by amenities:", selectedAmenities);
-        }
+    try {
+      let query = location;
+      
+      if (selectedCareType !== "any") {
+        const careTypeLabel = careTypes.find(type => type.id === selectedCareType)?.label;
+        query += ` ${careTypeLabel}`;
       }
       
-      setIsSearching(false);
+      if (selectedAmenities.length > 0) {
+        const amenityLabels = selectedAmenities.map(id => 
+          amenities.find(amenity => amenity.id === id)?.label
+        ).join(" ");
+        query += ` ${amenityLabels}`;
+      }
       
+      query += " senior care facility";
+      
+      console.log("Searching for:", query);
+      
+      const apiUrl = `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+      
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("SerpAPI response:", data);
+      
+      if (data.local_results && data.local_results.length > 0) {
+        const facilities = data.local_results.map((item: any) => ({
+          id: item.place_id || Math.random().toString(36).substring(2),
+          name: item.title,
+          address: item.address || "",
+          rating: parseFloat(item.rating || 0),
+          description: item.description || item.type || "Senior care facility",
+          url: item.website || "",
+          latitude: item.gps_coordinates?.latitude || 0,
+          longitude: item.gps_coordinates?.longitude || 0,
+        }));
+        
+        setSearchResults(facilities);
+        
+        if (window.SP && isPro) {
+          window.SP.map.clearMarkers();
+          
+          facilities.forEach((facility: Facility) => {
+            if (facility.latitude && facility.longitude) {
+              window.SP.map.addMarker({
+                id: facility.id,
+                lat: facility.latitude,
+                lng: facility.longitude,
+                title: facility.name,
+                address: facility.address,
+                description: facility.description || "",
+                website: facility.url || "",
+              });
+            }
+          });
+          
+          if (facilities.length > 0 && facilities[0].latitude && facilities[0].longitude) {
+            window.SP.map.setCenter(facilities[0].latitude, facilities[0].longitude);
+          } else {
+            window.SP.map.setLocation(location);
+          }
+        } else {
+          if (window.SP) {
+            window.SP.map.setLocation(query);
+          }
+        }
+        
+        toast({
+          title: "Search Complete",
+          description: `Found ${facilities.length} facilities matching your criteria.`,
+        });
+      } else {
+        setSearchResults([]);
+        toast({
+          title: "No Results",
+          description: "No facilities found matching your criteria.",
+        });
+        
+        if (window.SP) {
+          window.SP.map.setLocation(location);
+        }
+      }
+    } catch (error) {
+      console.error("Search error:", error);
       toast({
-        title: "Search Complete",
-        description: "Map updated with your search criteria.",
+        title: "Search Failed",
+        description: "Unable to search facilities. Please try again later.",
+        variant: "destructive",
       });
-    }, 1000);
+    }
+    
+    setIsSearching(false);
   };
-  
+
   useEffect(() => {
     if (isPro) {
-      // This will run after the StorePoint script has loaded for premium users
       const checkSP = setInterval(function() {
         if (typeof window.SP !== 'undefined') {
           clearInterval(checkSP);
           
-          // Configure map display
-          window.SP.options.maxLocations = 25; // Show 25 locations at a time
-          window.SP.options.defaultView = 'map'; // Start with map view
+          window.SP.options.maxLocations = 25;
+          window.SP.options.defaultView = 'map';
           
-          // Set up event listeners for future Ava integration
           window.SP.on('markerClick', function(location: any) {
             console.log('Location selected:', location.name);
-            // This will connect to our Ava AI in the future
             window.selectedLocation = location;
           });
           
-          // Optional: Add custom controls to the map
           const mapControls = document.querySelector('.storepoint-map-controls');
           if (mapControls) {
             const helpButton = document.createElement('button');
@@ -142,7 +213,6 @@ const MapPage = () => {
         }
       }, 100);
 
-      // Clean up interval on component unmount
       return () => {
         clearInterval(checkSP);
       };
@@ -176,10 +246,8 @@ const MapPage = () => {
         </div>
       </div>
       
-      {/* Search Controls */}
       <div className="bg-healthcare-50 p-6 rounded-lg shadow-sm mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Location Search */}
           <div className="space-y-2">
             <Label htmlFor="location" className="text-healthcare-700">Location</Label>
             <div className="relative">
@@ -194,7 +262,6 @@ const MapPage = () => {
             </div>
           </div>
           
-          {/* Care Type */}
           <div className="space-y-2">
             <Label htmlFor="care-type" className="text-healthcare-700">Care Type</Label>
             <Select
@@ -218,7 +285,6 @@ const MapPage = () => {
             )}
           </div>
           
-          {/* Search Button */}
           <div className="self-end">
             <Button 
               onClick={handleSearch}
@@ -230,7 +296,6 @@ const MapPage = () => {
           </div>
         </div>
         
-        {/* Amenities - Pro only */}
         {isPro && (
           <div className="mt-4 pt-4 border-t border-healthcare-200">
             <Label className="text-healthcare-700 mb-3 block">Amenities (Pro Feature)</Label>
@@ -277,10 +342,8 @@ const MapPage = () => {
       
       {isPro ? (
         <>
-          {/* StorePoint Container for Pro users - full functionality */}
           <div id="storepoint-container" data-map-id="1645a775a8a422"></div>
           
-          {/* StorePoint Custom Styles */}
           <style>
             {`
               #storepoint-container {
@@ -321,7 +384,6 @@ const MapPage = () => {
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
               }
 
-              /* Responsive adjustments */
               @media (max-width: 768px) {
                 #storepoint-container {
                   height: 500px;
@@ -336,7 +398,6 @@ const MapPage = () => {
             `}
           </style>
           
-          {/* StorePoint Script for Pro users */}
           <Helmet>
             <script>
               {`
@@ -354,10 +415,8 @@ const MapPage = () => {
         </>
       ) : (
         <>
-          {/* Basic tier limited map with restricted filters */}
           <div id="storepoint-container" data-tags="assisted living community,skilled nursing facility,behavioral residential facility,assisted living home (group home),veteran contracted facility,memory care community,adult day health care,adult foster care" data-map-id="1645a775a8a422"></div>
           
-          {/* StorePoint Custom Styles for Basic tier */}
           <style>
             {`
               #storepoint-container {
@@ -387,12 +446,10 @@ const MapPage = () => {
                 background: #f7f7f7;
               }
 
-              /* Hide the tag dropdown for basic tier */
               #storepoint-tag-dropdown{
                 display: none !important;
               }
 
-              /* Responsive adjustments */
               @media (max-width: 768px) {
                 #storepoint-container {
                   height: 500px;
@@ -407,7 +464,6 @@ const MapPage = () => {
             `}
           </style>
           
-          {/* StorePoint Script for Basic tier */}
           <Helmet>
             <script>
               {`
@@ -425,7 +481,6 @@ const MapPage = () => {
         </>
       )}
 
-      {/* Map key and explanation */}
       <div className="mt-8 bg-healthcare-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-healthcare-700 mb-3">Map Features</h3>
         <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
