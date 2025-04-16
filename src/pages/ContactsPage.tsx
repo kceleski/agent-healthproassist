@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Building, 
   CalendarDays, 
@@ -16,7 +15,7 @@ import {
   X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -28,22 +27,17 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-
-// Mock function to check user subscription tier
-const getUserTier = () => {
-  // In a real app, this would check the user's actual subscription
-  // For now, let's make it return "basic" to test the basic tier functionality
-  return "basic"; // Change to "pro" to test pro tier functionality
-};
+import AddSeniorClientForm from "@/components/contacts/AddSeniorClientForm";
+import { useAuth } from "@/context/AuthContext";
 
 // Sample Senior Clients Data
-const seniorsData = [
+const initialSeniorsData = [
   {
     id: "1",
     name: "Eleanor Johnson",
@@ -211,7 +205,12 @@ const facilityContactsData = [
 
 const ContactsPage = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [seniorsData, setSeniorsData] = useState(() => {
+    const savedSeniors = localStorage.getItem("seniorClients");
+    return savedSeniors ? JSON.parse(savedSeniors) : initialSeniorsData;
+  });
   const [filteredSeniors, setFilteredSeniors] = useState(seniorsData);
   const [filteredFacilities, setFilteredFacilities] = useState(facilityContactsData);
   const [selectedContact, setSelectedContact] = useState<any>(null);
@@ -219,11 +218,14 @@ const ContactsPage = () => {
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("seniors");
   
-  // Determine user tier
-  const userTier = getUserTier();
-  const isProUser = userTier === "pro";
+  const userTier = user?.demoTier || user?.subscription || 'basic';
+  const isProUser = userTier === "premium";
 
-  // Handle search
+  useEffect(() => {
+    localStorage.setItem("seniorClients", JSON.stringify(seniorsData));
+    setFilteredSeniors(seniorsData);
+  }, [seniorsData]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -231,15 +233,14 @@ const ContactsPage = () => {
       const query = searchQuery.toLowerCase();
       
       const matchedSeniors = seniorsData.filter(
-        senior => 
+        (senior: any) => 
           senior.name.toLowerCase().includes(query) ||
           senior.location.toLowerCase().includes(query) ||
-          senior.careNeeds.some(need => need.toLowerCase().includes(query))
+          senior.careNeeds.some((need: string) => need.toLowerCase().includes(query))
       );
       
-      // Only filter facilities if the user is on pro tier
       const matchedFacilities = isProUser ? facilityContactsData.filter(
-        contact => 
+        (contact: any) => 
           contact.name.toLowerCase().includes(query) ||
           contact.facility.toLowerCase().includes(query) ||
           contact.location.toLowerCase().includes(query) ||
@@ -254,14 +255,12 @@ const ContactsPage = () => {
     }
   };
 
-  // Handle search clear
   const handleClearSearch = () => {
     setSearchQuery("");
     setFilteredSeniors(seniorsData);
     setFilteredFacilities(isProUser ? facilityContactsData : []);
   };
 
-  // Apply filters
   const handleApplyFilters = () => {
     toast({
       title: "Filters Applied",
@@ -269,7 +268,6 @@ const ContactsPage = () => {
     });
   };
 
-  // Handle export
   const handleExport = () => {
     toast({
       title: "Contacts Exported",
@@ -277,10 +275,13 @@ const ContactsPage = () => {
     });
   };
 
-  // Open contact detail drawer
   const openContactDetails = (contact: any) => {
     setSelectedContact(contact);
     setIsDetailDrawerOpen(true);
+  };
+
+  const handleSaveSeniorClient = (newClient: any) => {
+    setSeniorsData([newClient, ...seniorsData]);
   };
 
   return (
@@ -294,7 +295,6 @@ const ContactsPage = () => {
         </p>
       </div>
 
-      {/* Search and Actions Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
@@ -325,25 +325,26 @@ const ContactsPage = () => {
             Export
           </Button>
           <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-healthcare-600">
-                <Plus className="h-4 w-4 mr-2" />
-                {isProUser ? "Add Contact" : "Add Senior Client"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+            <Button className="bg-healthcare-600" onClick={() => setIsContactDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {isProUser ? "Add Contact" : "Add Senior Client"}
+            </Button>
+            <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle>{isProUser ? "Add New Contact" : "Add New Senior Client"}</DialogTitle>
+                <DialogTitle>Add New Senior Client</DialogTitle>
                 <DialogDescription>
-                  This feature will be available in a future update.
+                  Fill out the form below to add a new senior client to your contacts.
                 </DialogDescription>
               </DialogHeader>
+              <AddSeniorClientForm 
+                onClose={() => setIsContactDialogOpen(false)}
+                onSave={handleSaveSeniorClient}
+              />
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Contacts Tabs - Only show tabs for Pro users */}
       {isProUser ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center mb-4">
@@ -363,7 +364,6 @@ const ContactsPage = () => {
             </Button>
           </div>
           
-          {/* Seniors Tab Content */}
           <TabsContent value="seniors">
             {filteredSeniors.length === 0 ? (
               <Card className="glass-card">
@@ -483,7 +483,6 @@ const ContactsPage = () => {
             )}
           </TabsContent>
           
-          {/* Facility Contacts Tab Content */}
           <TabsContent value="facilities">
             {filteredFacilities.length === 0 ? (
               <Card className="glass-card">
@@ -596,7 +595,6 @@ const ContactsPage = () => {
           </TabsContent>
         </Tabs>
       ) : (
-        /* Basic user view - only senior clients */
         <div>
           {filteredSeniors.length === 0 ? (
             <Card className="glass-card">
@@ -717,7 +715,6 @@ const ContactsPage = () => {
         </div>
       )}
 
-      {/* Contact Details Drawer */}
       {selectedContact && (
         <Sheet open={isDetailDrawerOpen} onOpenChange={setIsDetailDrawerOpen}>
           <SheetContent className="sm:max-w-md overflow-y-auto">
@@ -883,4 +880,3 @@ const ContactsPage = () => {
 };
 
 export default ContactsPage;
-
