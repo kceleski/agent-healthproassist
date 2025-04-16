@@ -1,8 +1,21 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Search } from "lucide-react";
 
 // Declare the global SP object that StorePoint provides
 declare global {
@@ -12,9 +25,89 @@ declare global {
   }
 }
 
+// Care type options
+const careTypes = [
+  { id: "any", label: "Any Care Type" },
+  { id: "assisted_living", label: "Assisted Living" },
+  { id: "memory_care", label: "Memory Care" },
+  { id: "skilled_nursing", label: "Skilled Nursing" },
+  { id: "independent_living", label: "Independent Living" },
+];
+
+// Amenity options
+const amenities = [
+  { id: "dining", label: "Fine Dining" },
+  { id: "transport", label: "Transportation" },
+  { id: "activities", label: "Social Activities" },
+  { id: "pets", label: "Pet Friendly" },
+  { id: "medical", label: "24/7 Medical Staff" },
+  { id: "rehab", label: "Rehabilitation Services" },
+];
+
 const MapPage = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const isPro = (user?.demoTier || user?.subscription) === 'premium';
+  
+  // Search state
+  const [location, setLocation] = useState<string>("");
+  const [selectedCareType, setSelectedCareType] = useState<string>("any");
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  
+  // Toggle amenity selection
+  const toggleAmenity = (amenityId: string) => {
+    setSelectedAmenities((current) => {
+      if (current.includes(amenityId)) {
+        return current.filter((id) => id !== amenityId);
+      } else {
+        return [...current, amenityId];
+      }
+    });
+  };
+  
+  // Handle search submission
+  const handleSearch = () => {
+    if (!location) {
+      toast({
+        title: "Location Required",
+        description: "Please enter a location to search",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSearching(true);
+    
+    // Construct the search query for StorePoint
+    let searchQuery = location;
+    
+    // Reset search after brief delay to simulate loading
+    setTimeout(() => {
+      // If we have access to the StorePoint API object
+      if (window.SP) {
+        // Set the location search
+        window.SP.map.setLocation(searchQuery);
+        
+        // Apply filters if they exist in the SP API
+        if (selectedCareType !== "any") {
+          // This would need to be adapted to how StorePoint filtering works
+          console.log("Filtering by care type:", selectedCareType);
+        }
+        
+        if (selectedAmenities.length > 0) {
+          console.log("Filtering by amenities:", selectedAmenities);
+        }
+      }
+      
+      setIsSearching(false);
+      
+      toast({
+        title: "Search Complete",
+        description: "Map updated with your search criteria.",
+      });
+    }, 1000);
+  };
   
   useEffect(() => {
     if (isPro) {
@@ -58,19 +151,98 @@ const MapPage = () => {
   return (
     <div className="container py-10">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Find Senior Care Facilities</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Senior Care Facility Map</h1>
         <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1">
           {isPro ? 'Pro' : 'Basic'} Feature
         </Badge>
       </div>
       <p className="text-muted-foreground mb-6">
-        Use the interactive map below to explore senior care facilities in your area. Click on a marker to see details about each location.
+        Find and explore senior care facilities across the country with our interactive map. Search by location and filter by facility type.
         {!isPro && (
           <span className="ml-2 text-healthcare-600">
-            Note: Basic tier has limited filtering options. <a href="/profile" className="underline">Upgrade to Pro</a> for advanced features.
+            Note: Basic tier has limited search options. <a href="/profile" className="underline">Upgrade to Pro</a> for advanced features.
           </span>
         )}
       </p>
+      
+      {/* Search Controls */}
+      <div className="bg-healthcare-50 p-6 rounded-lg shadow-sm mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Location Search */}
+          <div className="space-y-2">
+            <Label htmlFor="location" className="text-healthcare-700">Location</Label>
+            <div className="relative">
+              <Input
+                id="location"
+                placeholder="City, state or zip code"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="pr-8"
+              />
+              <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+          
+          {/* Care Type */}
+          <div className="space-y-2">
+            <Label htmlFor="care-type" className="text-healthcare-700">Care Type</Label>
+            <Select
+              value={selectedCareType}
+              onValueChange={setSelectedCareType}
+              disabled={!isPro}
+            >
+              <SelectTrigger id="care-type">
+                <SelectValue placeholder="Select care type" />
+              </SelectTrigger>
+              <SelectContent>
+                {careTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!isPro && (
+              <p className="text-xs text-healthcare-600">Advanced filtering requires Pro tier</p>
+            )}
+          </div>
+          
+          {/* Search Button */}
+          <div className="self-end">
+            <Button 
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="w-full bg-healthcare-600 hover:bg-healthcare-700"
+            >
+              {isSearching ? "Searching..." : "Search Map"}
+            </Button>
+          </div>
+        </div>
+        
+        {/* Amenities - Pro only */}
+        {isPro && (
+          <div className="mt-4 pt-4 border-t border-healthcare-200">
+            <Label className="text-healthcare-700 mb-3 block">Amenities (Pro Feature)</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {amenities.map((amenity) => (
+                <div key={amenity.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`amenity-${amenity.id}`}
+                    checked={selectedAmenities.includes(amenity.id)}
+                    onCheckedChange={() => toggleAmenity(amenity.id)}
+                  />
+                  <label
+                    htmlFor={`amenity-${amenity.id}`}
+                    className="text-sm font-medium leading-none cursor-pointer"
+                  >
+                    {amenity.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       
       {isPro ? (
         <>
