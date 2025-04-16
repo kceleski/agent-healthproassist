@@ -168,8 +168,12 @@ const FacilityMapboxPro = () => {
     setSelectedFacility(null);
     
     try {
-      // Use SerpAPI to search for facilities
-      const searchQuery = `senior care facilities near ${locationQuery}`;
+      // Use SerpAPI to search for facilities with user input
+      // Allow users to specify what they're looking for
+      const searchQuery = locationQuery.includes('near') ? 
+        locationQuery : 
+        `senior care facilities near ${locationQuery}`;
+      
       const results = await searchFacilities(searchQuery);
       
       if (results.length === 0) {
@@ -311,13 +315,13 @@ const FacilityMapboxPro = () => {
           
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="location" className="text-sm font-medium">Location</label>
+              <label htmlFor="location" className="text-sm font-medium">Search Query</label>
               <div className="flex gap-2">
                 <Input 
                   id="location"
                   value={locationQuery}
                   onChange={(e) => setLocationQuery(e.target.value)}
-                  placeholder="City, state or zip code"
+                  placeholder="E.g., 'nursing homes near Phoenix' or 'Chicago'"
                   className="flex-grow"
                 />
                 <Button 

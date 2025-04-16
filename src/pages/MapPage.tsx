@@ -13,7 +13,7 @@ const MapPage = () => {
         </Badge>
       </div>
       <p className="text-muted-foreground mb-6">
-        Use the interactive map below to explore senior care facilities in your area. Click on a marker to see details about each location.
+        Use the interactive map below to explore healthcare facilities. Enter specific search terms like "nursing homes near Phoenix" or "assisted living in Chicago" to find exactly what you're looking for.
         <span className="ml-2 text-healthcare-600">
           All search results are powered by live data through SerpAPI integration.
         </span>
