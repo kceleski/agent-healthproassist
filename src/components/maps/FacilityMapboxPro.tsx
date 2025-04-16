@@ -47,7 +47,8 @@ const FacilityMapboxPro = () => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   
-  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+  const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>([]);
   const [facilityTypes, setFacilityTypes] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [locationQuery, setLocationQuery] = useState<string>('');
@@ -178,7 +179,8 @@ const FacilityMapboxPro = () => {
       
       if (results.length === 0) {
         setStatus('No facilities found. Please try a different search.');
-        setFacilities([]);
+        setAllFacilities([]);
+        setFilteredFacilities([]);
         return;
       }
       
@@ -207,12 +209,15 @@ const FacilityMapboxPro = () => {
         description: result.description
       }));
       
+      // Store all facilities
+      setAllFacilities(mappedFacilities);
+      
       // Filter by type if needed
       const filteredResults = selectedType === 'all' 
         ? mappedFacilities 
         : mappedFacilities.filter(f => f.type === selectedType);
       
-      setFacilities(filteredResults);
+      setFilteredFacilities(filteredResults);
       
       // Center map on first result
       const centerCoords: [number, number] = [results[0].longitude, results[0].latitude];
@@ -240,7 +245,22 @@ const FacilityMapboxPro = () => {
       
       if (isNaN(lon) || isNaN(lat) || !mapRef.current) return;
       
+      // Create a custom element for the marker
+      const el = document.createElement('div');
+      el.className = 'cursor-pointer';
+      el.style.width = '25px';
+      el.style.height = '35px';
+      el.style.backgroundImage = 'url(https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png)';
+      el.style.backgroundSize = 'cover';
+      
+      // Add a click event directly to the marker element
+      el.addEventListener('click', () => {
+        flyToFacility([lon, lat]);
+        setSelectedFacility(facility);
+      });
+      
       const marker = new mapboxgl.Marker({
+        element: el,
         color: "#4CAF50"
       })
         .setLngLat([lon, lat])
@@ -257,17 +277,34 @@ const FacilityMapboxPro = () => {
       
       const button = document.createElement('button');
       button.textContent = 'View Details';
-      button.className = 'px-2 py-1 mt-2 bg-blue-600 text-white rounded text-sm';
-      button.onclick = () => {
+      button.className = 'px-2 py-1 mt-2 bg-blue-600 text-white rounded text-sm cursor-pointer';
+      
+      // Use a proper event listener instead of onclick
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         flyToFacility([lon, lat]);
         setSelectedFacility(facility);
-      };
+      });
+      
       popupContent.appendChild(button);
       
-      const popup = new mapboxgl.Popup({ offset: 25 })
+      const popup = new mapboxgl.Popup({ 
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false
+      })
         .setDOMContent(popupContent);
       
+      // Add popup to marker
       marker.setPopup(popup);
+      
+      // Add click handler to marker
+      marker.getElement().addEventListener('click', () => {
+        flyToFacility([lon, lat]);
+        setSelectedFacility(facility);
+      });
+      
       markersRef.current.push(marker);
     });
   };
@@ -297,13 +334,22 @@ const FacilityMapboxPro = () => {
     setSelectedType(type);
     
     // Filter facilities by type
-    if (facilities.length > 0) {
+    if (allFacilities.length > 0) {
       const filtered = type === 'all' 
-        ? facilities 
-        : facilities.filter(f => f.type === type);
+        ? allFacilities 
+        : allFacilities.filter(f => f.type === type);
       
+      // Update the filtered facilities list
+      setFilteredFacilities(filtered);
+      
+      // Clear existing markers and add new ones
       clearMarkers();
       addMarkersToMap(filtered);
+      
+      // Reset selected facility if it doesn't match the filter
+      if (selectedFacility && type !== 'all' && selectedFacility.type !== type) {
+        setSelectedFacility(null);
+      }
     }
   };
 
@@ -362,13 +408,13 @@ const FacilityMapboxPro = () => {
           
           <div className="flex-grow overflow-y-auto">
             <h3 className="text-lg font-medium mb-2">
-              {facilities.length > 0 
-                ? `${facilities.length} facilities found`
+              {filteredFacilities.length > 0 
+                ? `${filteredFacilities.length} facilities found`
                 : 'Enter a location to search'}
             </h3>
             
             <ul className="space-y-2">
-              {facilities.length === 0 ? (
+              {filteredFacilities.length === 0 ? (
                 <li className="p-3 bg-gray-50 rounded text-gray-500">
                   {isLoading 
                     ? 'Searching...' 
@@ -377,7 +423,7 @@ const FacilityMapboxPro = () => {
                       : 'Enter a location and search.'}
                 </li>
               ) : (
-                facilities.map((facility, index) => {
+                filteredFacilities.map((facility, index) => {
                   return (
                     <li 
                       key={index}
@@ -498,7 +544,26 @@ const FacilityMapboxPro = () => {
                   )}
                   
                   <div className="flex justify-end pt-2">
-                    <Button className="bg-healthcare-600">View Details</Button>
+                    <Button 
+                      className="bg-healthcare-600"
+                      onClick={() => {
+                        // Open website in new tab if available
+                        if (selectedFacility.website) {
+                          const url = selectedFacility.website.startsWith('http') 
+                            ? selectedFacility.website 
+                            : `https://${selectedFacility.website}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        } else {
+                          // If no website, try to open Google Maps
+                          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            `${selectedFacility.name} ${selectedFacility.address || ''}`
+                          )}`;
+                          window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+                        }
+                      }}
+                    >
+                      {selectedFacility.website ? 'Visit Website' : 'View on Maps'}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
