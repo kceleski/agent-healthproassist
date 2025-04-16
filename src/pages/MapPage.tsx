@@ -198,8 +198,12 @@ const MapPage = () => {
       </div>
 
       {/* Map Component */}
-      <FacilityMapbox />
-      
+      <FacilityMapbox 
+  location={location}
+  selectedCareType={selectedCareType}
+  selectedAmenities={selectedAmenities}
+/>
+
       {/* Include necessary scripts */}
       <Helmet>
         <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
