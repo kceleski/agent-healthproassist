@@ -12,7 +12,8 @@ import {
   Plus, 
   Search, 
   User, 
-  Users
+  Users,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +31,9 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 // Mock function to check user subscription tier
 const getUserTier = () => {
@@ -213,6 +217,7 @@ const ContactsPage = () => {
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("seniors");
   
   // Determine user tier
   const userTier = getUserTier();
@@ -247,6 +252,21 @@ const ContactsPage = () => {
       setFilteredSeniors(seniorsData);
       setFilteredFacilities(isProUser ? facilityContactsData : []);
     }
+  };
+
+  // Handle search clear
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setFilteredSeniors(seniorsData);
+    setFilteredFacilities(isProUser ? facilityContactsData : []);
+  };
+
+  // Apply filters
+  const handleApplyFilters = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Contact filters have been updated.",
+    });
   };
 
   // Handle export
@@ -286,8 +306,17 @@ const ContactsPage = () => {
                 : "Search senior clients by name, location, or needs..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 pr-10"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </form>
         <div className="flex gap-2">
@@ -316,7 +345,7 @@ const ContactsPage = () => {
 
       {/* Contacts Tabs - Only show tabs for Pro users */}
       {isProUser ? (
-        <Tabs defaultValue="seniors" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center mb-4">
             <TabsList>
               <TabsTrigger value="seniors" className="flex items-center gap-2">
@@ -328,7 +357,7 @@ const ContactsPage = () => {
                 Facility Contacts
               </TabsTrigger>
             </TabsList>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleApplyFilters}>
               <Filter className="h-3 w-3 mr-1" />
               <span className="hidden sm:inline">Filter</span>
             </Button>
@@ -686,6 +715,168 @@ const ContactsPage = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Contact Details Drawer */}
+      {selectedContact && (
+        <Sheet open={isDetailDrawerOpen} onOpenChange={setIsDetailDrawerOpen}>
+          <SheetContent className="sm:max-w-md overflow-y-auto">
+            <SheetHeader className="mb-4">
+              <SheetTitle>Contact Details</SheetTitle>
+              <SheetDescription>
+                View detailed information about this contact
+              </SheetDescription>
+            </SheetHeader>
+            
+            <div className="space-y-6">
+              <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={selectedContact.image} />
+                  <AvatarFallback>{selectedContact.name?.charAt(0) || "?"}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-xl font-semibold">{selectedContact.name}</h3>
+                  
+                  {selectedContact.facility ? (
+                    <div className="mt-1">
+                      <span className="text-muted-foreground">{selectedContact.title}</span>
+                      <Badge className="ml-2 bg-healthcare-50 text-healthcare-700">
+                        {selectedContact.facilityType}
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-2">
+                      <span className="text-muted-foreground">{selectedContact.age} years old</span>
+                      <Badge className={
+                        selectedContact.status === "Active" 
+                          ? "bg-green-100 text-green-700" 
+                          : "bg-blue-100 text-blue-700"
+                      }>
+                        {selectedContact.status}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <Separator />
+              
+              {selectedContact.facility ? (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Facility</Label>
+                    <p className="font-medium">{selectedContact.facility}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Care Needs</Label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {selectedContact.careNeeds?.map((need: string, i: number) => (
+                        <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700">
+                          {need}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Budget</Label>
+                    <p>{selectedContact.budget}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div>
+                <Label className="text-muted-foreground mb-1 block">Contact Information</Label>
+                <div className="space-y-3 mt-2">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span>{selectedContact.location}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <a 
+                      href={`mailto:${selectedContact.email}`}
+                      className="text-healthcare-600 hover:underline"
+                    >
+                      {selectedContact.email}
+                    </a>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <a 
+                      href={`tel:${selectedContact.phone}`}
+                      className="text-healthcare-600 hover:underline"
+                    >
+                      {selectedContact.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              {selectedContact.familyContacts && (
+                <div>
+                  <Label className="text-muted-foreground mb-1 block">Family Contacts</Label>
+                  <div className="space-y-4 mt-2">
+                    {selectedContact.familyContacts.map((contact: any, index: number) => (
+                      <div key={index} className="bg-muted/50 p-3 rounded-md">
+                        <div className="font-medium">{contact.name}</div>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          {contact.relationship}
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-3 w-3 text-muted-foreground" />
+                            <a 
+                              href={`mailto:${contact.email}`}
+                              className="text-healthcare-600 hover:underline"
+                            >
+                              {contact.email}
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3 w-3 text-muted-foreground" />
+                            <a 
+                              href={`tel:${contact.phone}`}
+                              className="text-healthcare-600 hover:underline"
+                            >
+                              {contact.phone}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedContact.notes && (
+                <div>
+                  <Label className="text-muted-foreground mb-1 block">Notes</Label>
+                  <div className="bg-muted/50 p-3 rounded-md mt-1">
+                    <p className="text-sm">{selectedContact.notes}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center text-sm text-muted-foreground">
+                <CalendarDays className="h-4 w-4 mr-1" />
+                Last contact: {selectedContact.lastContact}
+              </div>
+            </div>
+            
+            <SheetFooter className="mt-6">
+              <Button className="w-full" variant="outline" onClick={() => setIsDetailDrawerOpen(false)}>
+                Close
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   );
