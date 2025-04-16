@@ -12,6 +12,24 @@ import { MapPin, Map, Search, Heart, ArrowLeft } from "lucide-react";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
+// Define careTypes and amenities that were missing
+const careTypes = [
+  { id: "any", label: "Any Care Type" },
+  { id: "assisted_living", label: "Assisted Living" },
+  { id: "memory_care", label: "Memory Care" },
+  { id: "skilled_nursing", label: "Skilled Nursing" },
+  { id: "independent_living", label: "Independent Living" },
+];
+
+const amenities = [
+  { id: "dining", label: "Fine Dining" },
+  { id: "transport", label: "Transportation" },
+  { id: "activities", label: "Social Activities" },
+  { id: "pets", label: "Pet Friendly" },
+  { id: "medical", label: "24/7 Medical Staff" },
+  { id: "rehab", label: "Rehabilitation Services" },
+];
+
 declare global {
   interface Window {
     SP: any;
@@ -296,50 +314,52 @@ const MapPage = () => {
           
           <div id="storepoint-container" data-map-id="1645a775a8a422"></div>
           
-          <style jsx>{`
-            #storepoint-container {
-              height: 650px;
-              width: 100%;
-              border-radius: 10px;
-              box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-              margin-bottom: 20px;
-            }
-
-            .storepoint-map .marker {
-              transform: scale(1.2);
-            }
-
-            .gm-style-iw {
-              max-width: 350px !important;
-              padding: 16px !important;
-            }
-
-            .storepoint-list-item {
-              padding: 14px;
-              border-bottom: 1px solid #eee;
-              transition: background 0.2s ease;
-            }
-
-            .storepoint-list-item:hover {
-              background: #f7f7f7;
-            }
-
-            #storepoint-tag-dropdown {
-              display: none !important;
-            }
-
-            @media (max-width: 768px) {
+          <style>
+            {`
               #storepoint-container {
-                height: 500px;
+                height: 650px;
+                width: 100%;
+                border-radius: 10px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+                margin-bottom: 20px;
               }
-            }
 
-            @media (max-width: 480px) {
-              #storepoint-container {
-                height: 400px;
+              .storepoint-map .marker {
+                transform: scale(1.2);
               }
-            }
-          `}</style>
+
+              .gm-style-iw {
+                max-width: 350px !important;
+                padding: 16px !important;
+              }
+
+              .storepoint-list-item {
+                padding: 14px;
+                border-bottom: 1px solid #eee;
+                transition: background 0.2s ease;
+              }
+
+              .storepoint-list-item:hover {
+                background: #f7f7f7;
+              }
+
+              #storepoint-tag-dropdown {
+                display: none !important;
+              }
+
+              @media (max-width: 768px) {
+                #storepoint-container {
+                  height: 500px;
+                }
+              }
+
+              @media (max-width: 480px) {
+                #storepoint-container {
+                  height: 400px;
+                }
+              }
+            `}
+          </style>
           
           <Helmet>
             <script>
