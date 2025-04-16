@@ -50,7 +50,7 @@ const amenities = [
 
 const FacilitySearchPage = () => {
   const { toast } = useToast();
-  const [location, setLocation] = useState<string>("");
+  const [location, setLocation] = useState<string>("Phoenix, AZ");
   const [selectedCareType, setSelectedCareType] = useState<string>("any");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [facilities, setFacilities] = useState<Facility[]>([]);
