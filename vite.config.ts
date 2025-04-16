@@ -6,8 +6,13 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 8080,
+    host: "0.0.0.0",
+    port: 12000,
+    cors: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+    allowedHosts: true,
   },
   plugins: [
     react(),
@@ -18,5 +23,10 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  define: {
+    // Provide default environment variables
+    'import.meta.env.VITE_SERPAPI_KEY': JSON.stringify(process.env.VITE_SERPAPI_KEY || ''),
+    'import.meta.env.VITE_APP_API_URL': JSON.stringify(process.env.VITE_APP_API_URL || 'https://healthproassist-api.example.com'),
   },
 }));
