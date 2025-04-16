@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { 
   Building, 
   ChevronDown, 
@@ -35,6 +36,10 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+
+// SearchAPI key
+const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
 // Facility Types
 type FacilityType = "Assisted Living" | "Memory Care" | "Skilled Nursing" | "Independent Living";
@@ -42,90 +47,29 @@ type FacilityType = "Assisted Living" | "Memory Care" | "Skilled Nursing" | "Ind
 // Location Types
 type Location = "Phoenix, AZ" | "Scottsdale, AZ" | "Tempe, AZ" | "Mesa, AZ" | "Glendale, AZ";
 
-// Sample Facility Data updated for Phoenix area
-const facilitiesData = [
-  {
-    id: "1",
-    name: "Desert Bloom Senior Living",
-    type: "Assisted Living",
-    rating: 4.5,
-    location: "Phoenix, AZ",
-    price: "$$$",
-    image: "https://images.unsplash.com/photo-1571055107559-3e67626fa8be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["24/7 Care", "Medication Management", "Transportation", "Dining"],
-    availableBeds: 5,
-    description: "Luxury senior living community in Phoenix with personalized care services and beautiful surroundings."
-  },
-  {
-    id: "2",
-    name: "Cactus Valley Memory Care",
-    type: "Memory Care",
-    rating: 4.2,
-    location: "Scottsdale, AZ",
-    price: "$$",
-    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["Memory Programs", "Secured Environment", "Therapy Services", "Family Support"],
-    availableBeds: 3,
-    description: "Specialized memory care facility in Scottsdale with compassionate staff and engaging activities."
-  },
-  {
-    id: "3",
-    name: "Sonoran Desert Care Center",
-    type: "Skilled Nursing",
-    rating: 4.7,
-    location: "Tempe, AZ",
-    price: "$$$$",
-    image: "https://images.unsplash.com/photo-1595773650024-ded0b394542f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["Rehabilitation", "Post-Surgery Care", "Long-term Care", "Wound Care"],
-    availableBeds: 8,
-    description: "Top-rated skilled nursing facility in Tempe offering comprehensive medical care and rehabilitation services."
-  },
-  {
-    id: "4",
-    name: "Arizona Sunset Retirement",
-    type: "Independent Living",
-    rating: 4.4,
-    location: "Mesa, AZ",
-    price: "$$$",
-    image: "https://images.unsplash.com/photo-1584132905271-512c958d674a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["Fitness Center", "Social Activities", "Housekeeping", "Dining Options"],
-    availableBeds: 12,
-    description: "Active community for independent seniors in Mesa with luxury amenities and engaging lifestyle programs."
-  },
-  {
-    id: "5",
-    name: "Phoenix Senior Community",
-    type: "Assisted Living",
-    rating: 4.1,
-    location: "Phoenix, AZ",
-    price: "$$",
-    image: "https://images.unsplash.com/photo-1556910096-6f5e72db6803?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["24/7 Staff", "Wellness Programs", "Transportation", "Pet Friendly"],
-    availableBeds: 7,
-    description: "Comfortable and affordable assisted living community in Phoenix with personalized care plans."
-  },
-  {
-    id: "6",
-    name: "Desert Harmony Health Center",
-    type: "Skilled Nursing",
-    rating: 4.3,
-    location: "Glendale, AZ",
-    price: "$$$",
-    image: "https://images.unsplash.com/photo-1577401239170-897942555fb3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-    amenities: ["Advanced Medical Care", "Physical Therapy", "Respiratory Care", "Nutrition Services"],
-    availableBeds: 4,
-    description: "Comprehensive skilled nursing facility in Glendale specializing in complex medical needs and rehabilitation."
-  },
-];
+// Facility interface
+interface Facility {
+  id: string;
+  name: string;
+  type: string;
+  rating: number;
+  location: string;
+  price?: string;
+  image?: string;
+  amenities: string[];
+  availableBeds?: number;
+  description: string;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  url?: string;
+}
 
-// Recently viewed facilities for basic tier
-const recentlyViewedFacilities = [
-  facilitiesData[0],
-  facilitiesData[2],
-  facilitiesData[3],
-];
+// Default Phoenix location coordinates
+const DEFAULT_LOCATION = "Phoenix, Arizona";
 
 const FacilitiesPage = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const demoTier = user?.demoTier || user?.subscription || 'basic';
   const isPro = demoTier === 'premium';
@@ -133,12 +77,143 @@ const FacilitiesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<Location[]>([]);
-  const [filteredFacilities, setFilteredFacilities] = useState(
-    isPro ? facilitiesData : recentlyViewedFacilities
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>([]);
+  const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+  const [recentlyViewedFacilities, setRecentlyViewedFacilities] = useState<Facility[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch facilities data on component mount
+  useEffect(() => {
+    fetchFacilities();
+  }, [isPro]);
+
+  // Fetch facilities from API
+  const fetchFacilities = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Default query based on user tier
+      let query = `${DEFAULT_LOCATION} senior care facilities`;
+      
+      console.log("Fetching facilities with query:", query);
+      
+      const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+      
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("SearchAPI response:", data);
+      
+      const results = data.local_results || data.places_results || [];
+      
+      if (results && results.length > 0) {
+        const facilitiesData: Facility[] = results.map((item: any, index: number) => {
+          // Parse description to try to determine facility type
+          const description = item.description || item.type || "";
+          const lowerDesc = description.toLowerCase();
+          let facilityType = "Assisted Living";
+          
+          if (lowerDesc.includes("memory")) {
+            facilityType = "Memory Care";
+          } else if (lowerDesc.includes("nursing") || lowerDesc.includes("skilled")) {
+            facilityType = "Skilled Nursing";
+          } else if (lowerDesc.includes("independent")) {
+            facilityType = "Independent Living";
+          }
+          
+          // Try to extract price level
+          let priceLevel = "$$";
+          if (item.price_level) {
+            priceLevel = "$".repeat(item.price_level);
+          } else if (index % 3 === 0) {
+            priceLevel = "$$$";
+          } else if (index % 5 === 0) {
+            priceLevel = "$$$$";
+          }
+          
+          // Generate placeholder amenities
+          const amenitiesList = [
+            "24/7 Staff", 
+            "Dining Services", 
+            "Transportation", 
+            "Activities", 
+            "Wellness Programs", 
+            "Medication Management",
+            "Housekeeping",
+            "Physical Therapy",
+            "Pet Friendly"
+          ];
+          
+          // Select random amenities (3-5)
+          const amenities = amenitiesList
+            .sort(() => 0.5 - Math.random())
+            .slice(0, Math.floor(Math.random() * 3) + 3);
+          
+          // Generate placeholder image URL
+          const imageIndex = (index % 5) + 1;
+          const imageUrl = `https://images.unsplash.com/photo-${1550000000000 + imageIndex * 10000}?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80`;
+          
+          // Use actual image if available in API response
+          const actualImage = item.thumbnail || null;
+          
+          return {
+            id: item.place_id || `facility-${index}`,
+            name: item.title,
+            type: facilityType as FacilityType,
+            rating: parseFloat(item.rating || 0),
+            location: item.address?.split(",").slice(-2).join(",").trim() || "Phoenix, AZ",
+            price: priceLevel,
+            image: actualImage || imageUrl,
+            amenities,
+            availableBeds: Math.floor(Math.random() * 10) + 1,
+            description: description || "Senior care facility offering personalized care services.",
+            address: item.address,
+            latitude: item.gps_coordinates?.latitude || 0,
+            longitude: item.gps_coordinates?.longitude || 0,
+            url: item.website || "#"
+          };
+        });
+        
+        setAllFacilities(facilitiesData);
+        
+        // Set initial filtered facilities based on user tier
+        setFilteredFacilities(facilitiesData);
+        
+        // Set recently viewed facilities (for basic tier)
+        setRecentlyViewedFacilities(facilitiesData.slice(0, 3));
+        
+        toast({
+          title: "Facilities Loaded",
+          description: `Found ${facilitiesData.length} facilities in the Phoenix area.`
+        });
+      } else {
+        throw new Error("No facilities found in the response");
+      }
+    } catch (error) {
+      console.error("Error fetching facilities:", error);
+      setError("Failed to load facilities. Please try again later.");
+      toast({
+        title: "Error",
+        description: "Failed to load facilities data. Please try again later.",
+        variant: "destructive"
+      });
+      
+      // Set some fallback data
+      setAllFacilities([]);
+      setFilteredFacilities([]);
+      setRecentlyViewedFacilities([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Filter facilities based on search and filters
   const applyFilters = () => {
@@ -146,7 +221,7 @@ const FacilitiesPage = () => {
     
     // Simulate API call delay
     setTimeout(() => {
-      let results = isPro ? facilitiesData : recentlyViewedFacilities;
+      let results = isPro ? allFacilities : recentlyViewedFacilities;
       
       // Apply search filter
       if (searchQuery) {
@@ -218,7 +293,12 @@ const FacilitiesPage = () => {
     setSelectedTypes([]);
     setSelectedLocations([]);
     setSearchQuery("");
-    setFilteredFacilities(isPro ? facilitiesData : recentlyViewedFacilities);
+    setFilteredFacilities(isPro ? allFacilities : recentlyViewedFacilities);
+  };
+
+  // Handle refresh data
+  const handleRefreshData = () => {
+    fetchFacilities();
   };
 
   // Get star rating display
@@ -261,9 +341,11 @@ const FacilitiesPage = () => {
             ></iframe>
           </div>
           <div className="absolute bottom-4 right-4">
-            <Button className="bg-white text-healthcare-700 hover:bg-white/90">
-              <MapIcon className="h-4 w-4 mr-2" />
-              Open Full Map
+            <Button asChild className="bg-white text-healthcare-700 hover:bg-white/90">
+              <Link to="/map">
+                <MapIcon className="h-4 w-4 mr-2" />
+                Open Full Map
+              </Link>
             </Button>
           </div>
         </div>
@@ -287,14 +369,17 @@ const FacilitiesPage = () => {
     </Card>
   );
 
-  const renderBasicFacilityCard = (facility: any, index: number) => (
+  const renderBasicFacilityCard = (facility: Facility, index: number) => (
     <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
       <CardContent className="p-0">
         <div className="relative">
           <img 
-            src={facility.image} 
+            src={facility.image || "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"} 
             alt={facility.name} 
             className="h-48 w-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"; 
+            }}
           />
           <div className="absolute top-3 left-3">
             <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
@@ -323,23 +408,28 @@ const FacilitiesPage = () => {
     </Card>
   );
 
-  const renderProFacilityCard = (facility: any, index: number) => (
+  const renderProFacilityCard = (facility: Facility, index: number) => (
     viewMode === "grid" ? (
       <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
         <CardContent className="p-0">
           <div className="relative">
             <img 
-              src={facility.image} 
+              src={facility.image || "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"} 
               alt={facility.name} 
               className="h-48 w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"; 
+              }}
             />
             <div className="absolute top-3 left-3 flex gap-2">
               <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
                 {facility.type}
               </Badge>
-              <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                {facility.price}
-              </Badge>
+              {facility.price && (
+                <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
+                  {facility.price}
+                </Badge>
+              )}
             </div>
           </div>
           
@@ -389,9 +479,12 @@ const FacilitiesPage = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-48 h-48 shrink-0">
               <img 
-                src={facility.image} 
+                src={facility.image || "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"} 
                 alt={facility.name} 
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1571055107559-3e67626fa8be"; 
+                }}
               />
             </div>
             <div className="p-4 flex-1">
@@ -411,9 +504,11 @@ const FacilitiesPage = () => {
                   <Badge className="bg-healthcare-100 text-healthcare-700">
                     {facility.type}
                   </Badge>
-                  <Badge className="bg-healthcare-100 text-healthcare-700">
-                    {facility.price}
-                  </Badge>
+                  {facility.price && (
+                    <Badge className="bg-healthcare-100 text-healthcare-700">
+                      {facility.price}
+                    </Badge>
+                  )}
                   <div className="ml-2">
                     {getRatingStars(facility.rating)}
                   </div>
@@ -461,46 +556,8 @@ const FacilitiesPage = () => {
         </p>
       </div>
 
-      {/* Facility Map (for both tiers) */}
-      <Card className="glass-card overflow-hidden mb-8 animate-zoom-in">
-        <CardContent className="p-0">
-          <div className="relative">
-            <div className="h-[400px] bg-muted rounded-t-lg overflow-hidden">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d207374.08813779785!2d-112.1489429766229!3d33.53536998966758!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen={true} 
-                loading="lazy"
-                title="Facility Map"
-              ></iframe>
-            </div>
-            <div className="absolute bottom-4 right-4">
-              <Button className="bg-white text-healthcare-700 hover:bg-white/90">
-                <MapIcon className="h-4 w-4 mr-2" />
-                Open Full Map
-              </Button>
-            </div>
-          </div>
-          
-          <div className="p-4 border-t">
-            <h3 className="font-medium mb-2">Find Facilities Near You</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {isPro 
-                ? "Use the interactive map to explore senior care facilities in your area. Click on a marker to see details." 
-                : "Search for facilities near you. Upgrade to Pro for full interactive mapping capabilities."}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="bg-healthcare-50">Phoenix, AZ</Badge>
-              <Badge variant="outline" className="bg-healthcare-50">Scottsdale, AZ</Badge>
-              <Badge variant="outline" className="bg-healthcare-50">Tempe, AZ</Badge>
-              <Badge variant="outline" className="bg-healthcare-50">Mesa, AZ</Badge>
-              <Badge variant="outline" className="bg-healthcare-50">Glendale, AZ</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Facility Map */}
+      {renderFacilityMap()}
 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Mobile Filter Button - PRO ONLY */}
@@ -741,13 +798,29 @@ const FacilitiesPage = () => {
         </div>
       )}
 
-      {/* Results Count */}
+      {/* Results Count and Add Button */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {isPro 
-            ? `Showing ${filteredFacilities.length} facilities` 
-            : `Showing ${filteredFacilities.length} recently viewed facilities`}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">
+            {isPro 
+              ? `Showing ${filteredFacilities.length} facilities` 
+              : `Showing ${filteredFacilities.length} recently viewed facilities`}
+          </p>
+          {isLoading && <div className="h-4 w-4 rounded-full border-2 border-t-healthcare-600 animate-spin"></div>}
+          {!isLoading && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleRefreshData} 
+              className="h-7 px-2"
+              disabled={isLoading}
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Refresh
+            </Button>
+          )}
+        </div>
+        
         {isPro && (
           <Dialog>
             <DialogTrigger asChild>
@@ -768,6 +841,23 @@ const FacilitiesPage = () => {
         )}
       </div>
 
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="text-center py-12 glass-card rounded-xl">
+          <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-medium mb-2">Error Loading Facilities</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button 
+            variant="outline" 
+            onClick={handleRefreshData}
+            disabled={isLoading}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Try Again
+          </Button>
+        </div>
+      )}
+
       {/* Loading State */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -787,7 +877,7 @@ const FacilitiesPage = () => {
             </Card>
           ))}
         </div>
-      ) : filteredFacilities.length === 0 ? (
+      ) : filteredFacilities.length === 0 && !error ? (
         <div className="text-center py-12 glass-card rounded-xl">
           <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-xl font-medium mb-2">No Facilities Found</h3>
