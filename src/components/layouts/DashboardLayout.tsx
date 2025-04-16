@@ -1,4 +1,3 @@
-
 import { Outlet } from 'react-router-dom';
 import { 
   Sidebar, 
@@ -22,7 +21,8 @@ import {
   UserCog,
   LogOut,
   Map,
-  Calendar
+  Calendar,
+  Search
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,7 +44,8 @@ const DashboardLayout = () => {
   const basicMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Facilities', path: '/facilities', icon: Building },
-    { title: 'Facility Map', path: '/map', icon: Map },  // Added map to basic tier
+    { title: 'Facility Search', path: '/facility-search', icon: Search },
+    { title: 'Facility Map', path: '/map', icon: Map },
     { title: 'Clients', path: '/contacts', icon: Contact },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
@@ -53,6 +54,7 @@ const DashboardLayout = () => {
   const proMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Facilities', path: '/facilities', icon: Building },
+    { title: 'Facility Search', path: '/facility-search', icon: Search },
     { title: 'Facility Map', path: '/map', icon: Map },
     { title: 'Contacts', path: '/contacts', icon: Contact },
     { title: 'Payments', path: '/payments', icon: DollarSign },
@@ -104,7 +106,7 @@ const DashboardLayout = () => {
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
-                <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-sm font-medium">{user?.name}</p>

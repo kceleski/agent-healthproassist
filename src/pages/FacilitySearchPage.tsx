@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-// SerpAPI key - Updated to use the correct key format
+// SearchAPI key
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
 // Facility type interface
@@ -102,7 +101,7 @@ const FacilitySearchPage = () => {
       
       console.log("Searching for:", query);
 
-      // Updated to use the searchapi.io endpoint with the correct API key format
+      // Using the searchapi.io endpoint with the correct API key
       const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
       
       const response = await fetch(apiUrl);
@@ -130,7 +129,6 @@ const FacilitySearchPage = () => {
         }));
         
         setFacilities(searchResults);
-        setIsLoading(false);
         
         toast({
           title: "Search Complete",
@@ -138,7 +136,6 @@ const FacilitySearchPage = () => {
         });
       } else {
         setFacilities([]);
-        setIsLoading(false);
         toast({
           title: "No Results",
           description: "No facilities found matching your criteria.",
@@ -152,6 +149,7 @@ const FacilitySearchPage = () => {
         description: "Unable to search facilities. Please try again later.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
