@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Building, 
@@ -38,16 +37,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
-// SearchAPI key
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
-// Facility Types
 type FacilityType = "Assisted Living" | "Memory Care" | "Skilled Nursing" | "Independent Living";
 
-// Location Types
 type Location = "Phoenix, AZ" | "Scottsdale, AZ" | "Tempe, AZ" | "Mesa, AZ" | "Glendale, AZ";
 
-// Facility interface
 interface Facility {
   id: string;
   name: string;
@@ -65,7 +60,6 @@ interface Facility {
   url?: string;
 }
 
-// Default Phoenix location coordinates
 const DEFAULT_LOCATION = "Phoenix, Arizona";
 
 const FacilitiesPage = () => {
@@ -85,18 +79,15 @@ const FacilitiesPage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch facilities data on component mount
   useEffect(() => {
     fetchFacilities();
   }, [isPro]);
 
-  // Fetch facilities from API
   const fetchFacilities = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Default query based on user tier
       let query = `${DEFAULT_LOCATION} senior care facilities`;
       
       console.log("Fetching facilities with query:", query);
@@ -116,7 +107,6 @@ const FacilitiesPage = () => {
       
       if (results && results.length > 0) {
         const facilitiesData: Facility[] = results.map((item: any, index: number) => {
-          // Parse description to try to determine facility type
           const description = item.description || item.type || "";
           const lowerDesc = description.toLowerCase();
           let facilityType = "Assisted Living";
@@ -129,7 +119,6 @@ const FacilitiesPage = () => {
             facilityType = "Independent Living";
           }
           
-          // Try to extract price level
           let priceLevel = "$$";
           if (item.price_level) {
             priceLevel = "$".repeat(item.price_level);
@@ -139,7 +128,6 @@ const FacilitiesPage = () => {
             priceLevel = "$$$$";
           }
           
-          // Generate placeholder amenities
           const amenitiesList = [
             "24/7 Staff", 
             "Dining Services", 
@@ -152,16 +140,13 @@ const FacilitiesPage = () => {
             "Pet Friendly"
           ];
           
-          // Select random amenities (3-5)
           const amenities = amenitiesList
             .sort(() => 0.5 - Math.random())
             .slice(0, Math.floor(Math.random() * 3) + 3);
           
-          // Generate placeholder image URL
           const imageIndex = (index % 5) + 1;
           const imageUrl = `https://images.unsplash.com/photo-${1550000000000 + imageIndex * 10000}?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80`;
           
-          // Use actual image if available in API response
           const actualImage = item.thumbnail || null;
           
           return {
@@ -184,10 +169,8 @@ const FacilitiesPage = () => {
         
         setAllFacilities(facilitiesData);
         
-        // Set initial filtered facilities based on user tier
         setFilteredFacilities(facilitiesData);
         
-        // Set recently viewed facilities (for basic tier)
         setRecentlyViewedFacilities(facilitiesData.slice(0, 3));
         
         toast({
@@ -206,7 +189,6 @@ const FacilitiesPage = () => {
         variant: "destructive"
       });
       
-      // Set some fallback data
       setAllFacilities([]);
       setFilteredFacilities([]);
       setRecentlyViewedFacilities([]);
@@ -215,15 +197,12 @@ const FacilitiesPage = () => {
     }
   };
 
-  // Filter facilities based on search and filters
   const applyFilters = () => {
     setIsLoading(true);
     
-    // Simulate API call delay
     setTimeout(() => {
       let results = isPro ? allFacilities : recentlyViewedFacilities;
       
-      // Apply search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         results = results.filter(
@@ -234,14 +213,12 @@ const FacilitiesPage = () => {
         );
       }
       
-      // Apply type filter
       if (selectedTypes.length > 0) {
         results = results.filter(facility => 
           selectedTypes.includes(facility.type as FacilityType)
         );
       }
       
-      // Apply location filter
       if (selectedLocations.length > 0) {
         results = results.filter(facility => 
           selectedLocations.includes(facility.location as Location)
@@ -253,18 +230,15 @@ const FacilitiesPage = () => {
     }, 500);
   };
 
-  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
 
-  // Toggle facility type selection
   const toggleTypeSelection = (type: FacilityType) => {
     setSelectedTypes(prev =>
       prev.includes(type)
@@ -273,7 +247,6 @@ const FacilitiesPage = () => {
     );
   };
 
-  // Toggle location selection
   const toggleLocationSelection = (location: Location) => {
     setSelectedLocations(prev =>
       prev.includes(location)
@@ -282,13 +255,11 @@ const FacilitiesPage = () => {
     );
   };
 
-  // Apply filters when selections change
   const handleFilterApply = () => {
     applyFilters();
     setFilterOpen(false);
   };
 
-  // Reset all filters
   const handleFilterReset = () => {
     setSelectedTypes([]);
     setSelectedLocations([]);
@@ -296,12 +267,10 @@ const FacilitiesPage = () => {
     setFilteredFacilities(isPro ? allFacilities : recentlyViewedFacilities);
   };
 
-  // Handle refresh data
   const handleRefreshData = () => {
     fetchFacilities();
   };
 
-  // Get star rating display
   const getRatingStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -466,7 +435,12 @@ const FacilitiesPage = () => {
               <span className="text-sm">
                 <span className="font-medium">{facility.availableBeds}</span> beds available
               </span>
-              <Button asChild size="sm" className="bg-healthcare-600">
+              <Button 
+                size="sm" 
+                className="bg-healthcare-600"
+                onClick={() => handleViewDetails(facility)}
+                asChild
+              >
                 <Link to={`/facilities/${facility.id}`}>View Details</Link>
               </Button>
             </div>
@@ -529,7 +503,12 @@ const FacilitiesPage = () => {
                 <span className="text-sm">
                   <span className="font-medium">{facility.availableBeds}</span> beds available
                 </span>
-                <Button asChild size="sm" className="bg-healthcare-600">
+                <Button 
+                  size="sm" 
+                  className="bg-healthcare-600"
+                  onClick={() => handleViewDetails(facility)}
+                  asChild
+                >
                   <Link to={`/facilities/${facility.id}`}>View Details</Link>
                 </Button>
               </div>
@@ -539,6 +518,11 @@ const FacilitiesPage = () => {
       </Card>
     )
   );
+
+  const handleViewDetails = (facility: Facility) => {
+    sessionStorage.setItem('selectedFacility', JSON.stringify(facility));
+    console.log(`Navigating to facility detail: ${facility.id}`);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -556,11 +540,9 @@ const FacilitiesPage = () => {
         </p>
       </div>
 
-      {/* Facility Map */}
       {renderFacilityMap()}
 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
-        {/* Mobile Filter Button - PRO ONLY */}
         {isPro && (
           <Button
             variant="outline"
@@ -577,7 +559,6 @@ const FacilitiesPage = () => {
           </Button>
         )}
 
-        {/* Search Form */}
         <div className="flex-1 w-full">
           <form onSubmit={handleSearchSubmit} className="flex gap-2">
             <div className="relative flex-1">
@@ -598,7 +579,6 @@ const FacilitiesPage = () => {
           </form>
         </div>
 
-        {/* Desktop Filter Dropdown - PRO ONLY */}
         {isPro && (
           <div className="hidden lg:flex items-center gap-2">
             <DropdownMenu>
@@ -708,7 +688,6 @@ const FacilitiesPage = () => {
         )}
       </div>
 
-      {/* Filter Dialog (Mobile) - PRO ONLY */}
       {isPro && (
         <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
           <DialogContent className="sm:max-w-md">
@@ -765,7 +744,6 @@ const FacilitiesPage = () => {
         </Dialog>
       )}
 
-      {/* Active Filters Display - PRO ONLY */}
       {isPro && (selectedTypes.length > 0 || selectedLocations.length > 0) && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm font-medium">Active Filters:</span>
@@ -798,7 +776,6 @@ const FacilitiesPage = () => {
         </div>
       )}
 
-      {/* Results Count and Add Button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">
@@ -815,7 +792,7 @@ const FacilitiesPage = () => {
               className="h-7 px-2"
               disabled={isLoading}
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
+              <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
           )}
@@ -841,7 +818,6 @@ const FacilitiesPage = () => {
         )}
       </div>
 
-      {/* Error State */}
       {error && !isLoading && (
         <div className="text-center py-12 glass-card rounded-xl">
           <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -858,7 +834,6 @@ const FacilitiesPage = () => {
         </div>
       )}
 
-      {/* Loading State */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
@@ -890,7 +865,6 @@ const FacilitiesPage = () => {
           </Button>
         </div>
       ) : (
-        // Facilities Grid/List View - DIFFERENT FOR BASIC AND PRO
         <div className={
           viewMode === "grid" && isPro
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
