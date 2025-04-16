@@ -15,14 +15,14 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import FacilitiesPage from "./pages/FacilitiesPage";
 import FacilityDetailPage from "./pages/FacilityDetailPage";
-import FacilitySearchPage from "./pages/FacilitySearchPage";
+import SearchPage from "./pages/SearchPage";
+import MapPage from "./pages/MapPage";
+import FavoritesPage from "./pages/FavoritesPage";
 import ContactsPage from "./pages/ContactsPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ProfilePage from "./pages/ProfilePage";
-import MapPage from "./pages/MapPage";
 import CalendarPage from "./pages/CalendarPage";
 import AvaLogoDemo from "./pages/AvaLogoDemo";
-import AvaMapPage from "./pages/AvaMapPage";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -61,14 +61,14 @@ const App = () => (
                 </ProtectedRoute>
               }>
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/facilities" element={<FacilitiesPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/map" element={<MapPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/facilities" element={<FavoritesPage />} />
                 <Route path="/facilities/:id" element={<FacilityDetailPage />} />
-                <Route path="/facility-search" element={<FacilitySearchPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/map" element={<MapPage />} />
-                <Route path="/ava-map" element={<AvaMapPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
               </Route>
               

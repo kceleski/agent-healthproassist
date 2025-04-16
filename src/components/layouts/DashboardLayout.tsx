@@ -1,3 +1,4 @@
+
 import { Outlet } from 'react-router-dom';
 import { 
   Sidebar, 
@@ -22,7 +23,8 @@ import {
   LogOut,
   Map,
   Calendar,
-  Search
+  Search,
+  Heart
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -43,9 +45,9 @@ const DashboardLayout = () => {
   // Define menu items based on subscription tier
   const basicMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
-    { title: 'Facilities', path: '/facilities', icon: Building },
-    { title: 'Facility Search', path: '/facility-search', icon: Search },
-    { title: 'Facility Map', path: '/map', icon: Map },
+    { title: 'Search Facilities', path: '/search', icon: Search },
+    { title: 'Map View', path: '/map', icon: Map },
+    { title: 'Saved Facilities', path: '/favorites', icon: Heart },
     { title: 'Clients', path: '/contacts', icon: Contact },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
@@ -53,9 +55,9 @@ const DashboardLayout = () => {
 
   const proMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
-    { title: 'Facilities', path: '/facilities', icon: Building },
-    { title: 'Facility Search', path: '/facility-search', icon: Search },
-    { title: 'Facility Map', path: '/map', icon: Map },
+    { title: 'Search Facilities', path: '/search', icon: Search },
+    { title: 'Map View', path: '/map', icon: Map },
+    { title: 'Saved Facilities', path: '/favorites', icon: Heart },
     { title: 'Contacts', path: '/contacts', icon: Contact },
     { title: 'Payments', path: '/payments', icon: DollarSign },
     { title: 'Profile', path: '/profile', icon: UserCog },
