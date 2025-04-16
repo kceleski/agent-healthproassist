@@ -14,8 +14,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-// SerpAPI key
-const SERP_API_KEY = "b9365d165843e4d74619d8d0cfbcb81dd8f493c26c8413010b8ba1c0ad9f6493";
+// SerpAPI key - Updated to use the correct key format
+const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
 // Facility type interface
 interface Facility {
@@ -102,8 +102,8 @@ const FacilitySearchPage = () => {
       
       console.log("Searching for:", query);
 
-      // Call SerpAPI with Google Maps engine
-      const apiUrl = `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+      // Updated to use the searchapi.io endpoint with the correct API key format
+      const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
       
       const response = await fetch(apiUrl);
       
@@ -112,11 +112,13 @@ const FacilitySearchPage = () => {
       }
       
       const data = await response.json();
-      console.log("SerpAPI response:", data);
+      console.log("SearchAPI response:", data);
       
-      // Process results
-      if (data.local_results && data.local_results.length > 0) {
-        const searchResults = data.local_results.map((item: any) => ({
+      // Process results - checking both local_results and places_results fields
+      const results = data.local_results || data.places_results || [];
+      
+      if (results && results.length > 0) {
+        const searchResults = results.map((item: any) => ({
           id: item.place_id || Math.random().toString(36).substring(2),
           name: item.title,
           address: item.address || "",

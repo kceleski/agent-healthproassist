@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Search, Map } from "lucide-react";
 
-const SERP_API_KEY = "b9365d165843e4d74619d8d0cfbcb81dd8f493c26c8413010b8ba1c0ad9f6493";
+const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
 declare global {
   interface Window {
@@ -106,7 +106,7 @@ const MapPage = () => {
       
       console.log("Searching for:", query);
       
-      const apiUrl = `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+      const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
       
       const response = await fetch(apiUrl);
       
@@ -115,10 +115,12 @@ const MapPage = () => {
       }
       
       const data = await response.json();
-      console.log("SerpAPI response:", data);
+      console.log("SearchAPI response:", data);
       
-      if (data.local_results && data.local_results.length > 0) {
-        const facilities = data.local_results.map((item: any) => ({
+      const results = data.local_results || data.places_results || [];
+      
+      if (results && results.length > 0) {
+        const facilities = results.map((item: any) => ({
           id: item.place_id || Math.random().toString(36).substring(2),
           name: item.title,
           address: item.address || "",
