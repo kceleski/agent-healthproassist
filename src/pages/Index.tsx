@@ -39,7 +39,7 @@ const Index = () => {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${OPENAI_API_KEY}`,
-              'OpenAI-Beta': 'assistants=v1'
+              'OpenAI-Beta': 'assistants=v2'
             },
             body: JSON.stringify({})
           });
@@ -95,7 +95,7 @@ const Index = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'OpenAI-Beta': 'assistants=v1'
+          'OpenAI-Beta': 'assistants=v2'
         },
         body: JSON.stringify({
           assistant_id: ASSISTANT_ID,
@@ -130,7 +130,7 @@ const Index = () => {
         const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
           headers: {
             'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'OpenAI-Beta': 'assistants=v1'
+            'OpenAI-Beta': 'assistants=v2'
           }
         });
         
