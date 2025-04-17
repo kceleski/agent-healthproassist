@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -121,6 +122,10 @@ const DashboardLayout = () => {
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </div>
+            
+            {/* Add Subscription Toggle */}
+            <SubscriptionToggle className="mb-2" />
+            
             <Button 
               variant="outline" 
               className="w-full justify-start gap-2" 
