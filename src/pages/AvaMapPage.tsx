@@ -1,16 +1,15 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Loader2, MapPin, Search } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
 // Import the StorePoint types (TypeScript will use this even though it's an empty import)
-import {} from '@/types/storepoint';
+import {} from '@/types/storepoint.d.ts';
 
 interface Message {
   role: 'user' | 'assistant';

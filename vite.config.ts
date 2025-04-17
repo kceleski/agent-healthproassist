@@ -39,6 +39,12 @@ export default defineConfig(({ mode }) => ({
   },
   // Add optimizeDeps to help with dependency pre-bundling
   optimizeDeps: {
-    include: ['mapbox-gl']
+    include: ['mapbox-gl', 'react', 'react-dom']
   },
+  build: {
+    sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  }
 }));
