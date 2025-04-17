@@ -7,6 +7,7 @@ import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
 import { getUserNotifications, markNotificationAsRead } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const NotificationsOverview = () => {
   const { user } = useAuth();
