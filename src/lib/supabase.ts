@@ -7,9 +7,17 @@ import { Database } from './database.types';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://zpfaojrmcozacnsnwmra.supabase.co"; 
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmFvanJtY296YWNuc253bXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDI1NjYsImV4cCI6MjA1Nzg3ODU2Nn0.p6zCt1HzmKCkBHbairGysWtWo22d6m2rJY3q3yE58gc";
 
+// Configure the Supabase client
 export const supabase = createClient<Database>(
   supabaseUrl,
-  supabaseAnonKey
+  supabaseAnonKey,
+  {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  }
 );
 
 // Helper function to check if user is authenticated

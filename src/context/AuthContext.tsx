@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Session } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
@@ -13,16 +14,17 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   loading: boolean;
-  isAuthenticated: boolean; // Added for ProtectedRoute and Navbar
+  isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>; // Alias for signIn
-  register: (name: string, email: string, password: string) => Promise<void>; // Alias for signUp
-  logout: () => Promise<void>; // Alias for signOut
-  updateDemoTier: (tier: string) => Promise<void>; // For subscription-toggle
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateDemoTier: (tier: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,40 +35,55 @@ interface AuthProviderProps {
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ? {
+          id: currentSession.user.id,
+          email: currentSession.user.email || '',
+          name: currentSession.user.user_metadata?.full_name || '',
+          avatar_url: currentSession.user.user_metadata?.avatar_url || null,
+        } : null);
+        setIsAuthenticated(!!currentSession);
+        
+        if (event === 'SIGNED_IN' && currentSession?.user) {
+          setTimeout(() => {
+            fetchUserProfile(currentSession.user.id);
+          }, 0);
+        }
+      }
+    );
 
-      if (session) {
-        await fetchUser(session.user.id);
-        setIsAuthenticated(true);
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ? {
+        id: currentSession.user.id,
+        email: currentSession.user.email || '',
+        name: currentSession.user.user_metadata?.full_name || '',
+        avatar_url: currentSession.user.user_metadata?.avatar_url || null,
+      } : null);
+      setIsAuthenticated(!!currentSession);
+      
+      if (currentSession?.user) {
+        fetchUserProfile(currentSession.user.id);
       } else {
         setLoading(false);
-        setIsAuthenticated(false);
       }
-    };
-
-    getSession();
-
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN') {
-        await fetchUser(session?.user.id);
-        setIsAuthenticated(true);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-
-      setLoading(false);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const fetchUser = async (userId: string | undefined) => {
-    if (!userId) return;
-
+  const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('users')
@@ -76,21 +93,22 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (error) {
         console.error('Error fetching user data:', error);
+        setLoading(false);
         return;
       }
 
       if (data) {
         // Extract avatar_url correctly from user_profiles
-        let avatar_url = null;
-        if (data.user_profiles && data.user_profiles.length > 0 && data.user_profiles[0]) {
-          avatar_url = data.user_profiles[0].avatar_url;
+        let avatarUrl = null;
+        if (data.user_profiles && Array.isArray(data.user_profiles) && data.user_profiles[0]) {
+          avatarUrl = data.user_profiles[0].avatar_url;
         }
         
         setUser({
           id: data.id,
           email: data.email || '',
           name: data.full_name || '',
-          avatar_url: avatar_url,
+          avatar_url: avatarUrl,
           demoTier: data.demo_tier || null,
           subscription: data.subscription || null,
         });
@@ -105,7 +123,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
       if (error) throw error;
     } catch (error: any) {
       console.error("Error signing in:", error.message);
@@ -130,21 +151,61 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
 
       // Create a user profile after successful signup
-      if (data.user?.id) {
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .insert([{ user_id: data.user.id }]);
-
-        if (profileError) {
-          console.error("Error creating user profile:", profileError.message);
-          throw profileError;
-        }
+      if (data?.user?.id) {
+        await createUserRecord(data.user.id, { email, full_name: name });
       }
     } catch (error: any) {
       console.error("Error signing up:", error.message);
       throw error;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createUserRecord = async (userId: string, userData: { email: string, full_name: string }) => {
+    try {
+      // Check if user record exists
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .single();
+      
+      if (existingUser) {
+        // Update existing user
+        await supabase
+          .from('users')
+          .update({
+            email: userData.email,
+            full_name: userData.full_name,
+            updated_at: new Date().toISOString(),
+            last_login: new Date().toISOString()
+          })
+          .eq('id', userId);
+      } else {
+        // Create new user record
+        await supabase
+          .from('users')
+          .insert({
+            id: userId,
+            email: userData.email,
+            full_name: userData.full_name,
+            demo_tier: 'basic',
+            subscription: 'free',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            last_login: new Date().toISOString()
+          });
+        
+        // Create user profile
+        await supabase
+          .from('user_profiles')
+          .insert({
+            user_id: userId
+          });
+      }
+    } catch (error) {
+      console.error('Error creating user record:', error);
     }
   };
 
@@ -155,6 +216,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
       setUser(null);
       setIsAuthenticated(false);
+      setSession(null);
     } catch (error: any) {
       console.error("Error signing out:", error.message);
     } finally {
@@ -171,6 +233,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
     } catch (error: any) {
       console.error("Error resetting password:", error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -207,6 +270,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
+    session,
     loading,
     isAuthenticated,
     signIn,

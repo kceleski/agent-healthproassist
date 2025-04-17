@@ -12,6 +12,7 @@ import { Helmet } from "react-helmet";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import DashboardPage from "./pages/DashboardPage";
 import FacilitiesPage from "./pages/FacilitiesPage";
 import FacilityDetailPage from "./pages/FacilityDetailPage";
@@ -52,6 +53,7 @@ const App = () => (
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
                 <Route path="/index" element={<Index />} />
               </Route>
