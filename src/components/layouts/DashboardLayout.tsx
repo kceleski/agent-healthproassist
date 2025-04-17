@@ -1,5 +1,22 @@
+import { useState, useEffect } from 'react';
+import { Link, useLocation, NavLink, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { cn } from '@/lib/utils';
+import { 
+  Building, 
+  Home, 
+  Contact, 
+  DollarSign,
+  UserCog,
+  LogOut,
+  Map,
+  Calendar,
+  Search,
+  Heart,
+  Bookmark,
+} from 'lucide-react';
 
-import { Outlet } from 'react-router-dom';
 import { 
   Sidebar, 
   SidebarContent, 
@@ -13,22 +30,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
-import { useAuth } from '@/context/AuthContext';
-import { 
-  Building, 
-  Home, 
-  Contact, 
-  DollarSign,
-  UserCog,
-  LogOut,
-  Map,
-  Calendar,
-  Search,
-  Heart
-} from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { SubscriptionToggle } from '@/components/ui/subscription-toggle';
 
 const DashboardLayout = () => {

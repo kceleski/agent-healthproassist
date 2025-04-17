@@ -16,7 +16,8 @@ import { format } from "date-fns";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, Map } from "lucide-react";
+import { Search, Map, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const SavedSearchesPage = () => {
   const [searches, setSearches] = useState<any[]>([]);
@@ -24,24 +25,49 @@ const SavedSearchesPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const loadSearches = async () => {
-      if (!user?.id) return;
-      
-      try {
-        const results = await getSearchResults(user.id);
-        setSearches(results);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load saved searches",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadSearches = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const results = await getSearchResults(user.id);
+      setSearches(results);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load saved searches",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleDelete = async (searchId: string) => {
+    try {
+      const { error } = await supabase
+        .from('search_results')
+        .delete()
+        .eq('id', searchId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Search deleted successfully",
+      });
+
+      // Reload searches
+      loadSearches();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete search",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
     loadSearches();
   }, [user?.id]);
 
@@ -98,6 +124,13 @@ const SavedSearchesPage = () => {
                           <Link to={`/map?q=${encodeURIComponent(search.query)}`}>
                             <Map className="h-4 w-4" />
                           </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(search.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     </TableCell>
