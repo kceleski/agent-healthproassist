@@ -9,6 +9,9 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
+// Import the StorePoint types (TypeScript will use this even though it's an empty import)
+import {} from '@/types/storepoint';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -538,4 +541,3 @@ const AvaMapPage = () => {
 };
 
 export default AvaMapPage;
-
