@@ -1,17 +1,15 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
-import { getUserNotifications, markNotificationAsRead } from '@/services/userService';
+import { Bell, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { getUserNotifications, markNotificationAsRead, createTestNotification, type Notification } from '@/services/notificationService';
 
 const NotificationsOverview = () => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,21 +42,11 @@ const NotificationsOverview = () => {
     }
   };
 
-  // For demo/testing purposes
   const createDummyNotification = async () => {
     if (!user?.id) return;
     
     try {
-      const { data, error } = await supabase.from('notifications').insert({
-        user_id: user.id,
-        type: 'system',
-        title: 'Test Notification',
-        content: 'This is a test notification created at ' + new Date().toLocaleTimeString(),
-        read: false
-      }).select();
-      
-      if (error) throw error;
-      
+      await createTestNotification(user.id);
       toast.success('Test notification created');
       loadNotifications();
     } catch (error) {
