@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -74,7 +73,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="min-h-screen flex w-full">
-      <Sidebar>
+      <Sidebar className="bg-white shadow-lg">
         <SidebarHeader className="p-4">
           <div className="flex items-center">
             <img 
@@ -135,14 +134,10 @@ const DashboardLayout = () => {
       </Sidebar>
       
       <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b flex items-center justify-between">
+        <div className="p-4 border-b flex items-center justify-between bg-white">
           <SidebarTrigger />
           <div className="flex items-center gap-4">
             <NotificationsInbox />
-            <SubscriptionToggle />
-            <div className="text-sm font-medium">
-              Plan: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{isPro ? 'Pro' : 'Basic'}</span>
-            </div>
           </div>
         </div>
         
