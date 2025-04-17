@@ -1,12 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const demoTier = user?.demoTier || user?.subscription || 'basic';
   const isPro = demoTier === 'premium';
 
@@ -166,6 +168,15 @@ const DashboardPage = () => {
     },
   ];
 
+  const handleProcessReferral = (referralId: string, clientName: string) => {
+    toast.success(`Processing referral for ${clientName}`);
+    navigate(`/contacts?referral=${referralId}`);
+  };
+
+  const handleViewAllReferrals = () => {
+    navigate('/contacts?tab=referrals');
+  };
+
   const renderCalendarCard = () => (
     <Card className="glass-card animate-zoom-in" style={{ animationDelay: '500ms' }}>
       <CardHeader>
@@ -244,7 +255,7 @@ const DashboardPage = () => {
             <CardTitle>Recent Referrals</CardTitle>
             <CardDescription>New client referrals requiring your attention</CardDescription>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleViewAllReferrals}>
             <FileText className="h-3.5 w-3.5 mr-1" />
             <span>View All</span>
           </Button>
@@ -276,7 +287,7 @@ const DashboardPage = () => {
                   <td className="p-3 hidden md:table-cell text-muted-foreground">{referral.referredBy}</td>
                   <td className="p-3 hidden sm:table-cell text-muted-foreground">{referral.date}</td>
                   <td className="p-3">
-                    <Button size="sm" variant="outline">Process</Button>
+                    <Button size="sm" variant="outline" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
                   </td>
                 </tr>
               ))}
