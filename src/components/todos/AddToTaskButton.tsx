@@ -1,5 +1,4 @@
 
-// This is a modified version to match the props expected in CalendarPage.tsx
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -8,7 +7,7 @@ export interface AddToTaskButtonProps {
   actionText: string;
   size?: "default" | "sm" | "lg" | "icon";
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-  onClick?: (e: any) => void;
+  onClick?: (e: React.MouseEvent, actionText: string, priority?: 'low' | 'medium' | 'high') => void;
 }
 
 const AddToTaskButton: React.FC<AddToTaskButtonProps> = ({
@@ -17,9 +16,16 @@ const AddToTaskButton: React.FC<AddToTaskButtonProps> = ({
   variant = "default",
   onClick
 }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      // Default to medium priority if not specified
+      onClick(e, actionText, 'medium');
+    }
+  };
+
   return (
     <Button
-      onClick={onClick}
+      onClick={handleClick}
       size={size}
       variant={variant}
       className="flex items-center gap-1"
