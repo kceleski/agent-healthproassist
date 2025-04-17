@@ -38,18 +38,18 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
         throw uploadError;
       }
 
-      const { data: { publicUrl }, error: urlError } = supabase.storage
+      const { data } = supabase.storage
         .from('profile_photos')
         .getPublicUrl(filePath);
 
-      if (urlError) {
+      if (!data || !data.publicUrl) {
         throw new Error('Error getting public URL');
       }
 
       // Update user profile with new photo URL
       const { error: updateError } = await supabase
         .from('user_profiles')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: data.publicUrl })
         .eq('user_id', user?.id);
 
       if (updateError) {

@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/lib/database.types';
 
 export type CalendarProvider = 'google' | 'outlook' | 'apple';
 
@@ -41,11 +40,17 @@ export const getConnectedCalendars = async (userId: string): Promise<CalendarSyn
 
     if (error) throw error;
     
+    if (!data) return [];
+    
     // Cast the data to ensure it matches our CalendarSync type
-    const safeData: CalendarSync[] = data?.map(item => ({
-      ...item,
-      provider: item.provider as CalendarProvider
-    })) || [];
+    const safeData: CalendarSync[] = data.map(item => ({
+      id: item.id,
+      user_id: item.user_id,
+      provider: item.provider as CalendarProvider,
+      connected: item.connected,
+      last_synced: item.last_synced,
+      calendar_id: item.calendar_id
+    }));
     
     return safeData;
   } catch (error) {

@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/lib/database.types';
 
 export type ReminderType = 'email' | 'sms';
 export type ReminderTime = '15min' | '30min' | '1hour' | '1day';
@@ -27,15 +26,17 @@ export const createReminder = async (reminder: Omit<Reminder, 'sent'>): Promise<
 
     if (error) throw error;
     
+    if (!data) return null;
+    
     // Cast the response to ensure it matches our Reminder type
-    if (data) {
-      return {
-        ...data,
-        type: data.type as ReminderType,
-        time_before: data.time_before as ReminderTime
-      };
-    }
-    return null;
+    return {
+      id: data.id,
+      appointment_id: data.appointment_id,
+      type: data.type as ReminderType,
+      time_before: data.time_before as ReminderTime,
+      sent: data.sent,
+      user_id: data.user_id
+    };
   } catch (error) {
     console.error('Error creating reminder:', error);
     return null;
@@ -51,12 +52,17 @@ export const getRemindersByAppointmentId = async (appointmentId: string): Promis
 
     if (error) throw error;
     
+    if (!data) return [];
+    
     // Cast the response to ensure it matches our Reminder[] type
-    const safeData: Reminder[] = data?.map(item => ({
-      ...item,
+    const safeData: Reminder[] = data.map(item => ({
+      id: item.id,
+      appointment_id: item.appointment_id,
       type: item.type as ReminderType,
-      time_before: item.time_before as ReminderTime
-    })) || [];
+      time_before: item.time_before as ReminderTime,
+      sent: item.sent,
+      user_id: item.user_id
+    }));
     
     return safeData;
   } catch (error) {

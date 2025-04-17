@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,15 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
+export const updateTodoForm = (prevState: any, newData: any) => {
+  const { user } = useAuth();
+  return {
+    ...prevState,
+    ...newData,
+    user_id: user?.id,
+  };
+};
+
 const TodoList = () => {
   const { user } = useAuth();
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -38,7 +46,6 @@ const TodoList = () => {
   useEffect(() => {
     if (user?.id) {
       loadTodos();
-      // Update the newTodo state with the user_id when the user info is available
       setNewTodo(prev => ({
         ...prev,
         user_id: user.id

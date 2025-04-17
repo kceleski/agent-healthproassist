@@ -298,6 +298,7 @@ const CalendarPage = () => {
                           actionText={`Prepare for ${appointment.title}`}
                           size="sm"
                           variant="outline"
+                          onActionClick={(e) => handleAddTask(event)}
                         />
                       </div>
                     </div>
@@ -339,6 +340,7 @@ const CalendarPage = () => {
                     actionText={`Prepare for ${appointment.title}`}
                     size="sm"
                     variant="outline"
+                    onActionClick={(e) => handleAddTask(event)}
                   />
                 </div>
               ))}
