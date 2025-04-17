@@ -19,14 +19,17 @@ export interface TodoItem {
 
 export const createTodoItem = async (todo: Omit<TodoItem, 'completed' | 'created_at'>): Promise<TodoItem | null> => {
   try {
+    // Define the table name as a string literal type to help TypeScript
+    const tableName = 'todo_items' as const;
+    
     const { data, error } = await supabase
-      .from('todo_items')
+      .from(tableName)
       .insert([{ ...todo, completed: false, created_at: new Date().toISOString() }])
       .select()
       .single();
 
     if (error) throw error;
-    return data;
+    return data as TodoItem;
   } catch (error) {
     console.error('Error creating todo item:', error);
     return null;
@@ -35,14 +38,17 @@ export const createTodoItem = async (todo: Omit<TodoItem, 'completed' | 'created
 
 export const getTodoItems = async (userId: string): Promise<TodoItem[]> => {
   try {
+    // Define the table name as a string literal type to help TypeScript
+    const tableName = 'todo_items' as const;
+    
     const { data, error } = await supabase
-      .from('todo_items')
+      .from(tableName)
       .select('*')
       .eq('user_id', userId)
       .order('due_date', { ascending: true });
 
     if (error) throw error;
-    return data || [];
+    return data as TodoItem[] || [];
   } catch (error) {
     console.error('Error fetching todo items:', error);
     return [];
@@ -51,8 +57,11 @@ export const getTodoItems = async (userId: string): Promise<TodoItem[]> => {
 
 export const updateTodoItem = async (id: string, updates: Partial<TodoItem>): Promise<boolean> => {
   try {
+    // Define the table name as a string literal type to help TypeScript
+    const tableName = 'todo_items' as const;
+    
     const { error } = await supabase
-      .from('todo_items')
+      .from(tableName)
       .update(updates)
       .eq('id', id);
 
@@ -66,8 +75,11 @@ export const updateTodoItem = async (id: string, updates: Partial<TodoItem>): Pr
 
 export const deleteTodoItem = async (id: string): Promise<boolean> => {
   try {
+    // Define the table name as a string literal type to help TypeScript
+    const tableName = 'todo_items' as const;
+    
     const { error } = await supabase
-      .from('todo_items')
+      .from(tableName)
       .delete()
       .eq('id', id);
 
@@ -83,7 +95,7 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
   try {
     // In a real implementation, this would call an AI service
     // For now, we'll return mock recommendations
-    const mockRecommendations = [
+    const mockRecommendations: TodoItem[] = [
       {
         user_id: userId,
         title: "Follow up with Robert Johnson on facility preferences",
@@ -91,7 +103,8 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
         priority: "high" as const,
         due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
         ai_generated: true,
-        tags: ["follow-up", "client", "facilities"]
+        tags: ["follow-up", "client", "facilities"],
+        completed: false
       },
       {
         user_id: userId,
@@ -100,7 +113,8 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
         priority: "medium" as const,
         due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         ai_generated: true,
-        tags: ["medical", "records", "update"]
+        tags: ["medical", "records", "update"],
+        completed: false
       }
     ];
     

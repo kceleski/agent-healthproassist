@@ -27,7 +27,6 @@ import CalendarSync from "@/components/calendar/CalendarSync";
 import TodoList from "@/components/todos/TodoList";
 import AddToTaskButton from "@/components/todos/AddToTaskButton";
 
-// Types
 type Appointment = {
   id: string;
   title: string;
@@ -106,7 +105,6 @@ const CalendarPage = () => {
   const [isReminderSettingsOpen, setIsReminderSettingsOpen] = useState(false);
 
   useEffect(() => {
-    // Check for tab parameter in URL
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
     if (tab === 'todo') {
@@ -116,7 +114,6 @@ const CalendarPage = () => {
     }
   }, [location]);
 
-  // Get events for the selected date
   const getEventsForDate = (date: Date | undefined) => {
     if (!date) return [];
     return appointments.filter(apt => 
@@ -126,17 +123,14 @@ const CalendarPage = () => {
     );
   };
 
-  // Event handler for calendar date selection
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
   };
 
-  // Open appointment details dialog
   const handleAppointmentClick = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
   };
 
-  // Get badge color based on appointment type
   const getAppointmentBadgeColor = (type: Appointment['type']) => {
     switch (type) {
       case 'tour':
@@ -304,9 +298,6 @@ const CalendarPage = () => {
                           actionText={`Prepare for ${appointment.title}`}
                           size="sm"
                           variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
                         />
                       </div>
                     </div>
@@ -317,7 +308,6 @@ const CalendarPage = () => {
           </Card>
         </div>
 
-        {/* Schedule Summary */}
         <Card className="glass-card mt-6">
           <CardHeader>
             <CardTitle>Upcoming Schedule</CardTitle>
@@ -436,7 +426,6 @@ const CalendarPage = () => {
         </div>
       </TabsContent>
 
-      {/* Appointment Details Dialog */}
       {selectedAppointment && (
         <Dialog open={!!selectedAppointment} onOpenChange={() => setSelectedAppointment(null)}>
           <DialogContent className="sm:max-w-[500px]">
@@ -498,7 +487,6 @@ const CalendarPage = () => {
         </Dialog>
       )}
 
-      {/* Add Event Dialog */}
       <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -608,7 +596,6 @@ const CalendarPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Reminder Settings Dialog */}
       <Dialog open={isReminderSettingsOpen} onOpenChange={setIsReminderSettingsOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>

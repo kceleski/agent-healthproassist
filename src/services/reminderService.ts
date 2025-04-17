@@ -26,7 +26,16 @@ export const createReminder = async (reminder: Omit<Reminder, 'sent'>): Promise<
       .single();
 
     if (error) throw error;
-    return data;
+    
+    // Cast the response to ensure it matches our Reminder type
+    if (data) {
+      return {
+        ...data,
+        type: data.type as ReminderType,
+        time_before: data.time_before as ReminderTime
+      };
+    }
+    return null;
   } catch (error) {
     console.error('Error creating reminder:', error);
     return null;
@@ -41,7 +50,15 @@ export const getRemindersByAppointmentId = async (appointmentId: string): Promis
       .eq('appointment_id', appointmentId);
 
     if (error) throw error;
-    return data || [];
+    
+    // Cast the response to ensure it matches our Reminder[] type
+    const safeData: Reminder[] = data?.map(item => ({
+      ...item,
+      type: item.type as ReminderType,
+      time_before: item.time_before as ReminderTime
+    })) || [];
+    
+    return safeData;
   } catch (error) {
     console.error('Error fetching reminders:', error);
     return [];

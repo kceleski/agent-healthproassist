@@ -43,7 +43,7 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
         .getPublicUrl(filePath);
 
       if (urlError) {
-        throw urlError;
+        throw new Error('Error getting public URL');
       }
 
       // Update user profile with new photo URL
@@ -61,6 +61,8 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
         description: 'Your profile photo has been successfully uploaded.',
         variant: 'default'
       });
+      
+      // Update local user state if needed through your auth context
     } catch (error) {
       toast({
         title: 'Upload Failed',
@@ -89,6 +91,8 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
         description: 'Your profile photo has been successfully removed.',
         variant: 'default'
       });
+      
+      // Update local user state if needed
     } catch (error) {
       toast({
         title: 'Remove Failed',
@@ -98,11 +102,14 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
     }
   };
 
+  // Get avatar URL from user profile or use a default avatar
+  const avatarUrl = user?.avatar_url || `https://avatar.vercel.sh/${user?.email}`;
+
   return (
     <div className={`flex items-center gap-6 ${className}`}>
       <Avatar className="h-20 w-20">
         <AvatarImage 
-          src={user?.profilePhotoUrl || `https://avatar.vercel.sh/${user?.email}`} 
+          src={avatarUrl} 
           alt="Profile Photo" 
         />
         <AvatarFallback>
@@ -120,7 +127,7 @@ export const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({ clas
             <Camera className="mr-2 h-4 w-4" />
             {uploading ? 'Uploading...' : 'Change Photo'}
           </Button>
-          {user?.profilePhotoUrl && (
+          {user?.avatar_url && (
             <Button 
               variant="ghost" 
               size="sm" 

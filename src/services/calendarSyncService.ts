@@ -40,7 +40,14 @@ export const getConnectedCalendars = async (userId: string): Promise<CalendarSyn
       .eq('user_id', userId);
 
     if (error) throw error;
-    return data || [];
+    
+    // Cast the data to ensure it matches our CalendarSync type
+    const safeData: CalendarSync[] = data?.map(item => ({
+      ...item,
+      provider: item.provider as CalendarProvider
+    })) || [];
+    
+    return safeData;
   } catch (error) {
     console.error('Error fetching connected calendars:', error);
     return [];

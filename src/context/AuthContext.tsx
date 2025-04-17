@@ -1,238 +1,181 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-type User = {
+export interface User {
   id: string;
   email: string;
-  name: string;
-  role: 'placement_agent' | 'referral_partner';
-  subscription: 'free' | 'basic' | 'premium' | null;
-  warmLeadsEnabled: boolean;
-  warmLeadCredits: number;
-  demoTier?: 'basic' | 'premium'; // New field to track demo tier
-};
+  name?: string;
+  avatar_url?: string;
+  demoTier?: string | null;
+  subscription?: string | null;
+}
 
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-  enableWarmLeads: () => Promise<void>;
-  useWarmLeadCredit: () => Promise<boolean>;
-  purchaseWarmLeadCredits: (quantity: number) => Promise<void>;
-  updateDemoTier: (tier: 'basic' | 'premium') => void; // New function to update demo tier
-};
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('healthpro_user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      // Initialize with demoTier if not present
-      if (!parsedUser.demoTier) {
-        parsedUser.demoTier = parsedUser.subscription || 'basic';
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        await fetchUser(session.user.id);
+      } else {
+        setLoading(false);
       }
-      setUser(parsedUser);
-    }
-    setLoading(false);
+    };
+
+    getSession();
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        await fetchUser(session?.user.id);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+
+      setLoading(false);
+    });
   }, []);
 
-  // New function to update demo tier
-  const updateDemoTier = (tier: 'basic' | 'premium') => {
-    if (user) {
-      const updatedUser = {
-        ...user,
-        demoTier: tier
-      };
-      setUser(updatedUser);
-      localStorage.setItem('healthpro_user', JSON.stringify(updatedUser));
-    }
-  };
+  const fetchUser = async (userId: string | undefined) => {
+    if (!userId) return;
 
-  const login = async (email: string, password: string) => {
     try {
-      setLoading(true);
-      // In a real app, you would make an API call here
-      // For this demo, we'll simulate a successful login
-      
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      const mockUser: User = {
-        id: '1',
-        email,
-        name: 'Demo User',
-        role: 'placement_agent',
-        subscription: 'basic',
-        warmLeadsEnabled: false,
-        warmLeadCredits: 0,
-        demoTier: 'basic', // Initialize demo tier
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('healthpro_user', JSON.stringify(mockUser));
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, full_name, user_profiles(avatar_url), demo_tier, subscription')
+        .eq('id', userId)
+        .single();
 
-  const register = async (name: string, email: string, password: string) => {
-    try {
-      setLoading(true);
-      // In a real app, you would make an API call here
-      // For this demo, we'll simulate a successful registration
-      
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      const mockUser: User = {
-        id: '1',
-        email,
-        name,
-        role: 'placement_agent',
-        subscription: 'free',
-        warmLeadsEnabled: false,
-        warmLeadCredits: 0,
-        demoTier: 'basic', // Initialize demo tier
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('healthpro_user', JSON.stringify(mockUser));
-    } catch (error) {
-      console.error('Registration failed:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (error) {
+        console.error('Error fetching user data:', error);
+        return;
+      }
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('healthpro_user');
-  };
-
-  // New function to enable warm leads
-  const enableWarmLeads = async () => {
-    try {
-      setLoading(true);
-      // In a real app, you would make an API call here
-      // For this demo, we'll simulate a successful update
-      
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (user) {
-        const updatedUser = {
-          ...user,
-          warmLeadsEnabled: true,
-          warmLeadCredits: user.warmLeadCredits + 10, // Give 10 credits as a starter
-        };
-        
-        setUser(updatedUser);
-        localStorage.setItem('healthpro_user', JSON.stringify(updatedUser));
+      if (data) {
+        setUser({
+          id: data.id,
+          email: data.email || '',
+          name: data.full_name || '',
+          avatar_url: data.user_profiles?.avatar_url || null,
+          demoTier: data.demo_tier || null,
+          subscription: data.subscription || null,
+        });
       }
     } catch (error) {
-      console.error('Enabling warm leads failed:', error);
+      console.error('Unexpected error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Error signing in:", error.message);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // New function to use a warm lead credit
-  const useWarmLeadCredit = async (): Promise<boolean> => {
+  const signUp = async (email: string, password: string, name: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      // In a real app, you would make an API call here
-      // For this demo, we'll simulate a successful update
-      
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      if (user && user.warmLeadsEnabled && user.warmLeadCredits > 0) {
-        const updatedUser = {
-          ...user,
-          warmLeadCredits: user.warmLeadCredits - 1,
-        };
-        
-        setUser(updatedUser);
-        localStorage.setItem('healthpro_user', JSON.stringify(updatedUser));
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Using warm lead credit failed:', error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: name,
+          },
+        },
+      });
+      if (error) throw error;
 
-  // New function to purchase warm lead credits
-  const purchaseWarmLeadCredits = async (quantity: number): Promise<void> => {
-    try {
-      setLoading(true);
-      // In a real app, you would make an API call here
-      // For this demo, we'll simulate a successful purchase
-      
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (user) {
-        const updatedUser = {
-          ...user,
-          warmLeadsEnabled: true,
-          warmLeadCredits: user.warmLeadCredits + quantity,
-        };
-        
-        setUser(updatedUser);
-        localStorage.setItem('healthpro_user', JSON.stringify(updatedUser));
+      // Create a user profile after successful signup
+      if (data.user?.id) {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert([{ user_id: data.user.id }]);
+
+        if (profileError) {
+          console.error("Error creating user profile:", profileError.message);
+          throw profileError;
+        }
       }
-    } catch (error) {
-      console.error('Purchasing warm lead credits failed:', error);
+    } catch (error: any) {
+      console.error("Error signing up:", error.message);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        logout,
-        isAuthenticated: !!user,
-        enableWarmLeads,
-        useWarmLeadCredit,
-        purchaseWarmLeadCredits,
-        updateDemoTier,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const signOut = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+    } catch (error: any) {
+      console.error("Error signing out:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/update-password`,
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Error resetting password:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const value = {
+    user,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
+const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+
+export { AuthProvider, useAuth };
