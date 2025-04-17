@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +24,7 @@ import CalendarPage from "./pages/CalendarPage";
 import AvaLogoDemo from "./pages/AvaLogoDemo";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
+import SavedSearchesPage from "./pages/SavedSearchesPage";
 
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
@@ -64,6 +64,7 @@ const App = () => (
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/saved-searches" element={<SavedSearchesPage />} />
                 <Route path="/facilities" element={<FavoritesPage />} />
                 <Route path="/facilities/:id" element={<FacilityDetailPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />

@@ -42,12 +42,12 @@ const DashboardLayout = () => {
     navigate('/');
   };
 
-  // Define menu items based on subscription tier
   const basicMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
     { title: 'Search Facilities', path: '/search', icon: Search },
     { title: 'Map View', path: '/map', icon: Map },
     { title: 'Saved Facilities', path: '/favorites', icon: Heart },
+    { title: 'Saved Searches', path: '/saved-searches', icon: Bookmark },
     { title: 'Clients', path: '/contacts', icon: Contact },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
