@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -33,6 +32,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SubscriptionToggle } from '@/components/ui/subscription-toggle';
+import { NotificationsInbox } from '@/components/notifications/NotificationsInbox';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -134,6 +134,7 @@ const DashboardLayout = () => {
         <div className="p-4 border-b flex items-center justify-between">
           <SidebarTrigger />
           <div className="flex items-center gap-4">
+            <NotificationsInbox />
             <SubscriptionToggle />
             <div className="text-sm font-medium">
               Plan: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{isPro ? 'Pro' : 'Basic'}</span>
