@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import AddToTaskButton from "@/components/todos/AddToTaskButton";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -185,9 +186,11 @@ const DashboardPage = () => {
             <CardTitle>Upcoming Appointments</CardTitle>
             <CardDescription>Your scheduled meetings</CardDescription>
           </div>
-          <Button variant="outline" size="sm">
-            <Calendar className="h-3.5 w-3.5 mr-1" />
-            <span>Add</span>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/calendar">
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              <span>Add</span>
+            </Link>
           </Button>
         </div>
       </CardHeader>
@@ -198,11 +201,16 @@ const DashboardPage = () => {
               <div className="bg-healthcare-100 text-healthcare-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
                 <Calendar className="h-5 w-5" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h4 className="font-medium text-sm">{appointment.title}</h4>
                 <p className="text-xs text-muted-foreground mt-1">{appointment.date}</p>
                 <p className="text-xs mt-1">Client: {appointment.client}</p>
               </div>
+              <AddToTaskButton
+                actionText={`Prepare for ${appointment.title}`}
+                size="sm"
+                variant="outline"
+              />
             </div>
           ))}
         </div>
