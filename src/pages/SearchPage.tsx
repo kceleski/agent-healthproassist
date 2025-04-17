@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { Search, MapPin } from "lucide-react";
 import { saveSearchResult } from '@/services/searchResultService';
+import { FacilitySearchCard } from "@/components/FacilitySearchCard";
+import { supabase } from "@/integrations/supabase/client";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
@@ -80,22 +82,78 @@ const SearchPage = () => {
     
     query += " senior care facility";
     
-    sessionStorage.setItem('facilitySearchParams', JSON.stringify({
+    const searchParams = {
       query,
       location,
       careType: selectedCareType,
       amenities: selectedAmenities,
-    }));
+    };
     
-    await saveSearchResult({
-      query,
-      location,
-      facility_type: selectedCareType,
-      amenities: selectedAmenities,
-      results: []
-    });
+    sessionStorage.setItem('facilitySearchParams', JSON.stringify(searchParams));
     
-    navigate('/map');
+    try {
+      const response = await fetch(`https://www.searchapi.io/api/v1/search?engine=google_maps&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`);
+      
+      if (!response.ok) {
+        throw new Error('Search API request failed');
+      }
+
+      const data = await response.json();
+      const results = data.local_results || data.places_results || [];
+      
+      // Transform results into our facility format
+      const facilities = results.map((item: any) => ({
+        id: item.place_id || Math.random().toString(36).substr(2, 9),
+        name: item.title,
+        address: item.address,
+        rating: parseFloat(item.rating) || undefined,
+        description: item.description || item.type || "Senior care facility",
+        type: selectedCareType !== "any" ? 
+          careTypes.find(type => type.id === selectedCareType)?.label : 
+          "Senior Care",
+        url: item.website,
+        latitude: item.gps_coordinates?.latitude,
+        longitude: item.gps_coordinates?.longitude,
+        amenities: selectedAmenities.map(id => 
+          amenities.find(amenity => amenity.id === id)?.label
+        ).filter(Boolean) as string[],
+      }));
+
+      // Save search results to Supabase
+      await saveSearchResult({
+        query,
+        location,
+        facility_type: selectedCareType,
+        amenities: selectedAmenities,
+        results: facilities
+      });
+
+      // Display results in a grid
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          {facilities.map((facility) => (
+            <FacilitySearchCard 
+              key={facility.id} 
+              facility={facility}
+              onSave={async () => {
+                // Implementation for saving facility
+                toast({
+                  description: "Facility saved to favorites",
+                });
+              }}
+            />
+          ))}
+        </div>
+      );
+
+    } catch (error) {
+      console.error('Search error:', error);
+      toast({
+        title: "Search Failed",
+        description: "Unable to search facilities. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
