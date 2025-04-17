@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/navigation/Footer';
 import DIDScriptHead from '@/components/DIDScriptHead';
-import HealthProAssistWidget from '@/components/HealthProAssistWidget';
+import AvatarIntegration from '@/components/AvatarIntegration';
 
 const MainLayout = () => {
   return (
@@ -12,9 +12,9 @@ const MainLayout = () => {
       <Navbar />
       <main className="flex-grow animate-fade-in">
         <Outlet />
+        <AvatarIntegration />
       </main>
       <Footer />
-      <HealthProAssistWidget />
     </div>
   );
 };
