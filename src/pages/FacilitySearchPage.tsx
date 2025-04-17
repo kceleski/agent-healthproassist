@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { saveSearchResult } from '@/services/searchResultService';
 
 // SearchAPI key
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
@@ -129,6 +130,15 @@ const FacilitySearchPage = () => {
         }));
         
         setFacilities(searchResults);
+        
+        // Save search results to the database
+        await saveSearchResult({
+          query,
+          location,
+          facility_type: selectedCareType,
+          amenities: selectedAmenities,
+          results: searchResults
+        });
         
         toast({
           title: "Search Complete",

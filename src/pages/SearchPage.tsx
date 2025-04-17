@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -16,11 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { Search, MapPin } from "lucide-react";
+import { saveSearchResult } from '@/services/searchResultService';
 
-// SearchAPI key
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
-// Care type options
 const careTypes = [
   { id: "any", label: "Any Care Type" },
   { id: "assisted_living", label: "Assisted Living" },
@@ -29,7 +27,6 @@ const careTypes = [
   { id: "independent_living", label: "Independent Living" },
 ];
 
-// Amenity options
 const amenities = [
   { id: "dining", label: "Fine Dining" },
   { id: "transport", label: "Transportation" },
@@ -47,7 +44,6 @@ const SearchPage = () => {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Toggle amenity selection
   const toggleAmenity = (amenityId: string) => {
     setSelectedAmenities((current) => {
       if (current.includes(amenityId)) {
@@ -58,7 +54,6 @@ const SearchPage = () => {
     });
   };
 
-  // Handle search submission
   const handleSearch = async () => {
     if (!location) {
       toast({
@@ -69,7 +64,6 @@ const SearchPage = () => {
       return;
     }
 
-    // Build the search query
     let query = location;
     
     if (selectedCareType !== "any") {
@@ -86,7 +80,6 @@ const SearchPage = () => {
     
     query += " senior care facility";
     
-    // Store search parameters in session storage for the map page
     sessionStorage.setItem('facilitySearchParams', JSON.stringify({
       query,
       location,
@@ -94,7 +87,14 @@ const SearchPage = () => {
       amenities: selectedAmenities,
     }));
     
-    // Navigate to the map page with search results
+    await saveSearchResult({
+      query,
+      location,
+      facility_type: selectedCareType,
+      amenities: selectedAmenities,
+      results: []
+    });
+    
     navigate('/map');
   };
 

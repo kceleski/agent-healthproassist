@@ -524,6 +524,39 @@ export type Database = {
         }
         Relationships: []
       }
+      search_results: {
+        Row: {
+          amenities: string[] | null
+          created_at: string | null
+          facility_type: string | null
+          id: string
+          location: string | null
+          query: string
+          results: Json
+          user_id: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          created_at?: string | null
+          facility_type?: string | null
+          id?: string
+          location?: string | null
+          query: string
+          results: Json
+          user_id?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          created_at?: string | null
+          facility_type?: string | null
+          id?: string
+          location?: string | null
+          query?: string
+          results?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null
