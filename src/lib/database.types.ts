@@ -44,6 +44,56 @@ export interface Database {
           subscription?: string | null
         }
       }
+      todo_items: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          due_date: string | null
+          priority: string
+          completed: boolean
+          related_client_id: string | null
+          related_facility_id: string | null
+          related_appointment_id: string | null
+          ai_generated: boolean | null
+          tags: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          due_date?: string | null
+          priority: string
+          completed: boolean
+          related_client_id?: string | null
+          related_facility_id?: string | null
+          related_appointment_id?: string | null
+          ai_generated?: boolean | null
+          tags?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          due_date?: string | null
+          priority?: string
+          completed?: boolean
+          related_client_id?: string | null
+          related_facility_id?: string | null
+          related_appointment_id?: string | null
+          ai_generated?: boolean | null
+          tags?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       user_profiles: {
         Row: {
           id: string
@@ -310,56 +360,6 @@ export interface Database {
           related_id?: string | null
           read?: boolean | null
           created_at?: string
-        }
-      }
-      todo_items: {
-        Row: {
-          id: string
-          user_id: string
-          title: string
-          description: string | null
-          due_date: string | null
-          priority: string
-          completed: boolean
-          related_client_id: string | null
-          related_facility_id: string | null
-          related_appointment_id: string | null
-          ai_generated: boolean | null
-          tags: string[] | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          description?: string | null
-          due_date?: string | null
-          priority: string
-          completed: boolean
-          related_client_id?: string | null
-          related_facility_id?: string | null
-          related_appointment_id?: string | null
-          ai_generated?: boolean | null
-          tags?: string[] | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          description?: string | null
-          due_date?: string | null
-          priority?: string
-          completed?: boolean
-          related_client_id?: string | null
-          related_facility_id?: string | null
-          related_appointment_id?: string | null
-          ai_generated?: boolean | null
-          tags?: string[] | null
-          created_at?: string
-          updated_at?: string
         }
       }
     }

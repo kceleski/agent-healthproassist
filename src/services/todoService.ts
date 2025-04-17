@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 export interface TodoItem {
   id?: string;
@@ -103,7 +103,7 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
         user_id: userId,
         title: "Follow up with Robert Johnson on facility preferences",
         description: "Client viewed 3 facilities last week but hasn't made a decision",
-        priority: "high",
+        priority: "high" as const,
         due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
         ai_generated: true,
         tags: ["follow-up", "client", "facilities"],
@@ -113,7 +113,7 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
         user_id: userId,
         title: "Update Maria Garcia's medical records",
         description: "Records are over 30 days old and may need updating before placement",
-        priority: "medium",
+        priority: "medium" as const,
         due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         ai_generated: true,
         tags: ["medical", "records", "update"],

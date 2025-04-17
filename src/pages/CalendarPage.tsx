@@ -26,6 +26,8 @@ import ReminderSettings from "@/components/calendar/ReminderSettings";
 import CalendarSync from "@/components/calendar/CalendarSync";
 import TodoList from "@/components/todos/TodoList";
 import AddToTaskButton from "@/components/todos/AddToTaskButton";
+import { toast } from "sonner";
+import { createTodoItem } from "@/services/todoService";
 
 type Appointment = {
   id: string;
@@ -103,6 +105,30 @@ const CalendarPage = () => {
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'calendar' | 'todo' | 'settings'>('calendar');
   const [isReminderSettingsOpen, setIsReminderSettingsOpen] = useState(false);
+
+  const handleAddTask = async (event: React.MouseEvent, actionText: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
+    event.stopPropagation();
+    if (!user?.id) {
+      toast.error("You must be logged in to add tasks");
+      return;
+    }
+
+    try {
+      const todo = await createTodoItem({
+        user_id: user.id,
+        title: actionText,
+        priority: priority,
+        due_date: new Date().toISOString(),
+      });
+
+      if (todo) {
+        toast.success("Added to your tasks");
+      }
+    } catch (error) {
+      console.error("Error adding task:", error);
+      toast.error("Failed to add task");
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -298,7 +324,6 @@ const CalendarPage = () => {
                           actionText={`Prepare for ${appointment.title}`}
                           size="sm"
                           variant="outline"
-                          onActionClick={(e) => handleAddTask(event)}
                         />
                       </div>
                     </div>
@@ -340,7 +365,6 @@ const CalendarPage = () => {
                     actionText={`Prepare for ${appointment.title}`}
                     size="sm"
                     variant="outline"
-                    onActionClick={(e) => handleAddTask(event)}
                   />
                 </div>
               ))}
