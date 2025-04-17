@@ -1,3 +1,4 @@
+
 // components/maps/FacilityMapbox.tsx
 
 import React, { useEffect, useState } from "react";
@@ -19,18 +20,21 @@ const FacilityMapbox: React.FC<FacilityMapboxProps> = ({
   const [iframeSrc, setIframeSrc] = useState(BASE_URL);
 
   useEffect(() => {
-    let query = location;
+    // Only run in the browser environment
+    if (typeof window !== 'undefined') {
+      let query = location;
 
-    if (selectedCareType && selectedCareType !== "any") {
-      query += ` ${selectedCareType}`;
+      if (selectedCareType && selectedCareType !== "any") {
+        query += ` ${selectedCareType}`;
+      }
+
+      if (selectedAmenities.length > 0) {
+        query += ` ${selectedAmenities.join(" ")}`;
+      }
+
+      const fullUrl = `${BASE_URL}?search=${encodeURIComponent(query.trim())}`;
+      setIframeSrc(fullUrl);
     }
-
-    if (selectedAmenities.length > 0) {
-      query += ` ${selectedAmenities.join(" ")}`;
-    }
-
-    const fullUrl = `${BASE_URL}?search=${encodeURIComponent(query.trim())}`;
-    setIframeSrc(fullUrl);
   }, [location, selectedCareType, selectedAmenities]);
 
   return (

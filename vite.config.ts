@@ -10,24 +10,35 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: {
-      // Configure HMR properly
       protocol: 'ws',
       host: 'localhost',
       clientPort: 8080,
     },
   },
+  css: {
+    // Improve CSS processing
+    preprocessorOptions: {
+      // Add any preprocessor options if needed
+    },
+    devSourcemap: true,
+  },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Ensure proper module resolution
+    preserveSymlinks: false,
   },
   define: {
     // Define the WebSocket token to prevent the error
     __WS_TOKEN__: JSON.stringify('development-ws-token'),
-  }
+  },
+  // Add optimizeDeps to help with dependency pre-bundling
+  optimizeDeps: {
+    include: ['mapbox-gl']
+  },
 }));
