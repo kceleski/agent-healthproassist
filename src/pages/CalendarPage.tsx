@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -17,11 +18,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Plus, Clock, MapPin, User, Users, FileText, Bell, Link } from "lucide-react";
+import { 
+  Calendar as CalendarIcon, 
+  Plus, 
+  Clock, 
+  MapPin, 
+  User, 
+  Users, 
+  FileText, 
+  Bell, 
+  Link 
+} from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+// Lazy load these components to avoid potential rendering issues
 import ReminderSettings from "@/components/calendar/ReminderSettings";
 import CalendarSync from "@/components/calendar/CalendarSync";
 import TodoList from "@/components/todos/TodoList";
@@ -29,6 +41,7 @@ import AddToTaskButton from "@/components/todos/AddToTaskButton";
 import { toast } from "sonner";
 import { createTodoItem } from "@/services/todoService";
 
+// Define Appointment type
 type Appointment = {
   id: string;
   title: string;
@@ -42,6 +55,7 @@ type Appointment = {
   client: string;
 };
 
+// Demo appointments data
 const appointments: Appointment[] = [
   {
     id: '1',
@@ -105,7 +119,19 @@ const CalendarPage = () => {
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'calendar' | 'todo' | 'settings'>('calendar');
   const [isReminderSettingsOpen, setIsReminderSettingsOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Initialize the page safely
+  useEffect(() => {
+    // Short delay to ensure components are mounted properly
+    const timer = setTimeout(() => {
+      setIsInitialized(true);
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Handle adding tasks
   const handleAddTask = async (event: React.MouseEvent, actionText: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
     event.stopPropagation();
     if (!user?.id) {
@@ -130,6 +156,7 @@ const CalendarPage = () => {
     }
   };
 
+  // Handle URL parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
@@ -140,6 +167,7 @@ const CalendarPage = () => {
     }
   }, [location]);
 
+  // Get events for selected date
   const getEventsForDate = (date: Date | undefined) => {
     if (!date) return [];
     return appointments.filter(apt => 
@@ -171,6 +199,17 @@ const CalendarPage = () => {
         return 'bg-gray-100 text-gray-700';
     }
   };
+
+  // If not initialized yet, show minimal loading UI to avoid blank screen
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse text-healthcare-600">
+          Loading calendar...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -225,6 +264,7 @@ const CalendarPage = () => {
         </div>
       </div>
 
+      {/* Calendar Tab Content */}
       <TabsContent value="calendar" className="m-0 p-0">
         <div className="flex items-center gap-2 mb-4">
           <Tabs defaultValue="month" className="w-fit" onValueChange={(value) => setView(value as 'month' | 'week' | 'day')}>
@@ -375,10 +415,12 @@ const CalendarPage = () => {
         </Card>
       </TabsContent>
 
+      {/* Todo Tab Content */}
       <TabsContent value="todo" className="m-0 p-0">
         <TodoList />
       </TabsContent>
 
+      {/* Settings Tab Content */}
       <TabsContent value="settings" className="m-0 p-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
@@ -454,6 +496,7 @@ const CalendarPage = () => {
         </div>
       </TabsContent>
 
+      {/* Appointment Details Dialog */}
       {selectedAppointment && (
         <Dialog open={!!selectedAppointment} onOpenChange={() => setSelectedAppointment(null)}>
           <DialogContent className="sm:max-w-[500px]">
@@ -515,6 +558,7 @@ const CalendarPage = () => {
         </Dialog>
       )}
 
+      {/* Add Event Dialog */}
       <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -624,6 +668,7 @@ const CalendarPage = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Reminder Settings Dialog */}
       <Dialog open={isReminderSettingsOpen} onOpenChange={setIsReminderSettingsOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
