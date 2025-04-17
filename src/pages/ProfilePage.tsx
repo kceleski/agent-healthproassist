@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { Check, CreditCard, Lock, Save, User, ArrowRight } from "lucide-react";
+import { ProfilePhotoUploader } from '@/components/ProfilePhotoUploader';
 
 // Profile form schema
 const profileFormSchema = z.object({
@@ -210,6 +210,8 @@ const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <ProfilePhotoUploader className="mb-8" />
+              
               <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
