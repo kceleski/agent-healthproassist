@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import {
   Search,
   Heart,
   Bookmark,
+  FileText
 } from 'lucide-react';
 
 import { 
@@ -52,6 +54,7 @@ const DashboardLayout = () => {
     { title: 'Saved Facilities', path: '/favorites', icon: Heart },
     { title: 'Saved Searches', path: '/saved-searches', icon: Bookmark },
     { title: 'Clients', path: '/contacts', icon: Contact },
+    { title: 'Medical Records', path: '/medical-records', icon: FileText },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
   ];
@@ -61,6 +64,7 @@ const DashboardLayout = () => {
     { title: 'Search Facilities', path: '/search', icon: Search },
     { title: 'Map View', path: '/map', icon: Map },
     { title: 'Saved Facilities', path: '/favorites', icon: Heart },
+    { title: 'Medical Records', path: '/medical-records', icon: FileText },
     { title: 'Contacts', path: '/contacts', icon: Contact },
     { title: 'Payments', path: '/payments', icon: DollarSign },
     { title: 'Profile', path: '/profile', icon: UserCog },

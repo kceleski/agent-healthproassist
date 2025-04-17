@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,7 @@ import AvaLogoDemo from "./pages/AvaLogoDemo";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import SavedSearchesPage from "./pages/SavedSearchesPage";
+import ClientMedicalRecordsPage from "./pages/ClientMedicalRecordsPage";
 
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
@@ -71,6 +73,7 @@ const App = () => (
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/medical-records" element={<ClientMedicalRecordsPage />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
