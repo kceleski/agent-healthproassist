@@ -1,11 +1,14 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText } from "lucide-react";
+import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText, ListTodo } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import AddToTaskButton from "@/components/todos/AddToTaskButton";
+import TodoList from "@/components/todos/TodoList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -13,6 +16,7 @@ const DashboardPage = () => {
   const demoTier = user?.demoTier || user?.subscription || 'basic';
   const isPro = demoTier === 'premium';
 
+  // Stats data based on user tier
   const stats = isPro ? [
     {
       title: "Facilities",
@@ -59,6 +63,7 @@ const DashboardPage = () => {
     },
   ];
 
+  // Sample data for facilities, appointments, etc.
   const recentFacilities = [
     {
       id: "1",
@@ -179,7 +184,7 @@ const DashboardPage = () => {
   };
 
   const renderCalendarCard = () => (
-    <Card className="glass-card animate-zoom-in" style={{ animationDelay: '500ms' }}>
+    <Card className="glass-card animate-zoom-in h-full" style={{ animationDelay: '500ms' }}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -219,7 +224,7 @@ const DashboardPage = () => {
   );
 
   const renderNotificationsCard = () => (
-    <Card className="glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
+    <Card className="glass-card animate-zoom-in h-full" style={{ animationDelay: '400ms' }}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -233,7 +238,7 @@ const DashboardPage = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[300px] overflow-y-auto">
           {notifications.map((notification) => (
             <div key={notification.id} className="flex items-start gap-4 p-3 rounded-lg border">
               <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 
@@ -271,43 +276,64 @@ const DashboardPage = () => {
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Client Name</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Age</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Needs</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Referred By</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Date</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentReferrals.map((referral) => (
-                <tr key={referral.id} className="border-t hover:bg-muted/30 transition-colors">
-                  <td className="p-3 font-medium">{referral.name}</td>
-                  <td className="p-3">{referral.age}</td>
-                  <td className="p-3">
-                    <Badge variant="outline" className="bg-healthcare-50">
-                      {referral.needsType}
-                    </Badge>
-                  </td>
-                  <td className="p-3 hidden md:table-cell text-muted-foreground">{referral.referredBy}</td>
-                  <td className="p-3 hidden sm:table-cell text-muted-foreground">{referral.date}</td>
-                  <td className="p-3">
-                    <Button size="sm" variant="outline" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3">Client Name</th>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3">Age</th>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3">Needs</th>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Referred By</th>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Date</th>
+                  <th className="text-xs font-medium text-muted-foreground text-left p-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentReferrals.map((referral) => (
+                  <tr key={referral.id} className="border-t hover:bg-muted/30 transition-colors">
+                    <td className="p-3 font-medium">{referral.name}</td>
+                    <td className="p-3">{referral.age}</td>
+                    <td className="p-3">
+                      <Badge variant="outline" className="bg-healthcare-50">
+                        {referral.needsType}
+                      </Badge>
+                    </td>
+                    <td className="p-3 hidden md:table-cell text-muted-foreground">{referral.referredBy}</td>
+                    <td className="p-3 hidden sm:table-cell text-muted-foreground">{referral.date}</td>
+                    <td className="p-3">
+                      <Button size="sm" variant="outline" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 
+  const renderTasksCard = () => (
+    <Card className="glass-card animate-zoom-in col-span-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <ListTodo className="h-5 w-5 text-healthcare-600" />
+              Tasks
+            </CardTitle>
+            <CardDescription>Manage your to-do list</CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="max-h-[500px] overflow-y-auto">
+        <TodoList />
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name}</h1>
         <p className="text-muted-foreground">
@@ -320,92 +346,108 @@ const DashboardPage = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
-          <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-              {stat.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
-              <Link 
-                to={stat.link} 
-                className="text-healthcare-600 text-sm font-medium inline-flex items-center mt-3 hover:underline"
-              >
-                View details
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Dashboard Tabs */}
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview" className="mt-6 space-y-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {stats.map((stat, i) => (
+              <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </CardTitle>
+                  {stat.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
+                  <Link 
+                    to={stat.link} 
+                    className="text-healthcare-600 text-sm font-medium inline-flex items-center mt-3 hover:underline"
+                  >
+                    View details
+                    <ArrowUpRight className="ml-1 h-3 w-3" />
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {isPro ? (
-          <>
-            <Card className="lg:col-span-2 glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Recent Facilities</CardTitle>
-                    <CardDescription>Facilities you've recently interacted with</CardDescription>
-                  </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/facilities">View all</Link>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg border overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-muted/50">
-                      <tr>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3">Facility</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3">Type</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Location</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Last Contact</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recentFacilities.map((facility) => (
-                        <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
-                          <td className="p-3">
-                            <Link to={`/facilities/${facility.id}`} className="font-medium text-healthcare-700 hover:underline">
-                              {facility.name}
-                            </Link>
-                          </td>
-                          <td className="p-3 text-sm">{facility.type}</td>
-                          <td className="p-3 text-sm hidden sm:table-cell">
-                            <div className="flex items-center">
-                              <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
-                              {facility.location}
-                            </div>
-                          </td>
-                          <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-            {renderCalendarCard()}
-          </>
-        ) : (
-          <>
-            {renderNotificationsCard()}
-            {renderCalendarCard()}
-          </>
-        )}
-      </div>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {isPro ? (
+              <>
+                <Card className="lg:col-span-2 glass-card animate-zoom-in h-full" style={{ animationDelay: '400ms' }}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle>Recent Facilities</CardTitle>
+                        <CardDescription>Facilities you've recently interacted with</CardDescription>
+                      </div>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to="/facilities">View all</Link>
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-lg border overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-muted/50">
+                            <tr>
+                              <th className="text-xs font-medium text-muted-foreground text-left p-3">Facility</th>
+                              <th className="text-xs font-medium text-muted-foreground text-left p-3">Type</th>
+                              <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Location</th>
+                              <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Last Contact</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {recentFacilities.map((facility) => (
+                              <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
+                                <td className="p-3">
+                                  <Link to={`/facilities/${facility.id}`} className="font-medium text-healthcare-700 hover:underline">
+                                    {facility.name}
+                                  </Link>
+                                </td>
+                                <td className="p-3 text-sm">{facility.type}</td>
+                                <td className="p-3 text-sm hidden sm:table-cell">
+                                  <div className="flex items-center">
+                                    <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
+                                    {facility.location}
+                                  </div>
+                                </td>
+                                <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {renderCalendarCard()}
+              </>
+            ) : (
+              <>
+                {renderNotificationsCard()}
+                {renderCalendarCard()}
+              </>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {renderReferralsCard()}
-      </div>
+          {renderReferralsCard()}
+        </TabsContent>
+        
+        <TabsContent value="tasks" className="mt-6">
+          {renderTasksCard()}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/AuthContext';
-import { TodoItem, createTodoItem, getTodoItems, updateTodoItem, deleteTodoItem, generateAIRecommendations } from '@/services/todoService';
+import { supabase } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CheckCircle, Circle, List, Plus, Sparkles, Calendar as CalendarIcon, User, Building, Trash2, Clock } from 'lucide-react';
@@ -17,6 +18,7 @@ import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { TodoItem, createTodoItem, getTodoItems, updateTodoItem, deleteTodoItem, generateAIRecommendations } from '@/services/todoService';
 
 export const updateTodoForm = (prevState: any, newData: any) => {
   const { user } = useAuth();
@@ -189,13 +191,12 @@ const TodoList = () => {
     }
   };
 
+  // Main TodoList component rendering
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium flex items-center gap-2">
-          <List className="h-5 w-5 text-healthcare-600" />
-          To-Do List
-        </h3>
+    <div>
+      {/* Header with action buttons */}
+      <div className="flex items-center justify-between mb-4">
+        <div />
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
@@ -215,7 +216,7 @@ const TodoList = () => {
       
       {/* AI Recommendations */}
       {aiRecommendations.length > 0 && (
-        <Card className="border-dashed border-healthcare-200 bg-healthcare-50/50">
+        <Card className="border-dashed border-healthcare-200 bg-healthcare-50/50 mb-4">
           <CardHeader className="py-3">
             <CardTitle className="text-sm font-medium flex items-center">
               <Sparkles className="mr-2 h-4 w-4 text-healthcare-600" />
@@ -255,143 +256,138 @@ const TodoList = () => {
         </Card>
       )}
 
-      {/* Main Todo List */}
-      <Card>
-        <CardHeader className="py-3">
-          <Tabs defaultValue="active">
-            <TabsList>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </CardHeader>
-        <CardContent className="py-0">
-          <TabsContent value="active" className="m-0 pt-1">
-            {isLoading ? (
-              <div className="py-8 text-center text-muted-foreground">Loading tasks...</div>
-            ) : todos.filter(todo => !todo.completed).length === 0 ? (
-              <div className="py-8 text-center">
-                <List className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-muted-foreground">No active tasks</p>
-                <Button 
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => setIsAddDialogOpen(true)}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add a task
-                </Button>
-              </div>
-            ) : (
-              <ul className="space-y-3">
-                {todos
-                  .filter(todo => !todo.completed)
-                  .sort((a, b) => {
-                    const priorityOrder = { high: 0, medium: 1, low: 2 };
-                    return priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
-                  })
-                  .map(todo => (
-                    <li key={todo.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                      <Checkbox 
-                        id={`task-${todo.id}`}
-                        checked={todo.completed}
-                        onCheckedChange={() => handleToggleComplete(todo.id!, todo.completed)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={`task-${todo.id}`}
-                          className="font-medium cursor-pointer hover:text-healthcare-700"
-                        >
-                          {todo.title}
-                        </label>
-                        {todo.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{todo.description}</p>
-                        )}
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
-                          {todo.due_date && (
-                            <span className="text-xs text-muted-foreground flex items-center">
-                              <CalendarIcon className="h-3 w-3 mr-1" />
-                              {format(new Date(todo.due_date), 'MMM d, yyyy')}
-                            </span>
-                          )}
-                          {todo.related_client_id && (
-                            <span className="text-xs text-muted-foreground flex items-center">
-                              <User className="h-3 w-3 mr-1" />
-                              Client
-                            </span>
-                          )}
-                          {todo.related_facility_id && (
-                            <span className="text-xs text-muted-foreground flex items-center">
-                              <Building className="h-3 w-3 mr-1" />
-                              Facility
-                            </span>
-                          )}
-                          {getPriorityBadge(todo.priority)}
-                        </div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleDeleteTodo(todo.id!)}
-                        className="text-muted-foreground hover:text-destructive"
+      {/* Main Todo List with Tabs */}
+      <Tabs defaultValue="active">
+        <TabsList>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="active" className="mt-1">
+          {isLoading ? (
+            <div className="py-8 text-center text-muted-foreground">Loading tasks...</div>
+          ) : todos.filter(todo => !todo.completed).length === 0 ? (
+            <div className="py-8 text-center">
+              <List className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground">No active tasks</p>
+              <Button 
+                variant="outline"
+                className="mt-4"
+                onClick={() => setIsAddDialogOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add a task
+              </Button>
+            </div>
+          ) : (
+            <ul className="space-y-3 mt-4">
+              {todos
+                .filter(todo => !todo.completed)
+                .sort((a, b) => {
+                  const priorityOrder = { high: 0, medium: 1, low: 2 };
+                  return priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
+                })
+                .map(todo => (
+                  <li key={todo.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                    <Checkbox 
+                      id={`task-${todo.id}`}
+                      checked={todo.completed}
+                      onCheckedChange={() => handleToggleComplete(todo.id!, todo.completed)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={`task-${todo.id}`}
+                        className="font-medium cursor-pointer hover:text-healthcare-700"
                       >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="completed" className="m-0 pt-1">
-            {isLoading ? (
-              <div className="py-8 text-center text-muted-foreground">Loading tasks...</div>
-            ) : todos.filter(todo => todo.completed).length === 0 ? (
-              <div className="py-8 text-center">
-                <CheckCircle className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-muted-foreground">No completed tasks</p>
-              </div>
-            ) : (
-              <ul className="space-y-3">
-                {todos
-                  .filter(todo => todo.completed)
-                  .map(todo => (
-                    <li key={todo.id} className="flex items-start gap-3 p-3 border rounded-lg bg-muted/30">
-                      <Checkbox 
-                        id={`task-${todo.id}`}
-                        checked={todo.completed}
-                        onCheckedChange={() => handleToggleComplete(todo.id!, todo.completed)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={`task-${todo.id}`}
-                          className="line-through text-muted-foreground cursor-pointer"
-                        >
-                          {todo.title}
-                        </label>
-                        {todo.description && (
-                          <p className="text-sm text-muted-foreground mt-1 line-through">{todo.description}</p>
+                        {todo.title}
+                      </label>
+                      {todo.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{todo.description}</p>
+                      )}
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+                        {todo.due_date && (
+                          <span className="text-xs text-muted-foreground flex items-center">
+                            <CalendarIcon className="h-3 w-3 mr-1" />
+                            {format(new Date(todo.due_date), 'MMM d, yyyy')}
+                          </span>
                         )}
+                        {todo.related_client_id && (
+                          <span className="text-xs text-muted-foreground flex items-center">
+                            <User className="h-3 w-3 mr-1" />
+                            Client
+                          </span>
+                        )}
+                        {todo.related_facility_id && (
+                          <span className="text-xs text-muted-foreground flex items-center">
+                            <Building className="h-3 w-3 mr-1" />
+                            Facility
+                          </span>
+                        )}
+                        {getPriorityBadge(todo.priority)}
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleDeleteTodo(todo.id!)}
-                        className="text-muted-foreground hover:text-destructive"
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDeleteTodo(todo.id!)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="completed" className="mt-1">
+          {isLoading ? (
+            <div className="py-8 text-center text-muted-foreground">Loading tasks...</div>
+          ) : todos.filter(todo => todo.completed).length === 0 ? (
+            <div className="py-8 text-center">
+              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground">No completed tasks</p>
+            </div>
+          ) : (
+            <ul className="space-y-3 mt-4">
+              {todos
+                .filter(todo => todo.completed)
+                .map(todo => (
+                  <li key={todo.id} className="flex items-start gap-3 p-3 border rounded-lg bg-muted/30">
+                    <Checkbox 
+                      id={`task-${todo.id}`}
+                      checked={todo.completed}
+                      onCheckedChange={() => handleToggleComplete(todo.id!, todo.completed)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={`task-${todo.id}`}
+                        className="line-through text-muted-foreground cursor-pointer"
                       >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </TabsContent>
-        </CardContent>
-      </Card>
+                        {todo.title}
+                      </label>
+                      {todo.description && (
+                        <p className="text-sm text-muted-foreground mt-1 line-through">{todo.description}</p>
+                      )}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDeleteTodo(todo.id!)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Add Todo Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
