@@ -30,6 +30,36 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_reminders: {
+        Row: {
+          appointment_id: string
+          created_at: string | null
+          id: string
+          sent: boolean
+          time_before: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string | null
+          id?: string
+          sent?: boolean
+          time_before: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string | null
+          id?: string
+          sent?: boolean
+          time_before?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           calendar_event_id: string | null
@@ -111,6 +141,36 @@ export type Database = {
           id?: number
           text?: string
           voice_settings?: Json
+        }
+        Relationships: []
+      }
+      calendar_connections: {
+        Row: {
+          calendar_id: string | null
+          connected: boolean
+          created_at: string | null
+          id: string
+          last_synced: string | null
+          provider: string
+          user_id: string
+        }
+        Insert: {
+          calendar_id?: string | null
+          connected?: boolean
+          created_at?: string | null
+          id?: string
+          last_synced?: string | null
+          provider: string
+          user_id: string
+        }
+        Update: {
+          calendar_id?: string | null
+          connected?: boolean
+          created_at?: string | null
+          id?: string
+          last_synced?: string | null
+          provider?: string
+          user_id?: string
         }
         Relationships: []
       }

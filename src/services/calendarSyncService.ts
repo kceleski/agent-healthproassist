@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/lib/database.types';
 
 export type CalendarProvider = 'google' | 'outlook' | 'apple';
 
@@ -14,11 +15,14 @@ export interface CalendarSync {
 
 export const connectCalendarProvider = async (userId: string, provider: CalendarProvider): Promise<boolean> => {
   try {
-    // This function would typically initiate OAuth flow with the provider
-    // For now, we'll just mock the connection with a database record
     const { error } = await supabase
       .from('calendar_connections')
-      .insert([{ user_id: userId, provider, connected: true, last_synced: new Date().toISOString() }]);
+      .insert({
+        user_id: userId, 
+        provider, 
+        connected: true, 
+        last_synced: new Date().toISOString()
+      });
 
     if (error) throw error;
     return true;

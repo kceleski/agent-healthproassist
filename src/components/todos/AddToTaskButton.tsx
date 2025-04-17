@@ -10,12 +10,14 @@ interface AddToTaskButtonProps extends Omit<ButtonProps, 'onClick'> {
   actionText: string;
   priority?: 'low' | 'medium' | 'high';
   redirectAfterAdd?: boolean;
+  onTaskAdded?: () => void;
 }
 
 const AddToTaskButton = ({ 
   actionText, 
   priority = 'medium', 
   redirectAfterAdd = false,
+  onTaskAdded,
   ...props 
 }: AddToTaskButtonProps) => {
   const { user } = useAuth();
@@ -40,6 +42,7 @@ const AddToTaskButton = ({
         if (redirectAfterAdd) {
           navigate('/calendar?tab=todo');
         }
+        onTaskAdded?.();
       }
     } catch (error) {
       console.error("Error adding task:", error);

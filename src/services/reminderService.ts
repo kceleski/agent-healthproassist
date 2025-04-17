@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/lib/database.types';
 
 export type ReminderType = 'email' | 'sms';
 export type ReminderTime = '15min' | '30min' | '1hour' | '1day';
@@ -17,7 +18,10 @@ export const createReminder = async (reminder: Omit<Reminder, 'sent'>): Promise<
   try {
     const { data, error } = await supabase
       .from('appointment_reminders')
-      .insert([{ ...reminder, sent: false }])
+      .insert({
+        ...reminder,
+        sent: false
+      })
       .select()
       .single();
 

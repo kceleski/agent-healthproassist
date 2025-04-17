@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { TodoItem, createTodoItem, getTodoItems, updateTodoItem, deleteTodoItem, generateAIRecommendations } from '@/services/todoService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle, Circle, List, Plus, Sparkles, Calendar, User, Building, Trash2, Clock } from 'lucide-react';
+import { CheckCircle, Circle, List, Plus, Sparkles, Calendar as CalendarIcon, User, Building, Trash2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -25,7 +24,8 @@ const TodoList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null);
-  const [newTodo, setNewTodo] = useState<Partial<TodoItem>>({
+  const [newTodo, setNewTodo] = useState<Omit<TodoItem, 'id' | 'completed' | 'created_at'>>({
+    user_id: '',
     title: '',
     description: '',
     priority: 'medium',
@@ -65,13 +65,14 @@ const TodoList = () => {
       const todoItem = await createTodoItem({
         ...newTodo,
         user_id: user.id,
-        priority: newTodo.priority as 'low' | 'medium' | 'high'
+        priority: newTodo.priority,
       });
 
       if (todoItem) {
         setTodos(prev => [todoItem, ...prev]);
         setIsAddDialogOpen(false);
         setNewTodo({
+          user_id: user.id,
           title: '',
           description: '',
           priority: 'medium',
@@ -296,7 +297,7 @@ const TodoList = () => {
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
                           {todo.due_date && (
                             <span className="text-xs text-muted-foreground flex items-center">
-                              <Calendar className="h-3 w-3 mr-1" />
+                              <CalendarIcon className="h-3 w-3 mr-1" />
                               {format(new Date(todo.due_date), 'MMM d, yyyy')}
                             </span>
                           )}
@@ -431,15 +432,15 @@ const TodoList = () => {
                         !newTodo.due_date && "text-muted-foreground"
                       )}
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-2 h-4 w-4" />
                       {newTodo.due_date ? format(new Date(newTodo.due_date), 'PPP') : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={newTodo.due_date ? new Date(newTodo.due_date) : new Date()}
-                      onSelect={(date) => setNewTodo({ ...newTodo, due_date: date?.toISOString() })}
+                      selected={newTodo.due_date ? new Date(newTodo.due_date) : undefined}
+                      onSelect={(date) => setNewTodo({ ...newTodo, due_date: date?.toISOString() || new Date().toISOString() })}
                       initialFocus
                       className="p-3 pointer-events-auto"
                     />
