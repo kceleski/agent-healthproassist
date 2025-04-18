@@ -23,7 +23,11 @@ export default defineConfig(({ mode }) => ({
     devSourcemap: true,
   },
   plugins: [
-    react(),
+    react({
+      // Add better error handling for React components
+      devTools: true,
+      jsxImportSource: 'react',
+    }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -32,6 +36,7 @@ export default defineConfig(({ mode }) => ({
     },
     // Ensure proper module resolution
     preserveSymlinks: false,
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
   define: {
     // Define the WebSocket token to prevent the error
@@ -39,12 +44,29 @@ export default defineConfig(({ mode }) => ({
   },
   // Add optimizeDeps to help with dependency pre-bundling
   optimizeDeps: {
-    include: ['mapbox-gl', 'react', 'react-dom']
+    include: ['mapbox-gl', 'react', 'react-dom', 'react-router-dom', 'sonner'],
+    esbuildOptions: {
+      target: 'esnext'
+    }
   },
   build: {
     sourcemap: true,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+    rollupOptions: {
+      // Output configuration for better error handling
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'router-vendor': ['react-router-dom'],
+          'ui-vendor': ['@/components/ui']
+        }
+      }
+    }
+  },
+  // Improve error reporting
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
 }));

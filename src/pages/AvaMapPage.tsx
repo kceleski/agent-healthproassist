@@ -8,8 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
-// Import the StorePoint types (TypeScript will use this even though it's an empty import)
-import {} from '@/types/storepoint.d.ts';
+// Import the StorePoint types - use 'type' keyword for .d.ts files
+import type {} from '@/types/storepoint.d.ts';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -85,23 +85,28 @@ const AvaMapPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // StorePoint integration
+  // StorePoint integration - Add error handling
   useEffect(() => {
     if (isPro) {
       // This will run after the StorePoint script has loaded for premium users
       const checkSP = setInterval(function() {
-        if (typeof window.SP !== 'undefined') {
+        try {
+          if (typeof window.SP !== 'undefined') {
+            clearInterval(checkSP);
+            
+            // Configure map display
+            window.SP.options.maxLocations = 25; // Show 25 locations at a time
+            window.SP.options.defaultView = 'map'; // Start with map view
+            
+            // Set up event listeners
+            window.SP.on('markerClick', function(location) {
+              console.log('Location selected:', location.name);
+              window.selectedLocation = location;
+            });
+          }
+        } catch (error) {
+          console.error('Error initializing StorePoint map:', error);
           clearInterval(checkSP);
-          
-          // Configure map display
-          window.SP.options.maxLocations = 25; // Show 25 locations at a time
-          window.SP.options.defaultView = 'map'; // Start with map view
-          
-          // Set up event listeners
-          window.SP.on('markerClick', function(location: any) {
-            console.log('Location selected:', location.name);
-            window.selectedLocation = location;
-          });
         }
       }, 100);
 
