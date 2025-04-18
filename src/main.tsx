@@ -10,15 +10,44 @@ window.initMap = () => {
   console.log("Google Maps API loaded");
 };
 
-// Error handling for React
+// Error boundary for React rendering
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('React error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <h2>Something went wrong</h2>
+          <p>The application encountered an error. Please refresh the page or contact support.</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Enhanced error handling for rendering
 const renderApp = () => {
   try {
     ReactDOM.createRoot(document.getElementById('root')!).render(
-      <React.StrictMode>
+      <ErrorBoundary>
         <BrowserRouter>
           <App />
         </BrowserRouter>
-      </React.StrictMode>,
+      </ErrorBoundary>,
     );
   } catch (error) {
     console.error('Failed to render application:', error);

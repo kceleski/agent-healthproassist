@@ -21,15 +21,11 @@ export default defineConfig(({ mode }) => ({
     },
   },
   css: {
-    // Improve CSS processing
-    preprocessorOptions: {
-      // Add any preprocessor options if needed
-    },
+    preprocessorOptions: {},
     devSourcemap: true,
   },
   plugins: [
     react({
-      // Better React error handling
       jsxImportSource: 'react',
     }),
     mode === 'development' && componentTagger(),
@@ -38,15 +34,15 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Ensure proper module resolution
     preserveSymlinks: false,
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
   define: {
-    // Define the WebSocket token to prevent the error
+    // Define global variables
     __WS_TOKEN__: JSON.stringify('development-ws-token'),
+    // Ensure process.env is properly handled for client-side
+    'process.env': {},
   },
-  // Add optimizeDeps to help with dependency pre-bundling
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'sonner'],
     esbuildOptions: {
@@ -59,7 +55,6 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      // Output configuration for better error handling
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
@@ -69,7 +64,6 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
-  // Improve error reporting
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }

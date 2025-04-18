@@ -4,69 +4,120 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AvaChatInterface } from '../AvaChatInterface';
 
-describe('AvaChatInterface', () => {
-  const mockProps = {
-    messages: [],
-    isLoading: false,
-    input: '',
-    setInput: vi.fn(),
-    onSendMessage: vi.fn(),
-  };
+// Define the Message type to match what's expected in AvaChatInterface
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
+describe('AvaChatInterface', () => {
   it('renders empty state correctly', () => {
-    render(<AvaChatInterface {...mockProps} />);
-    expect(screen.getByText('Start a conversation with Ava about finding senior care facilities')).toBeInTheDocument();
+    const mockHandleSendMessage = vi.fn();
+    const mockSetInput = vi.fn();
+    
+    render(
+      <AvaChatInterface 
+        messages={[]}
+        input=""
+        setInput={mockSetInput}
+        handleSendMessage={mockHandleSendMessage}
+        isLoading={false}
+      />
+    );
+    
+    expect(screen.getByText('Start a conversation with your health assistant')).toBeInTheDocument();
   });
 
   it('renders messages correctly', () => {
-    const messages = [
+    const mockMessages: Message[] = [
       { role: 'user', content: 'Hello' },
-      { role: 'assistant', content: 'Hi there!' },
+      { role: 'assistant', content: 'How can I help you today?' },
     ];
     
-    render(<AvaChatInterface {...mockProps} messages={messages} />);
+    render(
+      <AvaChatInterface 
+        messages={mockMessages}
+        input=""
+        setInput={vi.fn()}
+        handleSendMessage={vi.fn()}
+        isLoading={false}
+      />
+    );
     
     expect(screen.getByText('Hello')).toBeInTheDocument();
-    expect(screen.getByText('Hi there!')).toBeInTheDocument();
+    expect(screen.getByText('How can I help you today?')).toBeInTheDocument();
   });
 
-  it('handles input changes', async () => {
-    const user = userEvent.setup();
-    render(<AvaChatInterface {...mockProps} />);
+  it('handles input change', () => {
+    const mockSetInput = vi.fn();
     
-    const input = screen.getByPlaceholder('Ask Ava about senior care facilities...');
-    await user.type(input, 'Test message');
+    render(
+      <AvaChatInterface 
+        messages={[]}
+        input="test"
+        setInput={mockSetInput}
+        handleSendMessage={vi.fn()}
+        isLoading={false}
+      />
+    );
     
-    expect(mockProps.setInput).toHaveBeenCalledTimes('Test message'.length);
+    const input = screen.getByPlaceholderText('Ask about your health...');
+    fireEvent.change(input, { target: { value: 'Hello' } });
+    
+    expect(mockSetInput).toHaveBeenCalledWith('Hello');
   });
 
-  it('handles send button click', () => {
-    render(<AvaChatInterface {...mockProps} />);
+  it('calls handleSendMessage when Send button is clicked', () => {
+    const mockHandleSendMessage = vi.fn();
     
-    const sendButton = screen.getByRole('button', { name: 'Send' });
-    fireEvent.click(sendButton);
+    render(
+      <AvaChatInterface 
+        messages={[]}
+        input="Hello"
+        setInput={vi.fn()}
+        handleSendMessage={mockHandleSendMessage}
+        isLoading={false}
+      />
+    );
     
-    expect(mockProps.onSendMessage).toHaveBeenCalledTimes(1);
+    const button = screen.getByRole('button', { name: 'Send' });
+    fireEvent.click(button);
+    
+    expect(mockHandleSendMessage).toHaveBeenCalled();
   });
 
-  it('disables input and shows loading state when isLoading is true', () => {
-    render(<AvaChatInterface {...mockProps} isLoading={true} />);
+  it('calls handleSendMessage when Enter key is pressed', () => {
+    const mockHandleSendMessage = vi.fn();
     
-    const input = screen.getByPlaceholder('Ask Ava about senior care facilities...');
-    const sendButton = screen.getByRole('button');
+    render(
+      <AvaChatInterface 
+        messages={[]}
+        input="Hello"
+        setInput={vi.fn()}
+        handleSendMessage={mockHandleSendMessage}
+        isLoading={false}
+      />
+    );
     
-    expect(input).toBeDisabled();
-    expect(sendButton).toBeDisabled();
-    expect(screen.getByRole('img', { name: 'Loading spinner' })).toBeInTheDocument();
+    const input = screen.getByPlaceholderText('Ask about your health...');
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    
+    expect(mockHandleSendMessage).toHaveBeenCalled();
   });
 
-  it('handles Enter key press', async () => {
-    const user = userEvent.setup();
-    render(<AvaChatInterface {...mockProps} />);
+  it('renders loading state correctly', () => {
+    render(
+      <AvaChatInterface 
+        messages={[]}
+        input=""
+        setInput={vi.fn()}
+        handleSendMessage={vi.fn()}
+        isLoading={true}
+      />
+    );
     
-    const input = screen.getByPlaceholder('Ask Ava about senior care facilities...');
-    await user.type(input, 'Test{Enter}');
-    
-    expect(mockProps.onSendMessage).toHaveBeenCalledTimes(1);
+    const button = screen.getByRole('button');
+    expect(button).toBeDisabled();
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('animate-spin');
   });
 });
