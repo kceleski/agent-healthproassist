@@ -9,6 +9,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: [
+      "localhost",
+      "127.0.0.1",
+      "4f07c6e1-0bde-43a9-ae72-9d02c96356d2.lovableproject.com"
+    ],
     hmr: {
       protocol: 'ws',
       host: 'localhost',
