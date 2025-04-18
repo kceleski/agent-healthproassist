@@ -17,6 +17,7 @@ describe('AvaAvatar', () => {
     render(<AvaAvatar isLoading={false} videoRef={videoRef} hasMessages={false} />);
     
     expect(screen.getByText('Ava will appear here when you start chatting')).toBeInTheDocument();
+    expect(screen.getByRole('video')).toBeInTheDocument();
   });
 
   it('renders video element when not loading and has messages', () => {

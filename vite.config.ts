@@ -38,10 +38,9 @@ export default defineConfig(({ mode }) => ({
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
   define: {
-    // Define global variables
-    __WS_TOKEN__: JSON.stringify('development-ws-token'),
-    // Ensure process.env is properly handled for client-side
+    // Handle environment variables properly
     'process.env': {},
+    __WS_TOKEN__: JSON.stringify('development-ws-token'),
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'sonner'],

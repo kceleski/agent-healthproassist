@@ -43,11 +43,13 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
 const renderApp = () => {
   try {
     ReactDOM.createRoot(document.getElementById('root')!).render(
-      <ErrorBoundary>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ErrorBoundary>,
+      <React.StrictMode>
+        <ErrorBoundary>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ErrorBoundary>
+      </React.StrictMode>
     );
   } catch (error) {
     console.error('Failed to render application:', error);

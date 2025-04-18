@@ -1,51 +1,56 @@
 
 import { useState } from "react";
 import type { Facility, FacilityType, Location } from "@/types/facility";
-import { useToast } from "@/hooks/use-toast";
 
 interface UseFacilitySearchProps {
-  initialFacilities: Facility[];
+  initialFacilities?: Facility[];
 }
 
-export function useFacilitySearch({ initialFacilities }: UseFacilitySearchProps) {
-  const { toast } = useToast();
+export function useFacilitySearch(props?: UseFacilitySearchProps) {
+  const initialFacilities = props?.initialFacilities || [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<Location[]>([]);
   const [filteredFacilities, setFilteredFacilities] = useState(initialFacilities);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const applyFilters = () => {
     setIsLoading(true);
     
-    setTimeout(() => {
-      let results = initialFacilities;
-      
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        results = results.filter(
-          facility => 
-            facility.name.toLowerCase().includes(query) ||
-            facility.description.toLowerCase().includes(query) ||
-            facility.type.toLowerCase().includes(query)
-        );
-      }
-      
-      if (selectedTypes.length > 0) {
-        results = results.filter(facility => 
-          selectedTypes.includes(facility.type as FacilityType)
-        );
-      }
-      
-      if (selectedLocations.length > 0) {
-        results = results.filter(facility => 
-          selectedLocations.includes(facility.location as Location)
-        );
-      }
-      
-      setFilteredFacilities(results);
+    try {
+      setTimeout(() => {
+        let results = initialFacilities;
+        
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          results = results.filter(
+            facility => 
+              facility.name.toLowerCase().includes(query) ||
+              facility.description.toLowerCase().includes(query) ||
+              facility.type.toLowerCase().includes(query)
+          );
+        }
+        
+        if (selectedTypes.length > 0) {
+          results = results.filter(facility => 
+            selectedTypes.includes(facility.type as FacilityType)
+          );
+        }
+        
+        if (selectedLocations.length > 0) {
+          results = results.filter(facility => 
+            selectedLocations.includes(facility.location as Location)
+          );
+        }
+        
+        setFilteredFacilities(results);
+        setIsLoading(false);
+      }, 500);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const toggleTypeSelection = (type: FacilityType) => {
@@ -78,6 +83,7 @@ export function useFacilitySearch({ initialFacilities }: UseFacilitySearchProps)
     selectedLocations,
     filteredFacilities,
     isLoading,
+    error,
     toggleTypeSelection,
     toggleLocationSelection,
     applyFilters,
