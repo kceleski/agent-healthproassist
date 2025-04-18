@@ -3,93 +3,50 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import WelcomeTabs from "@/components/welcome/WelcomeTabs";
-
-type NotificationPreferences = {
-  email: boolean;
-  sms: boolean;
-  inApp: boolean;
-};
-
-type CommunicationPreferences = {
-  receiveUpdates: boolean;
-  receiveReferrals: boolean;
-  allowContactSharing: boolean;
-};
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { UserProfile } from "@/types/profile";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { profile, updateProfile, isLoading } = useUserProfile(user?.id);
   
-  const [preferences, setPreferences] = useState({
-    defaultLocation: "",
-    notifications: {
-      email: true,
-      sms: false,
-      inApp: true,
-    },
-    bio: "",
-    communicationPreferences: {
-      receiveUpdates: true,
-      receiveReferrals: true,
-      allowContactSharing: false,
-    }
-  });
-
   const handleInputChange = (field: string, value: string) => {
-    setPreferences((prev) => ({ ...prev, [field]: value }));
+    updateProfile({ [field]: value });
   };
 
-  const handleNotificationChange = (field: keyof NotificationPreferences, value: boolean) => {
-    setPreferences((prev) => ({
-      ...prev,
-      notifications: { ...prev.notifications, [field]: value },
-    }));
+  const handleNotificationChange = (field: "email" | "sms" | "inApp", value: boolean) => {
+    if (!profile) return;
+    
+    updateProfile({
+      notification_preferences: {
+        ...profile.notification_preferences,
+        [field]: value
+      }
+    });
   };
 
-  const handleCommunicationPrefChange = (field: keyof CommunicationPreferences, value: boolean) => {
-    setPreferences((prev) => ({
-      ...prev,
-      communicationPreferences: { ...prev.communicationPreferences, [field]: value },
-    }));
+  const handleCommunicationPrefChange = (
+    field: "receiveUpdates" | "receiveReferrals" | "allowContactSharing",
+    value: boolean
+  ) => {
+    if (!profile) return;
+    
+    updateProfile({
+      communication_preferences: {
+        ...profile.communication_preferences,
+        [field]: value
+      }
+    });
   };
 
   const savePreferences = async () => {
-    if (!user) return;
-    
-    setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          default_location: preferences.defaultLocation,
-          bio: preferences.bio,
-          notification_preferences: preferences.notifications,
-          communication_preferences: preferences.communicationPreferences
-        });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Setup Complete!",
-        description: "Your preferences have been saved successfully.",
-      });
-      
+      await updateProfile(profile as UserProfile);
       navigate("/dashboard");
     } catch (error) {
       console.error("Error saving preferences:", error);
-      toast({
-        title: "Error Saving Preferences",
-        description: "There was a problem saving your preferences. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
     }
   };
   
@@ -105,8 +62,17 @@ const WelcomePage = () => {
         
         <CardContent className="p-6">
           <WelcomeTabs 
-            preferences={preferences}
-            loading={loading}
+            preferences={profile || {
+              notification_preferences: { email: true, sms: false, inApp: true },
+              communication_preferences: {
+                receiveUpdates: true,
+                receiveReferrals: true,
+                allowContactSharing: false
+              },
+              bio: "",
+              default_location: ""
+            }}
+            loading={isLoading}
             onInputChange={handleInputChange}
             onNotificationChange={handleNotificationChange}
             onCommunicationPrefChange={handleCommunicationPrefChange}

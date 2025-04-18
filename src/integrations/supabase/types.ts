@@ -664,6 +664,60 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          communication_preferences: Json | null
+          company: string | null
+          created_at: string | null
+          default_location: string | null
+          id: string
+          job_title: string | null
+          notification_preferences: Json | null
+          preferred_contact_method: string | null
+          state: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          communication_preferences?: Json | null
+          company?: string | null
+          created_at?: string | null
+          default_location?: string | null
+          id: string
+          job_title?: string | null
+          notification_preferences?: Json | null
+          preferred_contact_method?: string | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          communication_preferences?: Json | null
+          company?: string | null
+          created_at?: string | null
+          default_location?: string | null
+          id?: string
+          job_title?: string | null
+          notification_preferences?: Json | null
+          preferred_contact_method?: string | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
