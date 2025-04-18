@@ -24,8 +24,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Add better error handling for React components
-      devTools: true,
+      // Better React error handling
       jsxImportSource: 'react',
     }),
     mode === 'development' && componentTagger(),

@@ -27,8 +27,8 @@ interface StorepointLocation {
 // Extend the Window interface
 declare global {
   interface Window {
-    SP: StorepointSDK | undefined;
-    selectedLocation: StorepointLocation | null;
+    SP?: StorepointSDK;
+    selectedLocation?: StorepointLocation | null;
   }
 }
 

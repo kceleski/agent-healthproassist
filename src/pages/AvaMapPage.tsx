@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
-// Import the StorePoint types - use 'type' keyword for .d.ts files
+// Import the StorePoint types - use 'type' for type-only imports
 import type {} from '@/types/storepoint.d.ts';
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
 
 // API keys
 const OPENAI_API_KEY = "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";
@@ -26,6 +22,11 @@ const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268
 // Map filter types
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
 type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'los-angeles' | 'all';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 const AvaMapPage = () => {
   const { user } = useAuth();
@@ -91,12 +92,14 @@ const AvaMapPage = () => {
       // This will run after the StorePoint script has loaded for premium users
       const checkSP = setInterval(function() {
         try {
-          if (typeof window.SP !== 'undefined') {
+          if (window.SP) {
             clearInterval(checkSP);
             
             // Configure map display
-            window.SP.options.maxLocations = 25; // Show 25 locations at a time
-            window.SP.options.defaultView = 'map'; // Start with map view
+            if (window.SP.options) {
+              window.SP.options.maxLocations = 25; // Show 25 locations at a time
+              window.SP.options.defaultView = 'map'; // Start with map view
+            }
             
             // Set up event listeners
             window.SP.on('markerClick', function(location) {
@@ -117,9 +120,14 @@ const AvaMapPage = () => {
     }
   }, [isPro]);
 
-  // Apply map filters
+  // Apply map filters - Add safety checks
   const applyMapFilters = (filterType: FilterType, location: LocationArea) => {
-    if (typeof window.SP !== 'undefined') {
+    try {
+      if (!window.SP) {
+        console.warn('StorePoint map not initialized');
+        return;
+      }
+      
       let tagFilter = '';
       
       // Set facility type filter
@@ -181,6 +189,9 @@ const AvaMapPage = () => {
       
       setActiveFilter(filterType);
       setActiveLocation(location);
+    } catch (error) {
+      console.error('Error applying map filters:', error);
+      toast.error('Failed to update map filters');
     }
   };
 
