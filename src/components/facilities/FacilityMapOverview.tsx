@@ -3,12 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Location } from "@/types/facility";
 
 interface FacilityMapOverviewProps {
   isPro: boolean;
 }
 
 export function FacilityMapOverview({ isPro }: FacilityMapOverviewProps) {
+  const navigate = useNavigate();
+  const locations: Location[] = [
+    "San Francisco, CA",
+    "Oakland, CA", 
+    "San Jose, CA", 
+    "Palo Alto, CA", 
+    "Los Angeles, CA"
+  ];
+
+  const handleOpenMap = () => {
+    navigate('/map');
+  };
+  
   return (
     <Card className="glass-card overflow-hidden mb-8 animate-zoom-in">
       <CardContent className="p-0">
@@ -25,7 +40,10 @@ export function FacilityMapOverview({ isPro }: FacilityMapOverviewProps) {
             ></iframe>
           </div>
           <div className="absolute bottom-4 right-4">
-            <Button className="bg-white text-healthcare-700 hover:bg-white/90">
+            <Button 
+              className="bg-white text-healthcare-700 hover:bg-white/90"
+              onClick={handleOpenMap}
+            >
               <MapIcon className="h-4 w-4 mr-2" />
               Open Full Map
             </Button>
@@ -40,11 +58,11 @@ export function FacilityMapOverview({ isPro }: FacilityMapOverviewProps) {
               : "Search for facilities near you. Upgrade to Pro for full interactive mapping capabilities."}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="bg-healthcare-50">San Francisco, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Oakland, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">San Jose, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Palo Alto, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Los Angeles, CA</Badge>
+            {locations.map((location) => (
+              <Badge key={location} variant="outline" className="bg-healthcare-50">
+                {location}
+              </Badge>
+            ))}
           </div>
         </div>
       </CardContent>

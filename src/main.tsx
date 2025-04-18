@@ -4,7 +4,11 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
-// We're using Google Maps now, no need for Mapbox CSS
+
+// Define global initMap function for Google Maps
+window.initMap = () => {
+  console.log("Google Maps API loaded");
+};
 
 // Error handling for React
 const renderApp = () => {

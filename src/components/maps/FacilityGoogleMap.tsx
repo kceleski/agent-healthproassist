@@ -9,6 +9,14 @@ interface FacilityGoogleMapProps {
   selectedAmenities: string[];
 }
 
+// Define the window.initMap function for Google Maps callback
+declare global {
+  interface Window {
+    initMap: () => void;
+    google: typeof google;
+  }
+}
+
 const GOOGLE_MAPS_API_KEY = "AIzaSyADFSlLS5ofwKFSwjQKE1LSAzO3kECr4Ho";
 const GOOGLE_PLACES_API_KEY = "AIzaSyCxAU5BCCcICK4HdmkLfEDSQB3EvBwQQbE";
 
@@ -31,20 +39,21 @@ const FacilityGoogleMap: React.FC<FacilityGoogleMapProps> = ({
       return;
     }
 
+    // Define the callback function for Google Maps
+    window.initMap = () => {
+      setIsLoaded(true);
+    };
+
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
     script.async = true;
     script.defer = true;
-    
-    window.initMap = () => {
-      setIsLoaded(true);
-    };
-    
     document.head.appendChild(script);
     
     return () => {
-      window.initMap = undefined;
-      document.head.removeChild(script);
+      if (script.parentNode) {
+        document.head.removeChild(script);
+      }
     };
   }, []);
 
@@ -84,6 +93,11 @@ const FacilityGoogleMap: React.FC<FacilityGoogleMapProps> = ({
     // Clear existing markers
     clearMarkers();
     
+    if (!window.google) {
+      console.error("Google Maps API not loaded");
+      return;
+    }
+    
     // Geocode the location to get coordinates
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address: searchLocation }, (results, status) => {
@@ -114,7 +128,7 @@ const FacilityGoogleMap: React.FC<FacilityGoogleMapProps> = ({
           keyword: searchQuery,
           type: "health"
         },
-        (results, status, pagination) => {
+        (results, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             // Filter results by amenities if needed
             let filteredResults = results;
