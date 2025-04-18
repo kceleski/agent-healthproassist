@@ -1,8 +1,6 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Removed Mapbox CSS import as we're now using Google Maps */
 
 @font-face {
   font-family: 'SF Pro Display';
@@ -295,6 +293,9 @@
   }
   25% {
     transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
   }
 }
 

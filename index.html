@@ -1,26 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HealthProAssist</title>
-    <meta name="description" content="HealthProAssist Project" />
+    <title>HealthProAssist - AI Health Assistant</title>
+    <meta name="description" content="AI-powered health facility placement assistant" />
     <meta name="author" content="HealthProAssist" />
 
-    <meta property="og:title" content="HealthProAssist" />
-    <meta property="og:description" content="HealthProAssist Project" />
+    <meta property="og:title" content="HealthProAssist - AI Health Assistant" />
+    <meta property="og:description" content="AI-powered health facility placement assistant" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://healthproassist.com" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <!-- ElevenLabs Convai Widget -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@healthproassist" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- ElevenLabs AI Integration -->
     <elevenlabs-convai agent-id="R9M1zBEUj8fTGAij61wb"></elevenlabs-convai>
-    <script src="https://elevenlabs.io/convai-widget/index.js" defer type="text/javascript"></script>
+    <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+
+    <!-- D-ID Avatar Script -->
+    <script
+      type="module"
+      src="https://agent.d-id.com/v1/index.js"
+      data-name="did-agent"
+      data-mode="fabio"
+      data-client-key="Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4"
+      data-agent-id="agt_BvPZpW03"
+      data-monitor="true">
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

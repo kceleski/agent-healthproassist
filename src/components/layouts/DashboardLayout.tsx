@@ -1,5 +1,24 @@
 
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { cn } from '@/lib/utils';
+import { 
+  Building, 
+  Home, 
+  Contact, 
+  DollarSign,
+  UserCog,
+  LogOut,
+  Map,
+  Calendar,
+  Search,
+  Heart,
+  Bookmark,
+  FileText
+} from 'lucide-react';
+
 import { 
   Sidebar, 
   SidebarContent, 
@@ -13,21 +32,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
-import { useAuth } from '@/context/AuthContext';
-import { 
-  Building, 
-  Home, 
-  Contact, 
-  DollarSign,
-  UserCog,
-  LogOut,
-  Map,
-  Calendar
-} from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { SubscriptionToggle } from '@/components/ui/subscription-toggle';
+import { NotificationsInbox } from '@/components/notifications/NotificationsInbox';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -40,20 +47,24 @@ const DashboardLayout = () => {
     navigate('/');
   };
 
-  // Define menu items based on subscription tier
   const basicMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
-    { title: 'Facilities', path: '/facilities', icon: Building },
-    { title: 'Facility Map', path: '/map', icon: Map },  // Added map to basic tier
+    { title: 'Search Facilities', path: '/search', icon: Search },
+    { title: 'Map View', path: '/map', icon: Map },
+    { title: 'Saved Facilities', path: '/favorites', icon: Heart },
+    { title: 'Saved Searches', path: '/saved-searches', icon: Bookmark },
     { title: 'Clients', path: '/contacts', icon: Contact },
+    { title: 'Medical Records', path: '/medical-records', icon: FileText },
     { title: 'Calendar', path: '/calendar', icon: Calendar },
     { title: 'Profile', path: '/profile', icon: UserCog },
   ];
 
   const proMenuItems = [
     { title: 'Dashboard', path: '/dashboard', icon: Home },
-    { title: 'Facilities', path: '/facilities', icon: Building },
-    { title: 'Facility Map', path: '/map', icon: Map },
+    { title: 'Search Facilities', path: '/search', icon: Search },
+    { title: 'Map View', path: '/map', icon: Map },
+    { title: 'Saved Facilities', path: '/favorites', icon: Heart },
+    { title: 'Medical Records', path: '/medical-records', icon: FileText },
     { title: 'Contacts', path: '/contacts', icon: Contact },
     { title: 'Payments', path: '/payments', icon: DollarSign },
     { title: 'Profile', path: '/profile', icon: UserCog },
@@ -104,7 +115,7 @@ const DashboardLayout = () => {
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
-                <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-sm font-medium">{user?.name}</p>
@@ -127,6 +138,7 @@ const DashboardLayout = () => {
         <div className="p-4 border-b flex items-center justify-between">
           <SidebarTrigger />
           <div className="flex items-center gap-4">
+            <NotificationsInbox />
             <SubscriptionToggle />
             <div className="text-sm font-medium">
               Plan: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{isPro ? 'Pro' : 'Basic'}</span>

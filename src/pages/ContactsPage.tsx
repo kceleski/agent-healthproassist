@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Building, 
   CalendarDays, 
@@ -12,10 +11,11 @@ import {
   Plus, 
   Search, 
   User, 
-  Users
+  Users,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -27,19 +27,17 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-
-// Mock function to check user subscription tier
-const getUserTier = () => {
-  // In a real app, this would check the user's actual subscription
-  // For now, let's make it return "basic" to test the basic tier functionality
-  return "basic"; // Change to "pro" to test pro tier functionality
-};
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import AddSeniorClientForm from "@/components/contacts/AddSeniorClientForm";
+import { useAuth } from "@/context/AuthContext";
 
 // Sample Senior Clients Data
-const seniorsData = [
+const initialSeniorsData = [
   {
     id: "1",
     name: "Eleanor Johnson",
@@ -207,18 +205,27 @@ const facilityContactsData = [
 
 const ContactsPage = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [seniorsData, setSeniorsData] = useState(() => {
+    const savedSeniors = localStorage.getItem("seniorClients");
+    return savedSeniors ? JSON.parse(savedSeniors) : initialSeniorsData;
+  });
   const [filteredSeniors, setFilteredSeniors] = useState(seniorsData);
   const [filteredFacilities, setFilteredFacilities] = useState(facilityContactsData);
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("seniors");
   
-  // Determine user tier
-  const userTier = getUserTier();
-  const isProUser = userTier === "pro";
+  const userTier = user?.demoTier || user?.subscription || 'basic';
+  const isProUser = userTier === "premium";
 
-  // Handle search
+  useEffect(() => {
+    localStorage.setItem("seniorClients", JSON.stringify(seniorsData));
+    setFilteredSeniors(seniorsData);
+  }, [seniorsData]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -226,15 +233,14 @@ const ContactsPage = () => {
       const query = searchQuery.toLowerCase();
       
       const matchedSeniors = seniorsData.filter(
-        senior => 
+        (senior: any) => 
           senior.name.toLowerCase().includes(query) ||
           senior.location.toLowerCase().includes(query) ||
-          senior.careNeeds.some(need => need.toLowerCase().includes(query))
+          senior.careNeeds.some((need: string) => need.toLowerCase().includes(query))
       );
       
-      // Only filter facilities if the user is on pro tier
       const matchedFacilities = isProUser ? facilityContactsData.filter(
-        contact => 
+        (contact: any) => 
           contact.name.toLowerCase().includes(query) ||
           contact.facility.toLowerCase().includes(query) ||
           contact.location.toLowerCase().includes(query) ||
@@ -249,7 +255,19 @@ const ContactsPage = () => {
     }
   };
 
-  // Handle export
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setFilteredSeniors(seniorsData);
+    setFilteredFacilities(isProUser ? facilityContactsData : []);
+  };
+
+  const handleApplyFilters = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Contact filters have been updated.",
+    });
+  };
+
   const handleExport = () => {
     toast({
       title: "Contacts Exported",
@@ -257,10 +275,13 @@ const ContactsPage = () => {
     });
   };
 
-  // Open contact detail drawer
   const openContactDetails = (contact: any) => {
     setSelectedContact(contact);
     setIsDetailDrawerOpen(true);
+  };
+
+  const handleSaveSeniorClient = (newClient: any) => {
+    setSeniorsData([newClient, ...seniorsData]);
   };
 
   return (
@@ -274,7 +295,6 @@ const ContactsPage = () => {
         </p>
       </div>
 
-      {/* Search and Actions Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
@@ -286,8 +306,17 @@ const ContactsPage = () => {
                 : "Search senior clients by name, location, or needs..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 pr-10"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </form>
         <div className="flex gap-2">
@@ -296,27 +325,28 @@ const ContactsPage = () => {
             Export
           </Button>
           <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-healthcare-600">
-                <Plus className="h-4 w-4 mr-2" />
-                {isProUser ? "Add Contact" : "Add Senior Client"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+            <Button className="bg-healthcare-600" onClick={() => setIsContactDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {isProUser ? "Add Contact" : "Add Senior Client"}
+            </Button>
+            <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle>{isProUser ? "Add New Contact" : "Add New Senior Client"}</DialogTitle>
+                <DialogTitle>Add New Senior Client</DialogTitle>
                 <DialogDescription>
-                  This feature will be available in a future update.
+                  Fill out the form below to add a new senior client to your contacts.
                 </DialogDescription>
               </DialogHeader>
+              <AddSeniorClientForm 
+                onClose={() => setIsContactDialogOpen(false)}
+                onSave={handleSaveSeniorClient}
+              />
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Contacts Tabs - Only show tabs for Pro users */}
       {isProUser ? (
-        <Tabs defaultValue="seniors" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center mb-4">
             <TabsList>
               <TabsTrigger value="seniors" className="flex items-center gap-2">
@@ -328,13 +358,12 @@ const ContactsPage = () => {
                 Facility Contacts
               </TabsTrigger>
             </TabsList>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleApplyFilters}>
               <Filter className="h-3 w-3 mr-1" />
               <span className="hidden sm:inline">Filter</span>
             </Button>
           </div>
           
-          {/* Seniors Tab Content */}
           <TabsContent value="seniors">
             {filteredSeniors.length === 0 ? (
               <Card className="glass-card">
@@ -454,7 +483,6 @@ const ContactsPage = () => {
             )}
           </TabsContent>
           
-          {/* Facility Contacts Tab Content */}
           <TabsContent value="facilities">
             {filteredFacilities.length === 0 ? (
               <Card className="glass-card">
@@ -567,7 +595,6 @@ const ContactsPage = () => {
           </TabsContent>
         </Tabs>
       ) : (
-        /* Basic user view - only senior clients */
         <div>
           {filteredSeniors.length === 0 ? (
             <Card className="glass-card">
@@ -687,9 +714,169 @@ const ContactsPage = () => {
           )}
         </div>
       )}
+
+      {selectedContact && (
+        <Sheet open={isDetailDrawerOpen} onOpenChange={setIsDetailDrawerOpen}>
+          <SheetContent className="sm:max-w-md overflow-y-auto">
+            <SheetHeader className="mb-4">
+              <SheetTitle>Contact Details</SheetTitle>
+              <SheetDescription>
+                View detailed information about this contact
+              </SheetDescription>
+            </SheetHeader>
+            
+            <div className="space-y-6">
+              <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={selectedContact.image} />
+                  <AvatarFallback>{selectedContact.name?.charAt(0) || "?"}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-xl font-semibold">{selectedContact.name}</h3>
+                  
+                  {selectedContact.facility ? (
+                    <div className="mt-1">
+                      <span className="text-muted-foreground">{selectedContact.title}</span>
+                      <Badge className="ml-2 bg-healthcare-50 text-healthcare-700">
+                        {selectedContact.facilityType}
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-2">
+                      <span className="text-muted-foreground">{selectedContact.age} years old</span>
+                      <Badge className={
+                        selectedContact.status === "Active" 
+                          ? "bg-green-100 text-green-700" 
+                          : "bg-blue-100 text-blue-700"
+                      }>
+                        {selectedContact.status}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <Separator />
+              
+              {selectedContact.facility ? (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Facility</Label>
+                    <p className="font-medium">{selectedContact.facility}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Care Needs</Label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {selectedContact.careNeeds?.map((need: string, i: number) => (
+                        <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700">
+                          {need}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-muted-foreground mb-1 block">Budget</Label>
+                    <p>{selectedContact.budget}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div>
+                <Label className="text-muted-foreground mb-1 block">Contact Information</Label>
+                <div className="space-y-3 mt-2">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span>{selectedContact.location}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <a 
+                      href={`mailto:${selectedContact.email}`}
+                      className="text-healthcare-600 hover:underline"
+                    >
+                      {selectedContact.email}
+                    </a>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <a 
+                      href={`tel:${selectedContact.phone}`}
+                      className="text-healthcare-600 hover:underline"
+                    >
+                      {selectedContact.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              {selectedContact.familyContacts && (
+                <div>
+                  <Label className="text-muted-foreground mb-1 block">Family Contacts</Label>
+                  <div className="space-y-4 mt-2">
+                    {selectedContact.familyContacts.map((contact: any, index: number) => (
+                      <div key={index} className="bg-muted/50 p-3 rounded-md">
+                        <div className="font-medium">{contact.name}</div>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          {contact.relationship}
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-3 w-3 text-muted-foreground" />
+                            <a 
+                              href={`mailto:${contact.email}`}
+                              className="text-healthcare-600 hover:underline"
+                            >
+                              {contact.email}
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3 w-3 text-muted-foreground" />
+                            <a 
+                              href={`tel:${contact.phone}`}
+                              className="text-healthcare-600 hover:underline"
+                            >
+                              {contact.phone}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedContact.notes && (
+                <div>
+                  <Label className="text-muted-foreground mb-1 block">Notes</Label>
+                  <div className="bg-muted/50 p-3 rounded-md mt-1">
+                    <p className="text-sm">{selectedContact.notes}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center text-sm text-muted-foreground">
+                <CalendarDays className="h-4 w-4 mr-1" />
+                Last contact: {selectedContact.lastContact}
+              </div>
+            </div>
+            
+            <SheetFooter className="mt-6">
+              <Button className="w-full" variant="outline" onClick={() => setIsDetailDrawerOpen(false)}>
+                Close
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
   );
 };
 
 export default ContactsPage;
-
