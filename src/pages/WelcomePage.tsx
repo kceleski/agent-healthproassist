@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,18 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+
+type NotificationPreferences = {
+  email: boolean;
+  sms: boolean;
+  inApp: boolean;
+};
+
+type CommunicationPreferences = {
+  receiveUpdates: boolean;
+  receiveReferrals: boolean;
+  allowContactSharing: boolean;
+};
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -40,14 +51,14 @@ const WelcomePage = () => {
     setPreferences((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNotificationChange = (field: string, value: boolean) => {
+  const handleNotificationChange = (field: keyof NotificationPreferences, value: boolean) => {
     setPreferences((prev) => ({
       ...prev,
       notifications: { ...prev.notifications, [field]: value },
     }));
   };
 
-  const handleCommunicationPrefChange = (field: string, value: boolean) => {
+  const handleCommunicationPrefChange = (field: keyof CommunicationPreferences, value: boolean) => {
     setPreferences((prev) => ({
       ...prev,
       communicationPreferences: { ...prev.communicationPreferences, [field]: value },
@@ -57,7 +68,6 @@ const WelcomePage = () => {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     
-    // Update progress based on tab
     switch(tab) {
       case "welcome": setProgress(0); break;
       case "location": setProgress(25); break;
@@ -72,7 +82,6 @@ const WelcomePage = () => {
     
     setLoading(true);
     try {
-      // Save preferences to Supabase
       const { error } = await supabase
         .from('user_profiles')
         .upsert({
@@ -90,7 +99,6 @@ const WelcomePage = () => {
         description: "Your preferences have been saved successfully.",
       });
       
-      // Navigate to dashboard after successful setup
       navigate("/dashboard");
     } catch (error) {
       console.error("Error saving preferences:", error);
@@ -351,19 +359,9 @@ const WelcomePage = () => {
               <h2 className="text-2xl font-semibold">You're All Set!</h2>
               <p>
                 Thank you for setting up your preferences. You're now ready to use HealthProAssist
-                to its full potential. Your settings have been saved and you can change them anytime
-                from your profile page.
+                to its full potential. Your settings have been saved and you can update them anytime
+                from your profile settings.
               </p>
-              
-              <div className="bg-blue-50 p-4 rounded-md border border-blue-100 text-left">
-                <h3 className="font-medium text-blue-800">Next Steps:</h3>
-                <ul className="list-disc pl-5 mt-2 space-y-1 text-blue-700">
-                  <li>Explore healthcare facilities in your area</li>
-                  <li>Add your first client to manage their care needs</li>
-                  <li>Set up calendar integrations for appointment tracking</li>
-                  <li>Try out our AI assistant for healthcare recommendations</li>
-                </ul>
-              </div>
               
               <div className="pt-6">
                 <Button 
