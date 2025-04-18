@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import AddToTaskButton from "@/components/todos/AddToTaskButton";
+import SetupGuideButton from "@/components/dashboard/SetupGuideButton";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -307,19 +308,12 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name}</h1>
-        <p className="text-muted-foreground">
-          Here's an overview of your {isPro ? 'placement activities' : 'client management'}.
-          {!isPro && (
-            <span className="ml-2 text-healthcare-600">
-              <Link to="/profile" className="hover:underline">Upgrade to Pro</Link> for full features.
-            </span>
-          )}
-        </p>
+    <div className="container mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <SetupGuideButton />
       </div>
-
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>

@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import SavedSearchesPage from "./pages/SavedSearchesPage";
 import ClientMedicalRecordsPage from "./pages/ClientMedicalRecordsPage";
+import WelcomePage from "./pages/WelcomePage";
 
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
@@ -67,13 +68,14 @@ const App = () => (
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/saved-searches" element={<SavedSearchesPage />} />
-                <Route path="/facilities" element={<FavoritesPage />} />
+                <Route path="/facilities" element={<FavoritiesPage />} />
                 <Route path="/facilities/:id" element={<FacilityDetailPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/medical-records" element={<ClientMedicalRecordsPage />} />
+                <Route path="/welcome" element={<WelcomePage />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
