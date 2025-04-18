@@ -20,7 +20,7 @@ export const AvatarDisplay = ({ isLoading, hasMessages, videoUrl }: AvatarDispla
       <CardContent className="flex flex-col items-center justify-center">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <Loader2 className="h-16 w-16 animate-spin text-primary" data-testid="loading-spinner" />
             <p className="mt-4 text-muted-foreground">Processing your request...</p>
           </div>
         ) : (

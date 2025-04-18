@@ -61,7 +61,7 @@ export function AvaChatInterface({
             disabled={isLoading}
           />
           <Button onClick={onSendMessage} disabled={isLoading}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" data-testid="loading-spinner" /> : 'Send'}
           </Button>
         </div>
       </CardFooter>

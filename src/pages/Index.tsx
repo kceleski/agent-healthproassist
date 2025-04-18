@@ -9,8 +9,9 @@ import { useHealthAssistant } from '@/hooks/use-health-assistant';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { AvatarDisplay } from '@/components/avatar/AvatarDisplay';
 import { createDIDAnimation } from '@/services/did-animation';
+import { toast } from 'sonner';
 
-// API keys
+// API keys - Consider using environment variables for production
 const OPENAI_API_KEY = "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";
 const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4";
 const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
@@ -18,8 +19,10 @@ const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
 const Index = () => {
   const [showWidget, setShowWidget] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('chat');
-  const [videoUrl, setVideoUrl] = useState<string>();
-  const storedThreadId = localStorage.getItem('assistant_thread_id');
+  const [videoUrl, setVideoUrl] = useState<string | undefined>();
+  
+  // Get the stored thread ID from localStorage, handling potential null
+  const storedThreadId = typeof window !== 'undefined' ? localStorage.getItem('assistant_thread_id') : null;
   
   const { messages, isLoading, sendMessage } = useHealthAssistant(
     storedThreadId,
@@ -28,12 +31,22 @@ const Index = () => {
   );
 
   const handleSendMessage = async (message: string) => {
-    const response = await sendMessage(message);
-    if (response) {
-      const animationUrl = await createDIDAnimation(response, DID_API_KEY);
-      if (animationUrl) {
-        setVideoUrl(animationUrl);
+    try {
+      const response = await sendMessage(message);
+      if (response) {
+        // Show a toast notification that we're generating the avatar animation
+        toast.info("Generating avatar animation...");
+        
+        const animationUrl = await createDIDAnimation(response, DID_API_KEY);
+        if (animationUrl) {
+          setVideoUrl(animationUrl);
+        } else {
+          toast.error("Failed to generate avatar animation");
+        }
       }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again.");
     }
   };
 

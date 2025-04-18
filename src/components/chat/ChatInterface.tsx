@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -19,6 +19,13 @@ interface ChatInterfaceProps {
 export const ChatInterface = ({ messages, isLoading, onSendMessage }: ChatInterfaceProps) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll to the bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -65,7 +72,7 @@ export const ChatInterface = ({ messages, isLoading, onSendMessage }: ChatInterf
             disabled={isLoading}
           />
           <Button onClick={handleSend} disabled={isLoading}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" data-testid="loading-spinner" /> : 'Send'}
           </Button>
         </div>
       </CardFooter>

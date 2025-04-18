@@ -9,7 +9,7 @@ describe('AvaAvatar', () => {
     render(<AvaAvatar isLoading={true} videoRef={videoRef} hasMessages={false} />);
     
     expect(screen.getByText('Processing your request...')).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Loading spinner' })).toBeInTheDocument();
+    expect(screen.getByTestId('loading-spinner')).toHaveClass('animate-spin');
   });
 
   it('renders initial state with no messages', () => {
@@ -25,7 +25,7 @@ describe('AvaAvatar', () => {
     
     const video = screen.getByRole('video');
     expect(video).toBeInTheDocument();
-    expect(video).toHaveAttribute('autoplay');
+    expect(video).toHaveAttribute('autoPlay');
     expect(video).toHaveAttribute('playsInline');
   });
 });
