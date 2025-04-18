@@ -19,7 +19,7 @@ import FacilityGoogleMap from "@/components/maps/FacilityGoogleMap";
 import { Facility, careTypes, amenities } from "@/types/facilities";
 
 // API key for search service
-const API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
+const API_KEY = import.meta.env.VITE_SEARCH_API_KEY;
 
 const MapPage = () => {
   const { user } = useAuth();

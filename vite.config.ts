@@ -7,17 +7,20 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 8080,
+    host: "0.0.0.0",
+    port: 12000,
     allowedHosts: [
       "localhost",
       "127.0.0.1",
-      "4f07c6e1-0bde-43a9-ae72-9d02c96356d2.lovableproject.com"
+      "4f07c6e1-0bde-43a9-ae72-9d02c96356d2.lovableproject.com",
+      "work-1-kafvrqygqppamkpx.prod-runtime.all-hands.dev",
+      "work-2-kafvrqygqppamkpx.prod-runtime.all-hands.dev"
     ],
+    cors: true,
     hmr: {
       protocol: 'ws',
       host: 'localhost',
-      clientPort: 8080,
+      clientPort: 12000,
     },
   },
   css: {

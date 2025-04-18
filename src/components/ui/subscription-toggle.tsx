@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
@@ -14,7 +14,12 @@ interface SubscriptionToggleProps {
 
 export const SubscriptionToggle = ({ className }: SubscriptionToggleProps) => {
   const { user, updateDemoTier } = useAuth();
-  const [isPro, setIsPro] = useState(user?.subscription === "premium");
+  const [isPro, setIsPro] = useState(user?.demoTier === "premium" || user?.subscription === "premium");
+  
+  // Update state when user prop changes
+  useEffect(() => {
+    setIsPro(user?.demoTier === "premium" || user?.subscription === "premium");
+  }, [user?.demoTier, user?.subscription]);
   
   const handleToggleChange = (checked: boolean) => {
     const newTier = checked ? "premium" : "basic";

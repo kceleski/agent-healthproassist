@@ -17,8 +17,8 @@ declare global {
   }
 }
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyADFSlLS5ofwKFSwjQKE1LSAzO3kECr4Ho";
-const GOOGLE_PLACES_API_KEY = "AIzaSyCxAU5BCCcICK4HdmkLfEDSQB3EvBwQQbE";
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
 
 const FacilityGoogleMap: React.FC<FacilityGoogleMapProps> = ({
   location,

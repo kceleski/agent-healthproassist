@@ -1,5 +1,5 @@
 
-const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4";
+const DID_API_KEY = import.meta.env.VITE_DID_API_KEY;
 
 export const animateResponse = async (text: string): Promise<string> => {
   try {
