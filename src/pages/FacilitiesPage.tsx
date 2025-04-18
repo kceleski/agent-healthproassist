@@ -1,48 +1,25 @@
 import { useState } from "react";
-import { 
-  Building, 
-  ChevronDown, 
-  Filter, 
-  Globe, 
-  MoveHorizontal, 
-  Plus, 
-  RefreshCw, 
-  Search, 
-  Star,
-  SlidersHorizontal,
-  Map as MapIcon
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuCheckboxItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Building, Filter, MoveHorizontal, Plus, RefreshCw } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuth } from "@/context/AuthContext";
+import { FacilityCard } from "@/components/facilities/FacilityCard";
+import { FacilityMapOverview } from "@/components/facilities/FacilityMapOverview";
+import { FacilityFilters } from "@/components/facilities/FacilityFilters";
+import { useFacilitySearch } from "@/hooks/use-facility-search";
+import type { Facility } from "@/types/facility";
 
-// Facility Types
-type FacilityType = "Assisted Living" | "Memory Care" | "Skilled Nursing" | "Independent Living";
-
-// Location Types
-type Location = "San Francisco, CA" | "Oakland, CA" | "San Jose, CA" | "Palo Alto, CA" | "Los Angeles, CA";
-
-// Sample Facility Data
+// Sample facility data - in a real app this would come from an API
 const facilitiesData = [
   {
     id: "1",
@@ -119,69 +96,30 @@ const facilitiesData = [
 ];
 
 // Recently viewed facilities for basic tier
-const recentlyViewedFacilities = [
-  facilitiesData[0],
-  facilitiesData[2],
-  facilitiesData[3],
-];
+const recentlyViewedFacilities = facilitiesData.slice(0, 3);
 
 const FacilitiesPage = () => {
   const { user } = useAuth();
   const demoTier = user?.demoTier || user?.subscription || 'basic';
   const isPro = demoTier === 'premium';
   
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<Location[]>([]);
-  const [filteredFacilities, setFilteredFacilities] = useState(
-    isPro ? facilitiesData : recentlyViewedFacilities
-  );
-  const [isLoading, setIsLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Filter facilities based on search and filters
-  const applyFilters = () => {
-    setIsLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      let results = isPro ? facilitiesData : recentlyViewedFacilities;
-      
-      // Apply search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        results = results.filter(
-          facility => 
-            facility.name.toLowerCase().includes(query) ||
-            facility.description.toLowerCase().includes(query) ||
-            facility.type.toLowerCase().includes(query)
-        );
-      }
-      
-      // Apply type filter
-      if (selectedTypes.length > 0) {
-        results = results.filter(facility => 
-          selectedTypes.includes(facility.type as FacilityType)
-        );
-      }
-      
-      // Apply location filter
-      if (selectedLocations.length > 0) {
-        results = results.filter(facility => 
-          selectedLocations.includes(facility.location as Location)
-        );
-      }
-      
-      setFilteredFacilities(results);
-      setIsLoading(false);
-    }, 500);
-  };
-
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+  const {
+    searchQuery,
+    setSearchQuery,
+    selectedTypes,
+    selectedLocations,
+    filteredFacilities,
+    isLoading,
+    toggleTypeSelection,
+    toggleLocationSelection,
+    applyFilters,
+    handleFilterReset
+  } = useFacilitySearch({
+    initialFacilities: isPro ? facilitiesData : recentlyViewedFacilities
+  });
 
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -189,261 +127,11 @@ const FacilitiesPage = () => {
     applyFilters();
   };
 
-  // Toggle facility type selection
-  const toggleTypeSelection = (type: FacilityType) => {
-    setSelectedTypes(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
-  };
-
-  // Toggle location selection
-  const toggleLocationSelection = (location: Location) => {
-    setSelectedLocations(prev =>
-      prev.includes(location)
-        ? prev.filter(l => l !== location)
-        : [...prev, location]
-    );
-  };
-
-  // Apply filters when selections change
+  // Handle filter apply
   const handleFilterApply = () => {
     applyFilters();
     setFilterOpen(false);
   };
-
-  // Reset all filters
-  const handleFilterReset = () => {
-    setSelectedTypes([]);
-    setSelectedLocations([]);
-    setSearchQuery("");
-    setFilteredFacilities(isPro ? facilitiesData : recentlyViewedFacilities);
-  };
-
-  // Get star rating display
-  const getRatingStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    
-    return (
-      <div className="flex items-center">
-        {Array(fullStars).fill(0).map((_, i) => (
-          <Star key={`full-${i}`} className="w-4 h-4 fill-healthcare-400 text-healthcare-400" />
-        ))}
-        {hasHalfStar && (
-          <div className="relative">
-            <Star className="w-4 h-4 text-healthcare-400" />
-            <Star className="w-4 h-4 fill-healthcare-400 text-healthcare-400 absolute top-0 left-0" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
-          </div>
-        )}
-        {Array(5 - fullStars - (hasHalfStar ? 1 : 0)).fill(0).map((_, i) => (
-          <Star key={`empty-${i}`} className="w-4 h-4 text-healthcare-400" />
-        ))}
-        <span className="ml-1 text-sm">{rating}</span>
-      </div>
-    );
-  };
-
-  const renderFacilityMap = () => (
-    <Card className="glass-card overflow-hidden mb-8 animate-zoom-in">
-      <CardContent className="p-0">
-        <div className="relative">
-          <div className="h-[400px] bg-muted rounded-t-lg overflow-hidden">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d100939.98555098464!2d-122.44761267845324!3d37.75781499602548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1625234961372!5m2!1sen!2sus" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen={true} 
-              loading="lazy"
-              title="Facility Map"
-            ></iframe>
-          </div>
-          <div className="absolute bottom-4 right-4">
-            <Button className="bg-white text-healthcare-700 hover:bg-white/90">
-              <MapIcon className="h-4 w-4 mr-2" />
-              Open Full Map
-            </Button>
-          </div>
-        </div>
-        
-        <div className="p-4 border-t">
-          <h3 className="font-medium mb-2">Find Facilities Near You</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            {isPro 
-              ? "Use the interactive map to explore senior care facilities in your area. Click on a marker to see details." 
-              : "Search for facilities near you. Upgrade to Pro for full interactive mapping capabilities."}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="bg-healthcare-50">San Francisco, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Oakland, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">San Jose, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Palo Alto, CA</Badge>
-            <Badge variant="outline" className="bg-healthcare-50">Los Angeles, CA</Badge>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderBasicFacilityCard = (facility: any, index: number) => (
-    <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-      <CardContent className="p-0">
-        <div className="relative">
-          <img 
-            src={facility.image} 
-            alt={facility.name} 
-            className="h-48 w-full object-cover"
-          />
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-              {facility.type}
-            </Badge>
-          </div>
-        </div>
-        
-        <div className="p-4">
-          <h3 className="font-medium text-lg">{facility.name}</h3>
-          
-          <div className="flex items-center gap-1 my-2">
-            <Globe className="h-3 w-3 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{facility.location}</span>
-          </div>
-          
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">Recently viewed</p>
-          
-          <div className="border-t pt-3 mt-2">
-            <span className="text-sm text-muted-foreground">
-              Last viewed recently
-            </span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderProFacilityCard = (facility: any, index: number) => (
-    viewMode === "grid" ? (
-      <Card key={facility.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-        <CardContent className="p-0">
-          <div className="relative">
-            <img 
-              src={facility.image} 
-              alt={facility.name} 
-              className="h-48 w-full object-cover"
-            />
-            <div className="absolute top-3 left-3 flex gap-2">
-              <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                {facility.type}
-              </Badge>
-              <Badge className="bg-white/80 backdrop-blur-sm text-healthcare-700 border-none">
-                {facility.price}
-              </Badge>
-            </div>
-          </div>
-          
-          <div className="p-4">
-            <Link to={`/facilities/${facility.id}`}>
-              <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
-            </Link>
-            
-            <div className="flex items-center gap-1 my-2">
-              <Globe className="h-3 w-3 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{facility.location}</span>
-            </div>
-            
-            <div className="my-2">
-              {getRatingStars(facility.rating)}
-            </div>
-            
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{facility.description}</p>
-            
-            <div className="flex flex-wrap gap-2 mb-3">
-              {facility.amenities.slice(0, 3).map((amenity: string, i: number) => (
-                <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                  {amenity}
-                </Badge>
-              ))}
-              {facility.amenities.length > 3 && (
-                <Badge variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                  +{facility.amenities.length - 3} more
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-between border-t pt-3">
-              <span className="text-sm">
-                <span className="font-medium">{facility.availableBeds}</span> beds available
-              </span>
-              <Button asChild size="sm" className="bg-healthcare-600">
-                <Link to={`/facilities/${facility.id}`}>View Details</Link>
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    ) : (
-      <Card key={facility.id} className="glass-card overflow-hidden animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-        <CardContent className="p-0">
-          <div className="flex flex-col md:flex-row">
-            <div className="md:w-48 h-48 shrink-0">
-              <img 
-                src={facility.image} 
-                alt={facility.name} 
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="p-4 flex-1">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                <div>
-                  <Link to={`/facilities/${facility.id}`}>
-                    <h3 className="font-medium text-lg hover:text-healthcare-600 transition-colors">{facility.name}</h3>
-                  </Link>
-                  
-                  <div className="flex items-center gap-1 my-1">
-                    <Globe className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{facility.location}</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge className="bg-healthcare-100 text-healthcare-700">
-                    {facility.type}
-                  </Badge>
-                  <Badge className="bg-healthcare-100 text-healthcare-700">
-                    {facility.price}
-                  </Badge>
-                  <div className="ml-2">
-                    {getRatingStars(facility.rating)}
-                  </div>
-                </div>
-              </div>
-              
-              <p className="text-sm text-muted-foreground my-2">{facility.description}</p>
-              
-              <div className="flex flex-wrap gap-2 mb-3 mt-3">
-                {facility.amenities.map((amenity: string, i: number) => (
-                  <Badge key={i} variant="outline" className="bg-healthcare-50 text-xs font-normal">
-                    {amenity}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex items-center justify-between border-t pt-3 mt-2">
-                <span className="text-sm">
-                  <span className="font-medium">{facility.availableBeds}</span> beds available
-                </span>
-                <Button asChild size="sm" className="bg-healthcare-600">
-                  <Link to={`/facilities/${facility.id}`}>View Details</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  );
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -461,8 +149,7 @@ const FacilitiesPage = () => {
         </p>
       </div>
 
-      {/* Facility Map (for both tiers) */}
-      {renderFacilityMap()}
+      <FacilityMapOverview isPro={isPro} />
 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Mobile Filter Button - PRO ONLY */}
@@ -486,14 +173,13 @@ const FacilitiesPage = () => {
         <div className="flex-1 w-full">
           <form onSubmit={handleSearchSubmit} className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder={isPro 
                   ? "Search facilities by name, type, or description..." 
                   : "Search recently viewed facilities..."}
                 value={searchQuery}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -503,104 +189,9 @@ const FacilitiesPage = () => {
           </form>
         </div>
 
-        {/* Desktop Filter Dropdown - PRO ONLY */}
+        {/* Desktop View Mode Toggle - PRO ONLY */}
         {isPro && (
           <div className="hidden lg:flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <SlidersHorizontal className="h-4 w-4" />
-                  <span>Filters</span>
-                  {(selectedTypes.length > 0 || selectedLocations.length > 0) && (
-                    <Badge variant="secondary" className="ml-2">
-                      {selectedTypes.length + selectedLocations.length}
-                    </Badge>
-                  )}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[220px]">
-                <DropdownMenuLabel>Facility Type</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <ScrollArea className="h-[200px]">
-                  <DropdownMenuCheckboxItem
-                    checked={selectedTypes.includes("Assisted Living")}
-                    onCheckedChange={() => toggleTypeSelection("Assisted Living")}
-                  >
-                    Assisted Living
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedTypes.includes("Memory Care")}
-                    onCheckedChange={() => toggleTypeSelection("Memory Care")}
-                  >
-                    Memory Care
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedTypes.includes("Skilled Nursing")}
-                    onCheckedChange={() => toggleTypeSelection("Skilled Nursing")}
-                  >
-                    Skilled Nursing
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedTypes.includes("Independent Living")}
-                    onCheckedChange={() => toggleTypeSelection("Independent Living")}
-                  >
-                    Independent Living
-                  </DropdownMenuCheckboxItem>
-                </ScrollArea>
-
-                <DropdownMenuLabel className="mt-2">Location</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <ScrollArea className="h-[200px]">
-                  <DropdownMenuCheckboxItem
-                    checked={selectedLocations.includes("San Francisco, CA")}
-                    onCheckedChange={() => toggleLocationSelection("San Francisco, CA")}
-                  >
-                    San Francisco, CA
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedLocations.includes("Oakland, CA")}
-                    onCheckedChange={() => toggleLocationSelection("Oakland, CA")}
-                  >
-                    Oakland, CA
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedLocations.includes("San Jose, CA")}
-                    onCheckedChange={() => toggleLocationSelection("San Jose, CA")}
-                  >
-                    San Jose, CA
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedLocations.includes("Palo Alto, CA")}
-                    onCheckedChange={() => toggleLocationSelection("Palo Alto, CA")}
-                  >
-                    Palo Alto, CA
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedLocations.includes("Los Angeles, CA")}
-                    onCheckedChange={() => toggleLocationSelection("Los Angeles, CA")}
-                  >
-                    Los Angeles, CA
-                  </DropdownMenuCheckboxItem>
-                </ScrollArea>
-
-                <div className="flex items-center justify-between pt-2 mt-2 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                    onClick={handleFilterReset}
-                  >
-                    <RefreshCw className="h-3 w-3 mr-1" />
-                    Reset
-                  </Button>
-                  <Button size="sm" className="text-xs" onClick={handleFilterApply}>
-                    Apply Filters
-                  </Button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             <Button
               variant="ghost"
               size="icon"
@@ -613,94 +204,18 @@ const FacilitiesPage = () => {
         )}
       </div>
 
-      {/* Filter Dialog (Mobile) - PRO ONLY */}
+      {/* Filters - PRO ONLY */}
       {isPro && (
-        <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Filter Facilities</DialogTitle>
-              <DialogDescription>
-                Refine results by facility type and location.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <h3 className="text-sm font-medium mb-2">Facility Type</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {["Assisted Living", "Memory Care", "Skilled Nursing", "Independent Living"].map((type) => (
-                    <Button
-                      key={type}
-                      variant={selectedTypes.includes(type as FacilityType) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleTypeSelection(type as FacilityType)}
-                      className={selectedTypes.includes(type as FacilityType) ? "bg-healthcare-600" : ""}
-                    >
-                      {type}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium mb-2">Location</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {["San Francisco, CA", "Oakland, CA", "San Jose, CA", "Palo Alto, CA", "Los Angeles, CA"].map((location) => (
-                    <Button
-                      key={location}
-                      variant={selectedLocations.includes(location as Location) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleLocationSelection(location as Location)}
-                      className={selectedLocations.includes(location as Location) ? "bg-healthcare-600" : ""}
-                    >
-                      {location}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={handleFilterReset}>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                <Button onClick={handleFilterApply} className="bg-healthcare-600">
-                  Apply Filters
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Active Filters Display - PRO ONLY */}
-      {isPro && (selectedTypes.length > 0 || selectedLocations.length > 0) && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-sm font-medium">Active Filters:</span>
-          {selectedTypes.map(type => (
-            <Badge key={type} variant="secondary" className="flex items-center gap-1">
-              {type}
-              <button 
-                onClick={() => toggleTypeSelection(type)}
-                className="ml-1 rounded-full"
-              >
-                ×
-              </button>
-            </Badge>
-          ))}
-          {selectedLocations.map(location => (
-            <Badge key={location} variant="secondary" className="flex items-center gap-1">
-              <Globe className="h-3 w-3 mr-1" />
-              {location}
-              <button 
-                onClick={() => toggleLocationSelection(location)}
-                className="ml-1 rounded-full"
-              >
-                ×
-              </button>
-            </Badge>
-          ))}
-          <Button variant="ghost" size="sm" onClick={handleFilterReset} className="h-7 px-2">
-            Clear All
-          </Button>
-        </div>
+        <FacilityFilters
+          selectedTypes={selectedTypes}
+          selectedLocations={selectedLocations}
+          toggleTypeSelection={toggleTypeSelection}
+          toggleLocationSelection={toggleLocationSelection}
+          handleFilterReset={handleFilterReset}
+          handleFilterApply={handleFilterApply}
+          filterOpen={filterOpen}
+          setFilterOpen={setFilterOpen}
+        />
       )}
 
       {/* Results Count */}
@@ -734,19 +249,17 @@ const FacilitiesPage = () => {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-0">
-                <div className="h-48 bg-muted rounded-t-lg" />
-                <div className="p-4 space-y-4">
-                  <div className="h-6 bg-muted rounded-md w-3/4" />
-                  <div className="h-4 bg-muted rounded-md w-1/2" />
-                  <div className="flex gap-2">
-                    <div className="h-6 bg-muted rounded-full w-20" />
-                    <div className="h-6 bg-muted rounded-full w-20" />
-                  </div>
+            <div key={i} className="animate-pulse">
+              <div className="h-48 bg-muted rounded-t-lg" />
+              <div className="p-4 space-y-4">
+                <div className="h-6 bg-muted rounded-md w-3/4" />
+                <div className="h-4 bg-muted rounded-md w-1/2" />
+                <div className="flex gap-2">
+                  <div className="h-6 bg-muted rounded-full w-20" />
+                  <div className="h-6 bg-muted rounded-full w-20" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       ) : filteredFacilities.length === 0 ? (
@@ -762,16 +275,19 @@ const FacilitiesPage = () => {
           </Button>
         </div>
       ) : (
-        // Facilities Grid/List View - DIFFERENT FOR BASIC AND PRO
         <div className={
           viewMode === "grid" && isPro
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
             : isPro ? "space-y-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         }>
           {filteredFacilities.map((facility, index) => (
-            isPro 
-              ? renderProFacilityCard(facility, index)
-              : renderBasicFacilityCard(facility, index)
+            <FacilityCard
+              key={facility.id}
+              facility={facility}
+              index={index}
+              isPro={isPro}
+              viewMode={viewMode}
+            />
           ))}
         </div>
       )}
