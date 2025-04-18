@@ -78,6 +78,17 @@ const Navbar = () => {
           >
             Contact
           </Link>
+          <Link
+            to="/ava-conversational"
+            className={cn(
+              'text-sm font-medium transition-colors',
+              location.pathname === '/ava-conversational'
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Ava AI Demo
+          </Link>
         </nav>
 
         {/* Desktop Auth Buttons */}
@@ -139,6 +150,17 @@ const Navbar = () => {
               className="py-2 text-sm font-medium text-muted-foreground transition-colors"
             >
               Contact
+            </Link>
+            <Link
+              to="/ava-conversational"
+              className={cn(
+                'py-2 text-sm font-medium transition-colors',
+                location.pathname === '/ava-conversational'
+                  ? 'text-primary'
+                  : 'text-muted-foreground'
+              )}
+            >
+              Ava AI Demo
             </Link>
 
             <div className="border-t pt-4 mt-2 flex flex-col gap-3">

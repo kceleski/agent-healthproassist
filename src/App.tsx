@@ -21,6 +21,7 @@ import MapPage from "./pages/MapPage";
 import CalendarPage from "./pages/CalendarPage";
 import AvaLogoDemo from "./pages/AvaLogoDemo";
 import AvaMapPage from "./pages/AvaMapPage";
+import AvaConversationalDemo from "./pages/AvaConversationalDemo";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
+                <Route path="/ava-conversational" element={<AvaConversationalDemo />} />
                 <Route path="/index" element={<Index />} />
               </Route>
               
