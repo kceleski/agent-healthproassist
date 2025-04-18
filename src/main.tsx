@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
-// Import mapbox CSS directly in JavaScript instead of in CSS
-import 'mapbox-gl/dist/mapbox-gl.css';
+// We're using Google Maps now, no need for Mapbox CSS
 
 // Error handling for React
 const renderApp = () => {

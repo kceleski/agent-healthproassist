@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import FacilityMapbox from "@/components/maps/FacilityMapbox";
+import FacilityGoogleMap from "@/components/maps/FacilityGoogleMap";
 import { Facility, careTypes, amenities } from "@/types/facilities";
 
 // API key for search service
@@ -197,12 +197,17 @@ const MapPage = () => {
         </div>
       </div>
 
-      {/* Map Component */}
-      <FacilityMapbox 
-  location={location}
-  selectedCareType={selectedCareType}
-  selectedAmenities={selectedAmenities}
-/>
+      {/* Google Maps Component */}
+      <FacilityGoogleMap 
+        location={location}
+        selectedCareType={selectedCareType}
+        selectedAmenities={selectedAmenities}
+      />
+
+      {/* Google Maps API required by Google's terms of service */}
+      <div className="text-center text-xs text-muted-foreground mt-2">
+        Map data ©{new Date().getFullYear()} Google
+      </div>
 
       {/* Include necessary scripts */}
       <Helmet>

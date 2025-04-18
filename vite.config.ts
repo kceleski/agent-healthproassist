@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => ({
   },
   // Add optimizeDeps to help with dependency pre-bundling
   optimizeDeps: {
-    include: ['mapbox-gl', 'react', 'react-dom', 'react-router-dom', 'sonner'],
+    include: ['react', 'react-dom', 'react-router-dom', 'sonner'],
     esbuildOptions: {
       target: 'esnext'
     }

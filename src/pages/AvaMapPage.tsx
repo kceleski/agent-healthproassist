@@ -9,15 +9,15 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
-// Import the StorePoint types - use 'type' for type-only imports
-import type {} from '@/types/storepoint.d.ts';
+// Import the Google Maps types
+import type {} from '@/types/google-maps';
 
 // API keys
 const OPENAI_API_KEY = "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";
 const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4";
 const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
 const GOOGLE_MAPS_API_KEY = "AIzaSyADFSlLS5ofwKFSwjQKE1LSAzO3kECr4Ho";
-const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268a51e793bae370";
+const GOOGLE_PLACES_API_KEY = "AIzaSyCxAU5BCCcICK4HdmkLfEDSQB3EvBwQQbE";
 
 // Map filter types
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
@@ -38,6 +38,8 @@ const AvaMapPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
   // Assistant thread management
   const [threadId, setThreadId] = useState<string | null>(localStorage.getItem('assistant_thread_id'));
@@ -45,6 +47,7 @@ const AvaMapPage = () => {
   // Map filter state
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [activeLocation, setActiveLocation] = useState<LocationArea>('all');
+  const [mapIsLoaded, setMapIsLoaded] = useState(false);
   
   // Create a new thread if we don't have one
   useEffect(() => {
@@ -86,112 +89,342 @@ const AvaMapPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // StorePoint integration - Add error handling
+  // Initialize Google Maps
   useEffect(() => {
-    if (isPro) {
-      // This will run after the StorePoint script has loaded for premium users
-      const checkSP = setInterval(function() {
-        try {
-          if (window.SP) {
-            clearInterval(checkSP);
-            
-            // Configure map display
-            if (window.SP.options) {
-              window.SP.options.maxLocations = 25; // Show 25 locations at a time
-              window.SP.options.defaultView = 'map'; // Start with map view
-            }
-            
-            // Set up event listeners
-            window.SP.on('markerClick', function(location) {
-              console.log('Location selected:', location.name);
-              window.selectedLocation = location;
-            });
-          }
-        } catch (error) {
-          console.error('Error initializing StorePoint map:', error);
-          clearInterval(checkSP);
-        }
-      }, 100);
-
-      // Clean up interval on component unmount
-      return () => {
-        clearInterval(checkSP);
+    if (!isPro || !mapRef.current) return;
+    
+    // Load Google Maps API
+    if (!window.google?.maps) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      
+      window.initMap = () => {
+        initializeMap();
+        setMapIsLoaded(true);
       };
+      
+      document.head.appendChild(script);
+      
+      return () => {
+        window.initMap = undefined;
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+    } else {
+      // API already loaded
+      initializeMap();
+      setMapIsLoaded(true);
     }
   }, [isPro]);
 
-  // Apply map filters - Add safety checks
-  const applyMapFilters = (filterType: FilterType, location: LocationArea) => {
+  // Initialize the map
+  const initializeMap = () => {
+    if (!mapRef.current || !isPro) return;
+    
     try {
-      if (!window.SP) {
-        console.warn('StorePoint map not initialized');
-        return;
-      }
+      // Create new map instance
+      const mapOptions = {
+        center: { lat: 37.7749, lng: -122.4194 }, // Default: San Francisco
+        zoom: 11,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true
+      };
       
-      let tagFilter = '';
+      const map = new google.maps.Map(mapRef.current, mapOptions);
+      mapInstanceRef.current = map;
+      
+      // Initialize with some facilities
+      loadDefaultFacilities(map);
+    } catch (error) {
+      console.error('Error initializing Google Map:', error);
+      toast.error('Could not initialize the map. Please try again.');
+    }
+  };
+
+  // Load some default senior care facilities
+  const loadDefaultFacilities = (map: google.maps.Map) => {
+    if (!isPro) return;
+    
+    try {
+      const service = new google.maps.places.PlacesService(map);
+      
+      service.nearbySearch(
+        {
+          location: { lat: 37.7749, lng: -122.4194 }, // San Francisco
+          radius: 10000,
+          keyword: 'senior care',
+          type: 'health'
+        },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            // Clear any existing markers
+            clearMarkers();
+            
+            // Create new markers
+            const newMarkers: google.maps.Marker[] = [];
+            const bounds = new google.maps.LatLngBounds();
+            
+            results.forEach(place => {
+              if (!place.geometry || !place.geometry.location) return;
+              
+              const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map,
+                title: place.name,
+                animation: google.maps.Animation.DROP
+              });
+              
+              const infoWindow = new google.maps.InfoWindow({
+                content: `
+                  <div>
+                    <h3 style="font-weight: bold; margin-bottom: 5px;">${place.name}</h3>
+                    <div style="margin-bottom: 5px;">${place.vicinity || ''}</div>
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                      <span style="color: #FFC107; margin-right: 5px;">★</span>
+                      <span>${place.rating || 'No rating'}</span>
+                    </div>
+                  </div>
+                `
+              });
+              
+              marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+              });
+              
+              bounds.extend(place.geometry.location);
+              newMarkers.push(marker);
+            });
+            
+            // Store markers reference
+            markersRef.current = newMarkers;
+            
+            // Adjust map to show all markers
+            if (newMarkers.length > 0) {
+              map.fitBounds(bounds);
+            }
+          } else {
+            console.warn('Places search returned no results:', status);
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error loading facilities:', error);
+    }
+  };
+  
+  // Clear all markers from the map
+  const clearMarkers = () => {
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+  };
+
+  // Apply map filters
+  const applyMapFilters = (filterType: FilterType, location: LocationArea) => {
+    if (!mapIsLoaded || !mapInstanceRef.current) {
+      console.warn('Google Maps not initialized');
+      return;
+    }
+    
+    try {
+      // Construct search query
+      let searchKeyword = 'senior care';
+      let locationQuery = '';
       
       // Set facility type filter
       switch(filterType) {
         case 'assisted-living':
-          tagFilter = 'assisted living community';
+          searchKeyword = 'assisted living senior care';
           break;
         case 'memory-care':
-          tagFilter = 'memory care community';
+          searchKeyword = 'memory care senior facility';
           break;
         case 'skilled-nursing':
-          tagFilter = 'skilled nursing facility';
+          searchKeyword = 'skilled nursing facility';
           break;
         case 'independent-living':
-          tagFilter = 'independent living community';
+          searchKeyword = 'independent living senior';
           break;
         case 'all':
-          // No tag filter
+          searchKeyword = 'senior care';
           break;
-      }
-      
-      // Apply the tag filter
-      if (tagFilter) {
-        window.SP.filter('tags', tagFilter);
-      } else {
-        window.SP.filter('tags', null);
       }
       
       // Set location filter
-      let locationFilter = '';
-      
       switch(location) {
         case 'san-francisco':
-          locationFilter = 'San Francisco';
+          locationQuery = 'San Francisco, CA';
           break;
         case 'oakland':
-          locationFilter = 'Oakland';
+          locationQuery = 'Oakland, CA';
           break;
         case 'san-jose':
-          locationFilter = 'San Jose';
+          locationQuery = 'San Jose, CA';
           break;
         case 'palo-alto':
-          locationFilter = 'Palo Alto';
+          locationQuery = 'Palo Alto, CA';
           break;
         case 'los-angeles':
-          locationFilter = 'Los Angeles';
+          locationQuery = 'Los Angeles, CA';
           break;
         case 'all':
-          // No location filter
+          // Use current map center
           break;
       }
       
-      // Apply the location filter
-      if (locationFilter) {
-        window.SP.filter('city', locationFilter);
-      } else {
-        window.SP.filter('city', null);
-      }
-      
+      // Store the new filter settings
       setActiveFilter(filterType);
       setActiveLocation(location);
+      
+      // Perform search with the combined filters
+      performMapSearch(searchKeyword, locationQuery);
     } catch (error) {
       console.error('Error applying map filters:', error);
       toast.error('Failed to update map filters');
+    }
+  };
+  
+  // Perform a search on the map
+  const performMapSearch = (keyword: string, location: string) => {
+    if (!mapInstanceRef.current) return;
+    
+    const map = mapInstanceRef.current;
+    clearMarkers();
+    
+    if (location) {
+      // First geocode the location
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: location }, (results, status) => {
+        if (status === "OK" && results && results.length > 0) {
+          const locationCoords = results[0].geometry.location;
+          map.setCenter(locationCoords);
+          
+          // Now search for places
+          const service = new google.maps.places.PlacesService(map);
+          service.nearbySearch(
+            {
+              location: locationCoords,
+              radius: 10000,
+              keyword: keyword,
+              type: 'health'
+            },
+            (results, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                // Create markers
+                const newMarkers: google.maps.Marker[] = [];
+                const bounds = new google.maps.LatLngBounds();
+                
+                results.forEach(place => {
+                  if (!place.geometry || !place.geometry.location) return;
+                  
+                  const marker = new google.maps.Marker({
+                    position: place.geometry.location,
+                    map,
+                    title: place.name,
+                    animation: google.maps.Animation.DROP
+                  });
+                  
+                  const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                      <div>
+                        <h3 style="font-weight: bold; margin-bottom: 5px;">${place.name}</h3>
+                        <div style="margin-bottom: 5px;">${place.vicinity || ''}</div>
+                        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                          <span style="color: #FFC107; margin-right: 5px;">★</span>
+                          <span>${place.rating || 'No rating'}</span>
+                        </div>
+                      </div>
+                    `
+                  });
+                  
+                  marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                  });
+                  
+                  bounds.extend(place.geometry.location);
+                  newMarkers.push(marker);
+                });
+                
+                // Store markers reference
+                markersRef.current = newMarkers;
+                
+                // Adjust map to show all markers
+                if (newMarkers.length > 0) {
+                  map.fitBounds(bounds);
+                }
+              } else {
+                console.warn('Places search returned no results:', status);
+              }
+            }
+          );
+        } else {
+          console.error('Geocoding failed:', status);
+        }
+      });
+    } else {
+      // Just search using the keyword around the current map center
+      const service = new google.maps.places.PlacesService(map);
+      const center = map.getCenter();
+      
+      if (center) {
+        service.nearbySearch(
+          {
+            location: center,
+            radius: 10000,
+            keyword: keyword,
+            type: 'health'
+          },
+          (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+              // Create markers (same code as above)
+              const newMarkers: google.maps.Marker[] = [];
+              const bounds = new google.maps.LatLngBounds();
+              
+              results.forEach(place => {
+                if (!place.geometry || !place.geometry.location) return;
+                
+                const marker = new google.maps.Marker({
+                  position: place.geometry.location,
+                  map,
+                  title: place.name,
+                  animation: google.maps.Animation.DROP
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                  content: `
+                    <div>
+                      <h3 style="font-weight: bold; margin-bottom: 5px;">${place.name}</h3>
+                      <div style="margin-bottom: 5px;">${place.vicinity || ''}</div>
+                      <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                        <span style="color: #FFC107; margin-right: 5px;">★</span>
+                        <span>${place.rating || 'No rating'}</span>
+                      </div>
+                    </div>
+                  `
+                });
+                
+                marker.addListener('click', () => {
+                  infoWindow.open(map, marker);
+                });
+                
+                bounds.extend(place.geometry.location);
+                newMarkers.push(marker);
+              });
+              
+              // Store markers reference
+              markersRef.current = newMarkers;
+              
+              // Adjust map to show all markers
+              if (newMarkers.length > 0) {
+                map.fitBounds(bounds);
+              }
+            }
+          }
+        );
+      }
     }
   };
 
@@ -516,9 +749,29 @@ const AvaMapPage = () => {
                   </div>
                 
                   {/* Map Container */}
-                  <div id="storepoint-container" data-map-id="1645a775a8a422" className="h-full rounded-b-lg"></div>
+                  {isPro ? (
+                    <div ref={mapRef} className="h-full rounded-b-lg"></div>
+                  ) : (
+                    <div className="h-full rounded-b-lg bg-slate-100 flex items-center justify-center">
+                      <div className="text-center p-6">
+                        <MapPin className="h-12 w-12 text-healthcare-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium mb-2">Interactive Map</h3>
+                        <p className="text-muted-foreground mb-4 max-w-xs">
+                          Upgrade to Pro to access our interactive map and search for senior care facilities near you.
+                        </p>
+                        <Button asChild className="bg-healthcare-600">
+                          <a href="/profile">Upgrade to Pro</a>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
+              {isPro && (
+                <div className="text-center text-xs text-muted-foreground py-2 border-t">
+                  Map data ©{new Date().getFullYear()} Google
+                </div>
+              )}
             </Card>
           </div>
         </div>
@@ -535,22 +788,16 @@ const AvaMapPage = () => {
         </div>
       </div>
 
-      {/* StorePoint Script */}
-      <Helmet>
-        <script async src="https://cse.google.com/cse.js?cx=d5643f65b5a2e487f"></script>
-        <script>
-          {`
-            (function(){
-              var a=document.createElement("script");
-              a.type="text/javascript";
-              a.async=!0;
-              a.src="https://cdn.storepoint.co/api/v1/js/1645a775a8a422.js";
-              var b=document.getElementsByTagName("script")[0];
-              b.parentNode.insertBefore(a,b);
-            }());
-          `}
-        </script>
-      </Helmet>
+      {/* Google Maps Script - will load conditionally in useEffect */}
+      {isPro && (
+        <Helmet>
+          <script>
+            {`
+              window.initMap = function() {};
+            `}
+          </script>
+        </Helmet>
+      )}
     </div>
   );
 };
