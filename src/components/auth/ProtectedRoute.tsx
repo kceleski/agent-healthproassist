@@ -10,8 +10,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
   
-  // Bypass authentication in development
-  const isDevelopment = true; // Set this to true to bypass auth checks
+  // Use environment variable to bypass authentication in development
+  const isDevelopment = import.meta.env.VITE_DEVELOPMENT_MODE === true;
 
   if (loading) {
     return (
