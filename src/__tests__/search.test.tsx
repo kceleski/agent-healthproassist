@@ -36,8 +36,8 @@ describe('SearchPage', () => {
     );
     
     // Check that main components are rendered
-    expect(screen.getByText('Search Senior Care Facilities')).toBeInTheDocument();
-    expect(screen.getByText('Find the perfect facility by location, care type, and amenities')).toBeInTheDocument();
+    expect(screen.getByText('Search Senior Care Facilities')).toBeDefined();
+    expect(screen.getByText('Find the perfect facility by location, care type, and amenities')).toBeDefined();
   });
   
   it('handles search submission correctly', async () => {
