@@ -1,14 +1,20 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
 
 User-agent: *
-Allow: /
+Disallow: /
+
+# Allow access to only the public landing page
+Allow: /$
+Allow: /index.html$
+Allow: /favicon.ico$
+Allow: /assets/
+
+# Only allow necessary bots with strict paths
+User-agent: Googlebot
+Allow: /$
+Allow: /index.html$
+Disallow: /
+
+User-agent: Bingbot
+Allow: /$
+Allow: /index.html$
+Disallow: /
