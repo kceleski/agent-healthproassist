@@ -14,7 +14,8 @@ interface SubscriptionToggleProps {
 
 export const SubscriptionToggle = ({ className }: SubscriptionToggleProps) => {
   const { user, updateDemoTier } = useAuth();
-  const [isPro, setIsPro] = useState(user?.subscription === "premium");
+  const currentTier = user?.subscription === "premium" || user?.demoTier === "premium" ? "premium" : "basic";
+  const [isPro, setIsPro] = useState(currentTier === "premium");
   
   const handleToggleChange = (checked: boolean) => {
     const newTier = checked ? "premium" : "basic";

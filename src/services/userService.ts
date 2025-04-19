@@ -63,7 +63,6 @@ export async function updateUserSubscription(userId: string, tier: 'free' | 'bas
     
     if (error) throw error;
     
-    toast.success(`Subscription updated to ${tier}`);
     return true;
   } catch (error) {
     console.error('Error updating subscription:', error);
@@ -110,5 +109,23 @@ export async function markNotificationAsRead(notificationId: string) {
   } catch (error) {
     console.error('Error marking notification as read:', error);
     return false;
+  }
+}
+
+// Fetch user profile data
+export async function fetchUserProfile(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (error) throw error;
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return null;
   }
 }
