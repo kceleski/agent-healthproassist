@@ -4,18 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
-import { Search, MapPin } from "lucide-react";
+import { Search, Bot } from "lucide-react";
 import { saveSearchResult } from '@/services/searchResultService';
+import { useAISearch } from '@/hooks/useAISearch';
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
@@ -39,10 +31,41 @@ const amenities = [
 const SearchPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  
   const [location, setLocation] = useState<string>("Phoenix, AZ");
   const [selectedCareType, setSelectedCareType] = useState<string>("any");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [aiQuery, setAIQuery] = useState<string>("");
+
+  const handleFiltersUpdate = (filters: any) => {
+    if (filters.location) {
+      setLocation(filters.location);
+    }
+    if (filters.facilityType && filters.facilityType.length > 0) {
+      setSelectedCareType(filters.facilityType[0]);
+    }
+    if (filters.amenities) {
+      setSelectedAmenities(filters.amenities);
+    }
+    
+    handleSearch(filters);
+  };
+
+  const { sendMessage, isConnected } = useAISearch(handleFiltersUpdate);
+
+  const handleAISearch = () => {
+    if (!aiQuery.trim()) {
+      toast({
+        title: "Query Required",
+        description: "Please enter what you're looking for",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    sendMessage(aiQuery);
+  };
 
   const toggleAmenity = (amenityId: string) => {
     setSelectedAmenities((current) => {
@@ -54,7 +77,7 @@ const SearchPage = () => {
     });
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (filters: any) => {
     if (!location) {
       toast({
         title: "Location Required",
@@ -113,6 +136,38 @@ const SearchPage = () => {
           </p>
         </div>
         
+        <Card>
+          <CardHeader>
+            <CardTitle>AI-Assisted Search</CardTitle>
+            <CardDescription>
+              Describe what you're looking for and our AI will help find the right facilities
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                placeholder="E.g., 'Looking for memory care facilities in Phoenix with activities for seniors'"
+                value={aiQuery}
+                onChange={(e) => setAIQuery(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                onClick={handleAISearch}
+                disabled={!isConnected || isLoading}
+                className="bg-healthcare-600 hover:bg-healthcare-700"
+              >
+                <Bot className="h-4 w-4 mr-2" />
+                Ask AI
+              </Button>
+            </div>
+            {!isConnected && (
+              <p className="text-sm text-muted-foreground">
+                Connecting to AI assistant...
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Search Criteria</CardTitle>
