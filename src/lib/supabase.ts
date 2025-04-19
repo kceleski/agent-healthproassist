@@ -1,11 +1,9 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './database.types';
 
-// Use constants instead of environment variables - these are already available in src/integrations/supabase/client.ts
-// Taking values from the actual project configuration
-const supabaseUrl = "https://zpfaojrmcozacnsnwmra.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmFvanJtY296YWNuc253bXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDI1NjYsImV4cCI6MjA1Nzg3ODU2Nn0.p6zCt1HzmKCkBHbairGysWtWo22d6m2rJY3q3yE58gc";
+// Use environment variables for Supabase configuration
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient<Database>(
   supabaseUrl,
