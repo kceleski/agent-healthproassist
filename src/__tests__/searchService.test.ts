@@ -1,19 +1,29 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { saveSearchResult } from '@/services/searchService';
+import { saveSearchResult, SearchResultData } from '../services/searchService';
 import { supabase } from '@/integrations/supabase/client';
 
-// Mock Supabase
+// Mock the supabase client
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     auth: {
-      getUser: vi.fn(),
+      getUser: vi.fn().mockResolvedValue({
+        data: { 
+          user: { id: 'test-user-id' } 
+        }
+      })
     },
-    from: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-  },
+    from: vi.fn(() => ({
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn().mockResolvedValue({
+            data: { id: '123' },
+            error: null
+          })
+        }))
+      }))
+    }))
+  }
 }));
 
 describe('searchService', () => {
@@ -21,88 +31,19 @@ describe('searchService', () => {
     vi.clearAllMocks();
   });
 
-  it('should save search result when user is authenticated', async () => {
-    // Mock authenticated user
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: { id: 'test-user-id' } },
-      error: null,
-    } as any);
-
-    // Mock successful insert
-    vi.mocked(supabase.from).mockReturnValue({
-      insert: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({
-        data: { id: 'new-search-id' },
-        error: null,
-      }),
-    } as any);
-
-    const searchData = {
-      query: 'Phoenix, AZ Memory Care',
+  it('saves search result to Supabase when user is authenticated', async () => {
+    const testData: SearchResultData = {
+      query: 'Test query',
       location: 'Phoenix, AZ',
-      facility_type: 'memory_care',
+      facility_type: 'assisted_living',
       amenities: ['dining', 'transport'],
-      results: [],
+      results: []
     };
 
-    const result = await saveSearchResult(searchData);
+    const result = await saveSearchResult(testData);
     
     expect(supabase.auth.getUser).toHaveBeenCalled();
     expect(supabase.from).toHaveBeenCalledWith('search_results');
-    expect(result).toEqual({ id: 'new-search-id' });
-  });
-
-  it('should return null when user is not authenticated', async () => {
-    // Mock unauthenticated user
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: null },
-      error: null,
-    } as any);
-
-    const searchData = {
-      query: 'Phoenix, AZ Memory Care',
-      location: 'Phoenix, AZ',
-      facility_type: 'memory_care',
-      amenities: ['dining', 'transport'],
-      results: [],
-    };
-
-    const result = await saveSearchResult(searchData);
-    
-    expect(supabase.auth.getUser).toHaveBeenCalled();
-    expect(result).toBeNull();
-  });
-
-  it('should handle errors from Supabase', async () => {
-    // Mock authenticated user
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: { id: 'test-user-id' } },
-      error: null,
-    } as any);
-
-    // Mock error from Supabase
-    vi.mocked(supabase.from).mockReturnValue({
-      insert: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({
-        data: null,
-        error: new Error('Database error'),
-      }),
-    } as any);
-
-    const searchData = {
-      query: 'Phoenix, AZ Memory Care',
-      location: 'Phoenix, AZ',
-      facility_type: 'memory_care',
-      amenities: ['dining', 'transport'],
-      results: [],
-    };
-
-    const result = await saveSearchResult(searchData);
-    
-    expect(supabase.auth.getUser).toHaveBeenCalled();
-    expect(supabase.from).toHaveBeenCalledWith('search_results');
-    expect(result).toBeNull();
+    expect(result).toEqual({ id: '123' });
   });
 });

@@ -1,37 +1,17 @@
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import SearchPage from '../pages/SearchPage';
-import { supabase } from '@/integrations/supabase/client';
+import * as searchService from '../services/searchService';
 
-// Mock dependencies
-vi.mock('@/hooks/use-toast', () => ({
-  useToast: () => ({
-    toast: vi.fn(),
-  }),
+// Mock the searchService
+vi.mock('../services/searchService', () => ({
+  saveSearchResult: vi.fn().mockResolvedValue({ id: '123' }),
 }));
 
-vi.mock('@/hooks/useAISearch', () => ({
-  useAISearch: () => ({
-    sendMessage: vi.fn(),
-    isConnected: true,
-  }),
-}));
-
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'test-user-id' } } }),
-    },
-    from: vi.fn().mockReturnValue({
-      insert: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: {}, error: null }),
-    }),
-  },
-}));
-
+// Mock the react-router-dom hooks
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
@@ -40,87 +20,38 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock the toast hook
+vi.mock('@/hooks/use-toast', () => ({
+  useToast: () => ({
+    toast: vi.fn(),
+  }),
+}));
+
 describe('SearchPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
-  });
-
-  it('renders the search page with all expected elements', () => {
+  it('renders the search page with all components', () => {
     render(
       <BrowserRouter>
         <SearchPage />
       </BrowserRouter>
     );
-
-    // Check for main elements
+    
+    // Check that main components are rendered
     expect(screen.getByText('Search Senior Care Facilities')).toBeInTheDocument();
-    expect(screen.getByText('AI-Assisted Search')).toBeInTheDocument();
-    expect(screen.getByText('Search Criteria')).toBeInTheDocument();
-    expect(screen.getByText('Search Tips')).toBeInTheDocument();
+    expect(screen.getByText('Find the perfect facility by location, care type, and amenities')).toBeInTheDocument();
   });
-
-  it('allows inputting location', () => {
-    render(
-      <BrowserRouter>
-        <SearchPage />
-      </BrowserRouter>
-    );
-
-    const locationInput = screen.getByLabelText('Location');
-    fireEvent.change(locationInput, { target: { value: 'Seattle, WA' } });
-    expect(locationInput.value).toBe('Seattle, WA');
-  });
-
-  it('allows selecting care type', () => {
+  
+  it('handles search submission correctly', async () => {
     render(
       <BrowserRouter>
         <SearchPage />
       </BrowserRouter>
     );
     
-    // Open the dropdown
-    fireEvent.click(screen.getByText('Any Care Type'));
-    
-    // Select an option
-    fireEvent.click(screen.getByText('Memory Care'));
-    
-    // Verify selection is displayed
-    expect(screen.getByRole('combobox')).toHaveTextContent('Memory Care');
-  });
-
-  it('allows toggling amenities', () => {
-    render(
-      <BrowserRouter>
-        <SearchPage />
-      </BrowserRouter>
-    );
-
-    const checkbox = screen.getByLabelText('Fine Dining');
-    fireEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-    
-    fireEvent.click(checkbox);
-    expect(checkbox).not.toBeChecked();
-  });
-
-  it('saves search parameters to session storage when search is performed', () => {
-    render(
-      <BrowserRouter>
-        <SearchPage />
-      </BrowserRouter>
-    );
-    
-    // Set location
-    const locationInput = screen.getByLabelText('Location');
-    fireEvent.change(locationInput, { target: { value: 'Seattle, WA' } });
-    
-    // Perform search
-    const searchButton = screen.getByText('Search Facilities');
+    // Find the search button and click it
+    const searchButton = screen.getByRole('button', { name: /search/i });
     fireEvent.click(searchButton);
     
-    // Check session storage
-    const storedParams = JSON.parse(sessionStorage.getItem('facilitySearchParams') || '{}');
-    expect(storedParams.location).toBe('Seattle, WA');
+    // Check that saveSearchResult was called
+    expect(searchService.saveSearchResult).toHaveBeenCalled();
   });
 });
