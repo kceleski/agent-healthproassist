@@ -78,7 +78,8 @@ const DashboardLayout = () => {
 
   const menuItems = isPro ? proMenuItems : basicMenuItems;
 
-  const SidebarContent = () => (
+  // Create a separate functional component for the sidebar content
+  const SidebarContents = () => (
     <>
       <SidebarHeader className="p-4">
         <div className="flex items-center">
@@ -148,13 +149,13 @@ const DashboardLayout = () => {
       {isMobile ? (
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetContent side="left" className="w-[80%] p-0">
-            <SidebarContent />
+            <SidebarContents />
           </SheetContent>
         </Sheet>
       ) : (
         <SidebarProvider defaultOpen={!isMobile}>
           <Sidebar>
-            <SidebarContent />
+            <SidebarContents />
           </Sidebar>
         </SidebarProvider>
       )}
