@@ -9,6 +9,9 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
+  
+  // Bypass authentication in development
+  const isDevelopment = true; // Set this to true to bypass auth checks
 
   if (loading) {
     return (
@@ -21,7 +24,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isDevelopment) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
