@@ -7,24 +7,23 @@ import NotificationsTab from "./tabs/NotificationsTab";
 import BioTab from "./tabs/BioTab";
 import FinishTab from "./tabs/FinishTab";
 import { Progress } from "@/components/ui/progress";
+import { UserProfile } from "@/types/profile";
 
-type PreferencesType = {
-  defaultLocation: string;
-  notifications: {
-    email: boolean;
-    sms: boolean;
-    inApp: boolean;
+export interface WelcomeTabsProps {
+  preferences: {
+    notification_preferences: {
+      email: boolean;
+      sms: boolean;
+      inApp: boolean;
+    };
+    communication_preferences: {
+      receiveUpdates: boolean;
+      receiveReferrals: boolean;
+      allowContactSharing: boolean;
+    };
+    bio?: string;
+    default_location?: string;
   };
-  bio: string;
-  communicationPreferences: {
-    receiveUpdates: boolean;
-    receiveReferrals: boolean;
-    allowContactSharing: boolean;
-  };
-};
-
-interface WelcomeTabsProps {
-  preferences: PreferencesType;
   loading: boolean;
   onInputChange: (field: string, value: string) => void;
   onNotificationChange: (field: "email" | "sms" | "inApp", value: boolean) => void;
@@ -72,8 +71,8 @@ const WelcomeTabs = ({
       
       <TabsContent value="location">
         <LocationTab 
-          defaultLocation={preferences.defaultLocation}
-          onLocationChange={(value) => onInputChange("defaultLocation", value)}
+          defaultLocation={preferences.default_location || ""}
+          onLocationChange={(value) => onInputChange("default_location", value)}
           onBack={() => handleTabChange("welcome")}
           onContinue={() => handleTabChange("notifications")}
         />
@@ -81,8 +80,8 @@ const WelcomeTabs = ({
       
       <TabsContent value="notifications">
         <NotificationsTab 
-          notifications={preferences.notifications}
-          communicationPreferences={preferences.communicationPreferences}
+          notifications={preferences.notification_preferences}
+          communicationPreferences={preferences.communication_preferences}
           onNotificationChange={onNotificationChange}
           onCommunicationPrefChange={onCommunicationPrefChange}
           onBack={() => handleTabChange("location")}
@@ -92,7 +91,7 @@ const WelcomeTabs = ({
       
       <TabsContent value="bio">
         <BioTab 
-          bio={preferences.bio}
+          bio={preferences.bio || ""}
           onBioChange={(value) => onInputChange("bio", value)}
           onBack={() => handleTabChange("notifications")}
           onContinue={() => handleTabChange("finish")}

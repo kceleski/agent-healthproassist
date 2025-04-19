@@ -11,6 +11,7 @@ interface AddToTaskButtonProps extends Omit<ButtonProps, 'onClick'> {
   priority?: 'low' | 'medium' | 'high';
   redirectAfterAdd?: boolean;
   onTaskAdded?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; // Add onClick prop
 }
 
 const AddToTaskButton = ({ 
@@ -18,12 +19,19 @@ const AddToTaskButton = ({
   priority = 'medium', 
   redirectAfterAdd = false,
   onTaskAdded,
+  onClick,
   ...props 
 }: AddToTaskButtonProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleAddToTasks = async () => {
+  const handleAddToTasks = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Allow external onClick handler to be called if provided
+    if (onClick) {
+      onClick(e);
+      return;
+    }
+    
     if (!user?.id) {
       toast.error("You must be logged in to add tasks");
       return;

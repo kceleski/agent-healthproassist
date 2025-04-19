@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ const TodoList = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null);
   const [newTodo, setNewTodo] = useState<Omit<TodoItem, 'id' | 'completed' | 'created_at'>>({
-    user_id: '',
+    user_id: user?.id || '',
     title: '',
     description: '',
     priority: 'medium',
@@ -36,6 +37,8 @@ const TodoList = () => {
 
   useEffect(() => {
     if (user?.id) {
+      // Update the user_id in newTodo when the user changes
+      setNewTodo(prev => ({ ...prev, user_id: user.id }));
       loadTodos();
     }
   }, [user]);
@@ -155,6 +158,7 @@ const TodoList = () => {
     }
     
     setNewTodo({
+      user_id: user.id,
       title: action,
       priority,
       due_date: new Date().toISOString(),

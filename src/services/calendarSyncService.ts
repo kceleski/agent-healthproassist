@@ -1,6 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/lib/database.types';
+import { supabase } from '@/lib/supabase';
 
 export type CalendarProvider = 'google' | 'outlook' | 'apple';
 
@@ -40,7 +39,17 @@ export const getConnectedCalendars = async (userId: string): Promise<CalendarSyn
       .eq('user_id', userId);
 
     if (error) throw error;
-    return data || [];
+    
+    // Ensure the provider is of type CalendarProvider
+    const validProviders: CalendarProvider[] = ['google', 'outlook', 'apple'];
+    const calendars: CalendarSync[] = (data || []).map(item => ({
+      ...item,
+      provider: validProviders.includes(item.provider as any) 
+        ? (item.provider as CalendarProvider) 
+        : 'google' // default fallback
+    }));
+    
+    return calendars;
   } catch (error) {
     console.error('Error fetching connected calendars:', error);
     return [];

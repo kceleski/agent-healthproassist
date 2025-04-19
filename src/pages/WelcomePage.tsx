@@ -50,6 +50,18 @@ const WelcomePage = () => {
     }
   };
   
+  // Create a preferences object that matches what WelcomeTabs expects
+  const preferences = profile || {
+    notification_preferences: { email: true, sms: false, inApp: true },
+    communication_preferences: {
+      receiveUpdates: true,
+      receiveReferrals: true,
+      allowContactSharing: false
+    },
+    bio: "",
+    default_location: ""
+  };
+  
   return (
     <div className="container mx-auto px-4 py-10 max-w-4xl">
       <Card className="border-none shadow-lg">
@@ -62,16 +74,7 @@ const WelcomePage = () => {
         
         <CardContent className="p-6">
           <WelcomeTabs 
-            preferences={profile || {
-              notification_preferences: { email: true, sms: false, inApp: true },
-              communication_preferences: {
-                receiveUpdates: true,
-                receiveReferrals: true,
-                allowContactSharing: false
-              },
-              bio: "",
-              default_location: ""
-            }}
+            preferences={preferences}
             loading={isLoading}
             onInputChange={handleInputChange}
             onNotificationChange={handleNotificationChange}
