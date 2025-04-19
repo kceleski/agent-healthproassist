@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet";
 import { Label } from "@/components/ui/label";
-import { MapPin } from "lucide-react";
+import { MapPin, Search, Bot } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,6 +16,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { useAISearch } from '@/hooks/useAISearch';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent 
+} from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
@@ -34,6 +43,38 @@ const amenities = [
   { id: "medical", label: "24/7 Medical Staff" },
   { id: "rehab", label: "Rehabilitation Services" },
 ];
+
+// Function to save search result
+const saveSearchResult = async (searchData) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      console.warn('No authenticated user. Search results not saved.');
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from('search_results')
+      .insert({
+        query: searchData.query,
+        location: searchData.location,
+        facility_type: searchData.facility_type,
+        amenities: searchData.amenities,
+        results: JSON.stringify(searchData.results),
+        user_id: user.id
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    return data;
+  } catch (error) {
+    console.error('Error saving search results:', error);
+    return null;
+  }
+};
 
 const SearchPage = () => {
   const { toast } = useToast();
