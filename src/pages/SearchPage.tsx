@@ -1,32 +1,16 @@
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet";
-import { Label } from "@/components/ui/label";
-import { MapPin, Search, Bot } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
-import { useAISearch } from '@/hooks/useAISearch';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent 
-} from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { AISearchCard } from "@/components/search/AISearchCard";
+import { SearchCriteriaCard } from "@/components/search/SearchCriteriaCard";
+import { SearchTipsCard } from "@/components/search/SearchTipsCard";
+import { saveSearchResult } from "@/services/searchService";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
+// Define care types and amenities
 const careTypes = [
   { id: "any", label: "Any Care Type" },
   { id: "assisted_living", label: "Assisted Living" },
@@ -44,38 +28,6 @@ const amenities = [
   { id: "rehab", label: "Rehabilitation Services" },
 ];
 
-// Function to save search result
-const saveSearchResult = async (searchData) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      console.warn('No authenticated user. Search results not saved.');
-      return null;
-    }
-
-    const { data, error } = await supabase
-      .from('search_results')
-      .insert({
-        query: searchData.query,
-        location: searchData.location,
-        facility_type: searchData.facility_type,
-        amenities: searchData.amenities,
-        results: JSON.stringify(searchData.results),
-        user_id: user.id
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    
-    return data;
-  } catch (error) {
-    console.error('Error saving search results:', error);
-    return null;
-  }
-};
-
 const SearchPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -84,8 +36,19 @@ const SearchPage = () => {
   const [selectedCareType, setSelectedCareType] = useState<string>("any");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [aiQuery, setAIQuery] = useState<string>("");
 
+  // Toggle amenity selection
+  const toggleAmenity = (amenityId: string) => {
+    setSelectedAmenities((current) => {
+      if (current.includes(amenityId)) {
+        return current.filter((id) => id !== amenityId);
+      } else {
+        return [...current, amenityId];
+      }
+    });
+  };
+
+  // Handle AI filter updates
   const handleFiltersUpdate = (filters: any) => {
     if (filters.location) {
       setLocation(filters.location);
@@ -100,32 +63,8 @@ const SearchPage = () => {
     handleSearch(filters);
   };
 
-  const { sendMessage, isConnected } = useAISearch(handleFiltersUpdate);
-
-  const handleAISearch = () => {
-    if (!aiQuery.trim()) {
-      toast({
-        title: "Query Required",
-        description: "Please enter what you're looking for",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    sendMessage(aiQuery);
-  };
-
-  const toggleAmenity = (amenityId: string) => {
-    setSelectedAmenities((current) => {
-      if (current.includes(amenityId)) {
-        return current.filter((id) => id !== amenityId);
-      } else {
-        return [...current, amenityId];
-      }
-    });
-  };
-
-  const handleSearch = async (filters: any) => {
+  // Handle search submission
+  const handleSearch = async (filters?: any) => {
     if (!location) {
       toast({
         title: "Location Required",
@@ -135,38 +74,53 @@ const SearchPage = () => {
       return;
     }
 
-    let query = location;
+    setIsLoading(true);
     
-    if (selectedCareType !== "any") {
-      const careTypeLabel = careTypes.find(type => type.id === selectedCareType)?.label;
-      query += ` ${careTypeLabel}`;
+    try {
+      let query = location;
+      
+      if (selectedCareType !== "any") {
+        const careTypeLabel = careTypes.find(type => type.id === selectedCareType)?.label;
+        query += ` ${careTypeLabel}`;
+      }
+      
+      if (selectedAmenities.length > 0) {
+        const amenityLabels = selectedAmenities.map(id => 
+          amenities.find(amenity => amenity.id === id)?.label
+        ).join(" ");
+        query += ` ${amenityLabels}`;
+      }
+      
+      query += " senior care facility";
+      
+      // Store search parameters in session storage for the map page
+      sessionStorage.setItem('facilitySearchParams', JSON.stringify({
+        query,
+        location,
+        careType: selectedCareType,
+        amenities: selectedAmenities,
+      }));
+      
+      // Save search result to database
+      await saveSearchResult({
+        query,
+        location,
+        facility_type: selectedCareType,
+        amenities: selectedAmenities,
+        results: []
+      });
+      
+      // Navigate to map page
+      navigate('/map');
+    } catch (error) {
+      console.error('Error during search:', error);
+      toast({
+        title: "Search Failed",
+        description: "An error occurred while searching. Please try again.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
     }
-    
-    if (selectedAmenities.length > 0) {
-      const amenityLabels = selectedAmenities.map(id => 
-        amenities.find(amenity => amenity.id === id)?.label
-      ).join(" ");
-      query += ` ${amenityLabels}`;
-    }
-    
-    query += " senior care facility";
-    
-    sessionStorage.setItem('facilitySearchParams', JSON.stringify({
-      query,
-      location,
-      careType: selectedCareType,
-      amenities: selectedAmenities,
-    }));
-    
-    await saveSearchResult({
-      query,
-      location,
-      facility_type: selectedCareType,
-      amenities: selectedAmenities,
-      results: []
-    });
-    
-    navigate('/map');
   };
 
   return (
@@ -184,129 +138,22 @@ const SearchPage = () => {
           </p>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>AI-Assisted Search</CardTitle>
-            <CardDescription>
-              Describe what you're looking for and our AI will help find the right facilities
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="E.g., 'Looking for memory care facilities in Phoenix with activities for seniors'"
-                value={aiQuery}
-                onChange={(e) => setAIQuery(e.target.value)}
-                className="flex-1"
-              />
-              <Button 
-                onClick={handleAISearch}
-                disabled={!isConnected || isLoading}
-                className="bg-healthcare-600 hover:bg-healthcare-700"
-              >
-                <Bot className="h-4 w-4 mr-2" />
-                Ask AI
-              </Button>
-            </div>
-            {!isConnected && (
-              <p className="text-sm text-muted-foreground">
-                Connecting to AI assistant...
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <AISearchCard onFiltersUpdate={handleFiltersUpdate} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Search Criteria</CardTitle>
-            <CardDescription>
-              Enter details below to find suitable facilities for your clients
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="location" className="text-healthcare-700">Location</Label>
-                <div className="relative">
-                  <Input
-                    id="location"
-                    placeholder="City, state or zip code"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="pr-8"
-                  />
-                  <MapPin className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="care-type" className="text-healthcare-700">Care Type</Label>
-                <Select
-                  value={selectedCareType}
-                  onValueChange={setSelectedCareType}
-                >
-                  <SelectTrigger id="care-type" className="border-healthcare-200">
-                    <SelectValue placeholder="Select care type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {careTypes.map((type) => (
-                      <SelectItem key={type.id} value={type.id}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div>
-              <Label className="text-healthcare-700 mb-3 block">Amenities</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {amenities.map((amenity) => (
-                  <div key={amenity.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`amenity-${amenity.id}`}
-                      checked={selectedAmenities.includes(amenity.id)}
-                      onCheckedChange={() => toggleAmenity(amenity.id)}
-                    />
-                    <label
-                      htmlFor={`amenity-${amenity.id}`}
-                      className="text-sm font-medium leading-none text-healthcare-700 cursor-pointer"
-                    >
-                      {amenity.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleSearch}
-              disabled={isLoading}
-              className="w-full sm:w-auto bg-healthcare-600 hover:bg-healthcare-700 text-white"
-              size="lg"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              {isLoading ? "Searching..." : "Search Facilities"}
-            </Button>
-          </CardContent>
-        </Card>
+        <SearchCriteriaCard 
+          location={location}
+          setLocation={setLocation}
+          selectedCareType={selectedCareType}
+          setSelectedCareType={setSelectedCareType}
+          selectedAmenities={selectedAmenities}
+          toggleAmenity={toggleAmenity}
+          handleSearch={() => handleSearch()}
+          isLoading={isLoading}
+          careTypes={careTypes}
+          amenities={amenities}
+        />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Search Tips</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Be specific with location (city, state, or zip code)</li>
-              <li>Select a care type to narrow down results</li>
-              <li>Choose amenities that are important to your client</li>
-              <li>Results will be shown on an interactive map</li>
-              <li>You can save facilities to your favorites list for future reference</li>
-            </ul>
-          </CardContent>
-        </Card>
+        <SearchTipsCard />
       </div>
     </div>
   );
