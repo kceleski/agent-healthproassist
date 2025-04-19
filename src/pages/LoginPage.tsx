@@ -52,12 +52,7 @@ const LoginPage = () => {
       });
       navigate(from);
     } catch (error) {
-      toast({
-        title: "Sign in failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
-    } finally {
+      // Error handling is done in the login function
       setIsLoading(false);
     }
   };

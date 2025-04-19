@@ -58,12 +58,7 @@ const RegisterPage = () => {
       });
       navigate("/dashboard");
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "There was an error creating your account. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+      // Error handling is done in the register function
       setIsLoading(false);
     }
   };

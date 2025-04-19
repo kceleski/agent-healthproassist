@@ -6,7 +6,11 @@ export const createTodoItem = async (todo: Omit<TodoItem, 'completed' | 'created
   try {
     const { data, error } = await supabase
       .from('tasks')
-      .insert([{ ...todo, completed: false, status: 'active' }])
+      .insert([{ 
+        ...todo, 
+        status: 'active',
+        completed: false 
+      }])
       .select()
       .single();
 
@@ -132,3 +136,6 @@ export const generateAIRecommendations = async (userId: string): Promise<TodoIte
     return [];
   }
 };
+
+// Re-export the TodoItem type for other components to use
+export type { TodoItem } from '@/types/todo';

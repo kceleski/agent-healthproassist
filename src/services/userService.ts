@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Create or update a user in our users table after authentication
@@ -40,19 +40,11 @@ export async function syncUserData(userId: string, userData: { email: string, fu
         });
       
       if (error) throw error;
-      
-      // Create empty user profile
-      await supabase
-        .from('user_profiles')
-        .insert({
-          user_id: userId
-        });
     }
     
     return true;
   } catch (error) {
     console.error('Error syncing user data:', error);
-    toast.error('Failed to sync user data');
     return false;
   }
 }
