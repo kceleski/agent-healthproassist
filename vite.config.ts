@@ -8,11 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: [
+      'localhost', // Keep local development working
+      '*.lovableproject.com', // Allow all Lovable preview subdomains (e.g., 4f07c6e1-0bde-43a9-ae72-9d02c96356d2.lovableproject.com)
+    ],
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
