@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -180,11 +181,11 @@ const DashboardPage = () => {
   };
 
   const renderCalendarCard = () => (
-    <Card className="glass-card animate-zoom-in" style={{ animationDelay: '500ms' }}>
+    <Card className="glass-card animate-zoom-in h-full" style={{ animationDelay: '500ms' }}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Upcoming Appointments</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Upcoming Appointments</CardTitle>
             <CardDescription>Your scheduled meetings</CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild>
@@ -196,21 +197,22 @@ const DashboardPage = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {upcomingAppointments.map((appointment) => (
-            <div key={appointment.id} className="flex items-start gap-4 p-3 rounded-lg border">
-              <div className="bg-healthcare-100 text-healthcare-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                <Calendar className="h-5 w-5" />
+            <div key={appointment.id} className="flex items-start gap-3 p-2 sm:p-3 rounded-lg border">
+              <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center shrink-0">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-sm">{appointment.title}</h4>
-                <p className="text-xs text-muted-foreground mt-1">{appointment.date}</p>
-                <p className="text-xs mt-1">Client: {appointment.client}</p>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-xs sm:text-sm truncate">{appointment.title}</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
+                <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
               </div>
               <AddToTaskButton
                 actionText={`Prepare for ${appointment.title}`}
                 size="sm"
                 variant="outline"
+                className="hidden sm:flex"
               />
             </div>
           ))}
@@ -220,34 +222,34 @@ const DashboardPage = () => {
   );
 
   const renderNotificationsCard = () => (
-    <Card className="glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
+    <Card className="glass-card animate-zoom-in h-full" style={{ animationDelay: '400ms' }}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Notifications</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Notifications</CardTitle>
             <CardDescription>Recent updates and alerts</CardDescription>
           </div>
           <Button variant="outline" size="sm">
             <Bell className="h-3.5 w-3.5 mr-1" />
-            <span>Mark all read</span>
+            <span className="hidden sm:inline">Mark all read</span>
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {notifications.map((notification) => (
-            <div key={notification.id} className="flex items-start gap-4 p-3 rounded-lg border">
-              <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 
+            <div key={notification.id} className="flex items-start gap-3 p-2 sm:p-3 rounded-lg border">
+              <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center shrink-0 
                 ${notification.type === 'info' ? 'bg-blue-100 text-blue-700' : 
                   notification.type === 'reminder' ? 'bg-amber-100 text-amber-700' : 
                   notification.type === 'warning' ? 'bg-orange-100 text-orange-700' : 
                   'bg-green-100 text-green-700'}`}>
-                <Bell className="h-5 w-5" />
+                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <div>
-                <h4 className="font-medium text-sm">{notification.title}</h4>
-                <p className="text-xs text-muted-foreground mt-1">{notification.message}</p>
-                <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-xs sm:text-sm truncate">{notification.title}</h4>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.message}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{notification.time}</p>
               </div>
             </div>
           ))}
@@ -261,42 +263,42 @@ const DashboardPage = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Recent Referrals</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Recent Referrals</CardTitle>
             <CardDescription>New client referrals requiring your attention</CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={handleViewAllReferrals}>
             <FileText className="h-3.5 w-3.5 mr-1" />
-            <span>View All</span>
+            <span className="hidden sm:inline">View All</span>
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-lg border overflow-hidden">
+      <CardContent className="p-0 sm:p-6">
+        <div className="rounded-lg border overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Client Name</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Age</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Needs</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Referred By</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Date</th>
-                <th className="text-xs font-medium text-muted-foreground text-left p-3">Action</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Client Name</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Age</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Needs</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden md:table-cell">Referred By</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden sm:table-cell">Date</th>
+                <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {recentReferrals.map((referral) => (
                 <tr key={referral.id} className="border-t hover:bg-muted/30 transition-colors">
-                  <td className="p-3 font-medium">{referral.name}</td>
-                  <td className="p-3">{referral.age}</td>
-                  <td className="p-3">
-                    <Badge variant="outline" className="bg-healthcare-50">
+                  <td className="p-2 sm:p-3 text-xs sm:text-sm font-medium truncate max-w-[100px] sm:max-w-none">{referral.name}</td>
+                  <td className="p-2 sm:p-3 text-xs sm:text-sm">{referral.age}</td>
+                  <td className="p-2 sm:p-3">
+                    <Badge variant="outline" className="bg-healthcare-50 text-xs">
                       {referral.needsType}
                     </Badge>
                   </td>
-                  <td className="p-3 hidden md:table-cell text-muted-foreground">{referral.referredBy}</td>
-                  <td className="p-3 hidden sm:table-cell text-muted-foreground">{referral.date}</td>
-                  <td className="p-3">
-                    <Button size="sm" variant="outline" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
+                  <td className="p-2 sm:p-3 hidden md:table-cell text-xs sm:text-sm text-muted-foreground">{referral.referredBy}</td>
+                  <td className="p-2 sm:p-3 hidden sm:table-cell text-xs sm:text-sm text-muted-foreground">{referral.date}</td>
+                  <td className="p-2 sm:p-3">
+                    <Button size="sm" variant="outline" className="text-xs h-7 px-2" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
                   </td>
                 </tr>
               ))}
@@ -308,27 +310,27 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="container mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+    <div className="px-1 sm:px-4 md:container mx-auto">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
         <SetupGuideButton />
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
         {stats.map((stat, i) => (
           <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between p-3 sm:pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
               {stat.icon}
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+            <CardContent className="px-3 pb-3 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
               <Link 
                 to={stat.link} 
-                className="text-healthcare-600 text-sm font-medium inline-flex items-center mt-3 hover:underline"
+                className="text-healthcare-600 text-xs sm:text-sm font-medium inline-flex items-center mt-2 hover:underline"
               >
                 View details
                 <ArrowUpRight className="ml-1 h-3 w-3" />
@@ -338,48 +340,51 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mt-3 sm:mt-6">
         {isPro ? (
           <>
             <Card className="lg:col-span-2 glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Recent Facilities</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Recent Facilities</CardTitle>
                     <CardDescription>Facilities you've recently interacted with</CardDescription>
                   </div>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/facilities">View all</Link>
+                    <Link to="/facilities">
+                      <span className="hidden sm:inline">View all</span>
+                      <ArrowUpRight className="h-3 w-3 sm:ml-1" />
+                    </Link>
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-lg border overflow-hidden">
+              <CardContent className="p-0 sm:p-6">
+                <div className="rounded-lg border overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3">Facility</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3">Type</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden sm:table-cell">Location</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-3 hidden md:table-cell">Last Contact</th>
+                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Facility</th>
+                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Type</th>
+                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden sm:table-cell">Location</th>
+                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden md:table-cell">Last Contact</th>
                       </tr>
                     </thead>
                     <tbody>
                       {recentFacilities.map((facility) => (
                         <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
-                          <td className="p-3">
-                            <Link to={`/facilities/${facility.id}`} className="font-medium text-healthcare-700 hover:underline">
+                          <td className="p-2 sm:p-3">
+                            <Link to={`/facilities/${facility.id}`} className="font-medium text-xs sm:text-sm text-healthcare-700 hover:underline truncate block max-w-[120px] sm:max-w-none">
                               {facility.name}
                             </Link>
                           </td>
-                          <td className="p-3 text-sm">{facility.type}</td>
-                          <td className="p-3 text-sm hidden sm:table-cell">
+                          <td className="p-2 sm:p-3 text-xs sm:text-sm">{facility.type}</td>
+                          <td className="p-2 sm:p-3 text-xs hidden sm:table-cell">
                             <div className="flex items-center">
                               <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
                               {facility.location}
                             </div>
                           </td>
-                          <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
+                          <td className="p-2 sm:p-3 text-xs text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -397,7 +402,7 @@ const DashboardPage = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 mt-3 sm:mt-6">
         {renderReferralsCard()}
       </div>
     </div>
