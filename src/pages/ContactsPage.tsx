@@ -36,7 +36,6 @@ import { Separator } from "@/components/ui/separator";
 import AddSeniorClientForm from "@/components/contacts/AddSeniorClientForm";
 import { useAuth } from "@/context/AuthContext";
 
-// Sample Senior Clients Data
 const initialSeniorsData = [
   {
     id: "1",
@@ -134,7 +133,6 @@ const initialSeniorsData = [
   }
 ];
 
-// Sample Facility Contacts Data
 const facilityContactsData = [
   {
     id: "1",
@@ -285,130 +283,398 @@ const ContactsPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Contacts</h1>
-        <p className="text-muted-foreground">
-          {isProUser 
-            ? "Manage your senior clients and facility contacts in one place."
-            : "Manage your senior clients in one place."}
-        </p>
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-4">
-        <form onSubmit={handleSearch} className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder={isProUser 
-                ? "Search contacts by name, location, or facility..."
-                : "Search senior clients by name, location, or needs..."}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        </form>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-            <Button className="bg-healthcare-600" onClick={() => setIsContactDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              {isProUser ? "Add Contact" : "Add Senior Client"}
-            </Button>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Add New Senior Client</DialogTitle>
-                <DialogDescription>
-                  Fill out the form below to add a new senior client to your contacts.
-                </DialogDescription>
-              </DialogHeader>
-              <AddSeniorClientForm 
-                onClose={() => setIsContactDialogOpen(false)}
-                onSave={handleSaveSeniorClient}
-              />
-            </DialogContent>
-          </Dialog>
+    <div className="container max-w-full py-4 px-2 sm:py-6 sm:px-4 animate-fade-in">
+      <div className="space-y-3 sm:space-y-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Contacts</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            {isProUser 
+              ? "Manage your senior clients and facility contacts in one place."
+              : "Manage your senior clients in one place."}
+          </p>
         </div>
-      </div>
 
-      {isProUser ? (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-between items-center mb-4">
-            <TabsList>
-              <TabsTrigger value="seniors" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Senior Clients
-              </TabsTrigger>
-              <TabsTrigger value="facilities" className="flex items-center gap-2">
-                <Building className="h-4 w-4" />
-                Facility Contacts
-              </TabsTrigger>
-            </TabsList>
-            <Button variant="outline" size="sm" onClick={handleApplyFilters}>
-              <Filter className="h-3 w-3 mr-1" />
-              <span className="hidden sm:inline">Filter</span>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+          <form onSubmit={handleSearch} className="flex-1 w-full">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search contacts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10 w-full"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </form>
+          <div className="flex gap-2 justify-end">
+            <Button 
+              variant="outline" 
+              onClick={handleExport}
+              className="flex-none"
+              size="sm"
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
+            <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
+              <Button 
+                className="bg-healthcare-600 flex-none" 
+                onClick={() => setIsContactDialogOpen(true)}
+                size="sm"
+              >
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">
+                  {isProUser ? "Add Contact" : "Add Senior"}
+                </span>
+              </Button>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Add New Senior Client</DialogTitle>
+                  <DialogDescription>
+                    Fill out the form below to add a new senior client to your contacts.
+                  </DialogDescription>
+                </DialogHeader>
+                <AddSeniorClientForm 
+                  onClose={() => setIsContactDialogOpen(false)}
+                  onSave={handleSaveSeniorClient}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
-          
-          <TabsContent value="seniors">
+        </div>
+
+        {isProUser ? (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <TabsList className="w-full sm:w-auto">
+                <TabsTrigger value="seniors" className="flex-1 sm:flex-none items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Senior Clients</span>
+                </TabsTrigger>
+                <TabsTrigger value="facilities" className="flex-1 sm:flex-none items-center gap-2">
+                  <Building className="h-4 w-4" />
+                  <span className="hidden sm:inline">Facility Contacts</span>
+                </TabsTrigger>
+              </TabsList>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleApplyFilters}
+                className="hidden sm:flex"
+              >
+                <Filter className="h-3 w-3 mr-2" />
+                Filter
+              </Button>
+            </div>
+            
+            <TabsContent value="seniors">
+              {filteredSeniors.length === 0 ? (
+                <Card className="glass-card">
+                  <CardContent className="flex flex-col items-center justify-center p-4 sm:p-8">
+                    <Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-4" />
+                    <h3 className="text-base sm:text-lg font-medium mb-1">No senior clients found</h3>
+                    <p className="text-muted-foreground mb-4 text-sm text-center">
+                      Try adjusting your search terms or add a new senior client.
+                    </p>
+                    <Button onClick={() => setIsContactDialogOpen(true)} size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Senior Client
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredSeniors.map((senior, index) => (
+                    <Card 
+                      key={senior.id} 
+                      className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" 
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <CardContent className="p-0">
+                        <div className="p-3 sm:p-4 flex items-center gap-3">
+                          <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
+                            <AvatarImage src={senior.image} />
+                            <AvatarFallback>{senior.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <h3 className="font-medium text-base sm:text-lg truncate">
+                                {senior.name}
+                              </h3>
+                              <Badge 
+                                className={
+                                  senior.status === "Active" 
+                                    ? "bg-green-100 text-green-700 text-xs" 
+                                    : "bg-blue-100 text-blue-700 text-xs"
+                                }
+                              >
+                                {senior.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center text-xs sm:text-sm text-muted-foreground mt-1">
+                              <User className="h-3 w-3 mr-1" />
+                              <span>{senior.age} years old</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="px-3 sm:px-4 pb-3">
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
+                            {senior.careNeeds.map((need, i) => (
+                              <Badge 
+                                key={i} 
+                                variant="outline" 
+                                className="bg-healthcare-50 text-healthcare-700 text-xs font-normal"
+                              >
+                                {need}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className="space-y-2 text-xs sm:text-sm mb-4">
+                            <div className="flex items-start">
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <span className="line-clamp-1">{senior.location}</span>
+                            </div>
+                            <div className="flex items-start">
+                              <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <a 
+                                href={`mailto:${senior.email}`} 
+                                className="truncate hover:text-healthcare-600 transition-colors"
+                              >
+                                {senior.email}
+                              </a>
+                            </div>
+                            <div className="flex items-start">
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <a 
+                                href={`tel:${senior.phone}`} 
+                                className="hover:text-healthcare-600 transition-colors"
+                              >
+                                {senior.phone}
+                              </a>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <CalendarDays className="h-3 w-3 mr-1" />
+                              <span className="line-clamp-1">
+                                Last: {senior.lastContact}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={() => openContactDetails(senior)}>
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                                  <DropdownMenuItem>Log Interaction</DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-destructive">
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8"
+                                onClick={() => openContactDetails(senior)}
+                              >
+                                View
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="facilities">
+              {filteredFacilities.length === 0 ? (
+                <Card className="glass-card">
+                  <CardContent className="flex flex-col items-center justify-center p-4 sm:p-8">
+                    <Building className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-4" />
+                    <h3 className="text-base sm:text-lg font-medium mb-1">No facility contacts found</h3>
+                    <p className="text-muted-foreground mb-4 text-sm text-center">
+                      Try adjusting your search terms or add a new facility contact.
+                    </p>
+                    <Button onClick={() => setIsContactDialogOpen(true)} size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Facility Contact
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredFacilities.map((contact, index) => (
+                    <Card key={contact.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
+                      <CardContent className="p-0">
+                        <div className="p-3 sm:p-4 flex items-center gap-3">
+                          <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
+                            <AvatarImage src={contact.image} />
+                            <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-base sm:text-lg truncate">{contact.name}</h3>
+                            <div className="flex items-center text-sm text-muted-foreground mt-0.5">
+                              <span className="truncate">{contact.title}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="px-3 sm:px-4 pb-3">
+                          <Badge variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal mb-3">
+                            {contact.facilityType}
+                          </Badge>
+                          
+                          <div className="space-y-2 text-sm mb-4">
+                            <div className="flex items-start">
+                              <Building className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <span className="font-medium">{contact.facility}</span>
+                            </div>
+                            <div className="flex items-start">
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <span>{contact.location}</span>
+                            </div>
+                            <div className="flex items-start">
+                              <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <a 
+                                href={`mailto:${contact.email}`} 
+                                className="truncate hover:text-healthcare-600 transition-colors"
+                              >
+                                {contact.email}
+                              </a>
+                            </div>
+                            <div className="flex items-start">
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
+                              <a 
+                                href={`tel:${contact.phone}`} 
+                                className="hover:text-healthcare-600 transition-colors"
+                              >
+                                {contact.phone}
+                              </a>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <CalendarDays className="h-3 w-3 mr-1" />
+                              <span className="line-clamp-1">
+                                Last: {contact.lastContact}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={() => openContactDetails(contact)}>
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                                  <DropdownMenuItem>Log Interaction</DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-destructive">
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8"
+                                onClick={() => openContactDetails(contact)}
+                              >
+                                View
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <div>
             {filteredSeniors.length === 0 ? (
               <Card className="glass-card">
-                <CardContent className="flex flex-col items-center justify-center p-8">
-                  <Users className="h-10 w-10 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-1">No senior clients found</h3>
-                  <p className="text-muted-foreground mb-4">
+                <CardContent className="flex flex-col items-center justify-center p-4 sm:p-8">
+                  <Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium mb-1">No senior clients found</h3>
+                  <p className="text-muted-foreground mb-4 text-sm text-center">
                     Try adjusting your search terms or add a new senior client.
                   </p>
-                  <Button onClick={() => setIsContactDialogOpen(true)}>
+                  <Button onClick={() => setIsContactDialogOpen(true)} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Senior Client
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredSeniors.map((senior, index) => (
                   <Card key={senior.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
                     <CardContent className="p-0">
-                      <div className="p-4 flex items-center gap-4">
-                        <Avatar className="h-16 w-16">
+                      <div className="p-3 sm:p-4 flex items-center gap-3">
+                        <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                           <AvatarImage src={senior.image} />
                           <AvatarFallback>{senior.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-medium text-lg truncate">{senior.name}</h3>
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-medium text-base sm:text-lg truncate">{senior.name}</h3>
                             <Badge 
-                              className={senior.status === "Active" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}
+                              className={senior.status === "Active" ? "bg-green-100 text-green-700 text-xs" : "bg-blue-100 text-blue-700 text-xs"}
                             >
                               {senior.status}
                             </Badge>
                           </div>
-                          <div className="flex items-center text-sm text-muted-foreground mt-1">
+                          <div className="flex items-center text-xs sm:text-sm text-muted-foreground mt-1">
                             <User className="h-3 w-3 mr-1" />
                             <span>{senior.age} years old</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="px-4 pb-3">
-                        <div className="flex flex-wrap gap-2 mb-3">
+                      <div className="px-3 sm:px-4 pb-3">
+                        <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
                           {senior.careNeeds.map((need, i) => (
-                            <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal">
+                            <Badge 
+                              key={i} 
+                              variant="outline" 
+                              className="bg-healthcare-50 text-healthcare-700 text-xs font-normal"
+                            >
                               {need}
                             </Badge>
                           ))}
@@ -442,7 +708,9 @@ const ContactsPage = () => {
                         <div className="flex items-center justify-between pt-3 border-t">
                           <div className="flex items-center text-xs text-muted-foreground">
                             <CalendarDays className="h-3 w-3 mr-1" />
-                            Last contact: {senior.lastContact}
+                            <span className="line-clamp-1">
+                              Last: {senior.lastContact}
+                            </span>
                           </div>
                           <div className="flex gap-2">
                             <DropdownMenu>
@@ -481,400 +749,170 @@ const ContactsPage = () => {
                 ))}
               </div>
             )}
-          </TabsContent>
-          
-          <TabsContent value="facilities">
-            {filteredFacilities.length === 0 ? (
-              <Card className="glass-card">
-                <CardContent className="flex flex-col items-center justify-center p-8">
-                  <Building className="h-10 w-10 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-1">No facility contacts found</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Try adjusting your search terms or add a new facility contact.
-                  </p>
-                  <Button onClick={() => setIsContactDialogOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Facility Contact
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredFacilities.map((contact, index) => (
-                  <Card key={contact.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-                    <CardContent className="p-0">
-                      <div className="p-4 flex items-center gap-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage src={contact.image} />
-                          <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-lg truncate">{contact.name}</h3>
-                          <div className="flex items-center text-sm text-muted-foreground mt-0.5">
-                            <span className="truncate">{contact.title}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="px-4 pb-3">
-                        <Badge variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal mb-3">
-                          {contact.facilityType}
-                        </Badge>
-                        
-                        <div className="space-y-2 text-sm mb-4">
-                          <div className="flex items-start">
-                            <Building className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                            <span className="font-medium">{contact.facility}</span>
-                          </div>
-                          <div className="flex items-start">
-                            <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                            <span>{contact.location}</span>
-                          </div>
-                          <div className="flex items-start">
-                            <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                            <a 
-                              href={`mailto:${contact.email}`} 
-                              className="truncate hover:text-healthcare-600 transition-colors"
-                            >
-                              {contact.email}
-                            </a>
-                          </div>
-                          <div className="flex items-start">
-                            <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                            <a 
-                              href={`tel:${contact.phone}`} 
-                              className="hover:text-healthcare-600 transition-colors"
-                            >
-                              {contact.phone}
-                            </a>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-3 border-t">
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <CalendarDays className="h-3 w-3 mr-1" />
-                            Last contact: {contact.lastContact}
-                          </div>
-                          <div className="flex gap-2">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => openContactDetails(contact)}>
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>Edit Contact</DropdownMenuItem>
-                                <DropdownMenuItem>Log Interaction</DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive">
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="h-8"
-                              onClick={() => openContactDetails(contact)}
-                            >
-                              View
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <div>
-          {filteredSeniors.length === 0 ? (
-            <Card className="glass-card">
-              <CardContent className="flex flex-col items-center justify-center p-8">
-                <Users className="h-10 w-10 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-1">No senior clients found</h3>
-                <p className="text-muted-foreground mb-4">
-                  Try adjusting your search terms or add a new senior client.
-                </p>
-                <Button onClick={() => setIsContactDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Senior Client
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredSeniors.map((senior, index) => (
-                <Card key={senior.id} className="glass-card overflow-hidden transition-all duration-300 hover:shadow-lg animate-zoom-in" style={{ animationDelay: `${index * 100}ms` }}>
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center gap-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage src={senior.image} />
-                        <AvatarFallback>{senior.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-lg truncate">{senior.name}</h3>
-                          <Badge 
-                            className={senior.status === "Active" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}
-                          >
-                            {senior.status}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground mt-1">
-                          <User className="h-3 w-3 mr-1" />
-                          <span>{senior.age} years old</span>
-                        </div>
-                      </div>
-                    </div>
+          </div>
+        )}
+
+        {selectedContact && (
+          <Sheet open={isDetailDrawerOpen} onOpenChange={setIsDetailDrawerOpen}>
+            <SheetContent className="sm:max-w-md overflow-y-auto">
+              <SheetHeader className="mb-4">
+                <SheetTitle>Contact Details</SheetTitle>
+                <SheetDescription>
+                  View detailed information about this contact
+                </SheetDescription>
+              </SheetHeader>
+              
+              <div className="space-y-6">
+                <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src={selectedContact.image} />
+                    <AvatarFallback>{selectedContact.name?.charAt(0) || "?"}</AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="text-xl font-semibold">{selectedContact.name}</h3>
                     
-                    <div className="px-4 pb-3">
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {senior.careNeeds.map((need, i) => (
-                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700 text-xs font-normal">
+                    {selectedContact.facility ? (
+                      <div className="mt-1">
+                        <span className="text-muted-foreground">{selectedContact.title}</span>
+                        <Badge className="ml-2 bg-healthcare-50 text-healthcare-700">
+                          {selectedContact.facilityType}
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-2">
+                        <span className="text-muted-foreground">{selectedContact.age} years old</span>
+                        <Badge className={
+                          selectedContact.status === "Active" 
+                            ? "bg-green-100 text-green-700" 
+                            : "bg-blue-100 text-blue-700"
+                        }>
+                          {selectedContact.status}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                {selectedContact.facility ? (
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-muted-foreground mb-1 block">Facility</Label>
+                      <p className="font-medium">{selectedContact.facility}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-muted-foreground mb-1 block">Care Needs</Label>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {selectedContact.careNeeds?.map((need: string, i: number) => (
+                          <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700">
                             {need}
                           </Badge>
                         ))}
                       </div>
-                      
-                      <div className="space-y-2 text-sm mb-4">
-                        <div className="flex items-start">
-                          <MapPin className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                          <span>{senior.location}</span>
-                        </div>
-                        <div className="flex items-start">
-                          <Mail className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                          <a 
-                            href={`mailto:${senior.email}`} 
-                            className="truncate hover:text-healthcare-600 transition-colors"
-                          >
-                            {senior.email}
-                          </a>
-                        </div>
-                        <div className="flex items-start">
-                          <Phone className="h-4 w-4 text-muted-foreground mr-2 shrink-0 mt-0.5" />
-                          <a 
-                            href={`tel:${senior.phone}`} 
-                            className="hover:text-healthcare-600 transition-colors"
-                          >
-                            {senior.phone}
-                          </a>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between pt-3 border-t">
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <CalendarDays className="h-3 w-3 mr-1" />
-                          Last contact: {senior.lastContact}
-                        </div>
-                        <div className="flex gap-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => openContactDetails(senior)}>
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>Edit Contact</DropdownMenuItem>
-                              <DropdownMenuItem>Log Interaction</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive">
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8"
-                            onClick={() => openContactDetails(senior)}
-                          >
-                            View
-                          </Button>
-                        </div>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {selectedContact && (
-        <Sheet open={isDetailDrawerOpen} onOpenChange={setIsDetailDrawerOpen}>
-          <SheetContent className="sm:max-w-md overflow-y-auto">
-            <SheetHeader className="mb-4">
-              <SheetTitle>Contact Details</SheetTitle>
-              <SheetDescription>
-                View detailed information about this contact
-              </SheetDescription>
-            </SheetHeader>
-            
-            <div className="space-y-6">
-              <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={selectedContact.image} />
-                  <AvatarFallback>{selectedContact.name?.charAt(0) || "?"}</AvatarFallback>
-                </Avatar>
+                    
+                    <div>
+                      <Label className="text-muted-foreground mb-1 block">Budget</Label>
+                      <p>{selectedContact.budget}</p>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="text-xl font-semibold">{selectedContact.name}</h3>
-                  
-                  {selectedContact.facility ? (
-                    <div className="mt-1">
-                      <span className="text-muted-foreground">{selectedContact.title}</span>
-                      <Badge className="ml-2 bg-healthcare-50 text-healthcare-700">
-                        {selectedContact.facilityType}
-                      </Badge>
+                <div>
+                  <Label className="text-muted-foreground mb-1 block">Contact Information</Label>
+                  <div className="space-y-3 mt-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span>{selectedContact.location}</span>
                     </div>
-                  ) : (
-                    <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                      <span className="text-muted-foreground">{selectedContact.age} years old</span>
-                      <Badge className={
-                        selectedContact.status === "Active" 
-                          ? "bg-green-100 text-green-700" 
-                          : "bg-blue-100 text-blue-700"
-                      }>
-                        {selectedContact.status}
-                      </Badge>
+                    
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <a 
+                        href={`mailto:${selectedContact.email}`}
+                        className="text-healthcare-600 hover:underline"
+                      >
+                        {selectedContact.email}
+                      </a>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              <Separator />
-              
-              {selectedContact.facility ? (
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-muted-foreground mb-1 block">Facility</Label>
-                    <p className="font-medium">{selectedContact.facility}</p>
+                    
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <a 
+                        href={`tel:${selectedContact.phone}`}
+                        className="text-healthcare-600 hover:underline"
+                      >
+                        {selectedContact.phone}
+                      </a>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
+                
+                {selectedContact.familyContacts && (
                   <div>
-                    <Label className="text-muted-foreground mb-1 block">Care Needs</Label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {selectedContact.careNeeds?.map((need: string, i: number) => (
-                        <Badge key={i} variant="outline" className="bg-healthcare-50 text-healthcare-700">
-                          {need}
-                        </Badge>
+                    <Label className="text-muted-foreground mb-1 block">Family Contacts</Label>
+                    <div className="space-y-4 mt-2">
+                      {selectedContact.familyContacts.map((contact: any, index: number) => (
+                        <div key={index} className="bg-muted/50 p-3 rounded-md">
+                          <div className="font-medium">{contact.name}</div>
+                          <div className="text-sm text-muted-foreground mb-2">
+                            {contact.relationship}
+                          </div>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-3 w-3 text-muted-foreground" />
+                              <a 
+                                href={`mailto:${contact.email}`}
+                                className="text-healthcare-600 hover:underline"
+                              >
+                                {contact.email}
+                              </a>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-3 w-3 text-muted-foreground" />
+                              <a 
+                                href={`tel:${contact.phone}`}
+                                className="text-healthcare-600 hover:underline"
+                              >
+                                {contact.phone}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
-                  
+                )}
+                
+                {selectedContact.notes && (
                   <div>
-                    <Label className="text-muted-foreground mb-1 block">Budget</Label>
-                    <p>{selectedContact.budget}</p>
+                    <Label className="text-muted-foreground mb-1 block">Notes</Label>
+                    <div className="bg-muted/50 p-3 rounded-md mt-1">
+                      <p className="text-sm">{selectedContact.notes}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-              
-              <div>
-                <Label className="text-muted-foreground mb-1 block">Contact Information</Label>
-                <div className="space-y-3 mt-2">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{selectedContact.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <a 
-                      href={`mailto:${selectedContact.email}`}
-                      className="text-healthcare-600 hover:underline"
-                    >
-                      {selectedContact.email}
-                    </a>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <a 
-                      href={`tel:${selectedContact.phone}`}
-                      className="text-healthcare-600 hover:underline"
-                    >
-                      {selectedContact.phone}
-                    </a>
-                  </div>
+                )}
+                
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <CalendarDays className="h-4 w-4 mr-1" />
+                  Last contact: {selectedContact.lastContact}
                 </div>
               </div>
               
-              {selectedContact.familyContacts && (
-                <div>
-                  <Label className="text-muted-foreground mb-1 block">Family Contacts</Label>
-                  <div className="space-y-4 mt-2">
-                    {selectedContact.familyContacts.map((contact: any, index: number) => (
-                      <div key={index} className="bg-muted/50 p-3 rounded-md">
-                        <div className="font-medium">{contact.name}</div>
-                        <div className="text-sm text-muted-foreground mb-2">
-                          {contact.relationship}
-                        </div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-3 w-3 text-muted-foreground" />
-                            <a 
-                              href={`mailto:${contact.email}`}
-                              className="text-healthcare-600 hover:underline"
-                            >
-                              {contact.email}
-                            </a>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-3 w-3 text-muted-foreground" />
-                            <a 
-                              href={`tel:${contact.phone}`}
-                              className="text-healthcare-600 hover:underline"
-                            >
-                              {contact.phone}
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {selectedContact.notes && (
-                <div>
-                  <Label className="text-muted-foreground mb-1 block">Notes</Label>
-                  <div className="bg-muted/50 p-3 rounded-md mt-1">
-                    <p className="text-sm">{selectedContact.notes}</p>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex items-center text-sm text-muted-foreground">
-                <CalendarDays className="h-4 w-4 mr-1" />
-                Last contact: {selectedContact.lastContact}
-              </div>
-            </div>
-            
-            <SheetFooter className="mt-6">
-              <Button className="w-full" variant="outline" onClick={() => setIsDetailDrawerOpen(false)}>
-                Close
-              </Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
-      )}
+              <SheetFooter className="mt-6">
+                <Button className="w-full" variant="outline" onClick={() => setIsDetailDrawerOpen(false)}>
+                  Close
+                </Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        )}
+      </div>
     </div>
   );
 };
