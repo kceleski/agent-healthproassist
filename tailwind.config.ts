@@ -65,6 +65,13 @@ export default {
 					800: '#2d43b0',
 					900: '#283a8a',
 				},
+				holo: {
+					blue: '#38bdf8',
+					purple: '#7c3aed',
+					cyan: '#22d3ee',
+					pink: '#e879f9',
+					glow: 'rgba(56, 189, 248, 0.5)'
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -93,12 +100,22 @@ export default {
 					to: { transform: 'translateY(0)', opacity: '1' }
 				},
 				'zoom-in': {
-          from: { transform: 'scale(0.95)', opacity: '0' },
-          to: { transform: 'scale(1)', opacity: '1' }
-        },
+					from: { transform: 'scale(0.95)', opacity: '0' },
+					to: { transform: 'scale(1)', opacity: '1' }
+				},
 				'float': {
-					'0%, 100%': { transform: 'translateY(0)' },
-					'50%': { transform: 'translateY(-5px)' }
+					'0%, 100%': { transform: 'translateY(0) translateZ(0)' },
+					'50%': { transform: 'translateY(-5px) translateZ(10px)' }
+				},
+				'holographic-shine': {
+					'0%, 100%': { 
+						backgroundPosition: '0% 0%',
+						opacity: 0.3
+					},
+					'50%': { 
+						backgroundPosition: '100% 100%',
+						opacity: 0.5
+					}
 				}
 			},
 			animation: {
@@ -108,7 +125,8 @@ export default {
 				'fade-out': 'fade-out 0.5s ease-out',
 				'slide-in': 'slide-in 0.5s ease-out',
 				'zoom-in': 'zoom-in 0.3s ease-out',
-				'float': 'float 6s ease-in-out infinite'
+				'float': 'float 6s ease-in-out infinite',
+				'holographic-shine': 'holographic-shine 8s infinite ease-in-out'
 			},
 			backdropFilter: {
         'none': 'none',
@@ -117,6 +135,8 @@ export default {
 			boxShadow: {
 				'soft': '0 4px 12px rgba(0, 0, 0, 0.05)',
 				'glass': '0 8px 32px rgba(0, 0, 0, 0.06)',
+				'holographic': '0 0 10px rgba(56, 189, 248, 0.3), 0 0 20px rgba(56, 189, 248, 0.1)',
+				'holographic-hover': '0 0 15px rgba(56, 189, 248, 0.5), 0 0 30px rgba(56, 189, 248, 0.2)'
 			}
 		}
 	},

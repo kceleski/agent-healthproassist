@@ -1,8 +1,10 @@
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Building, Users } from "lucide-react";
 import { ContactCard } from "./ContactCard";
+import { HolographicCard, HolographicCardContent } from "@/components/ui/holographic-card";
+import { HolographicButton } from "@/components/ui/holographic-button";
 
 interface ContactListProps {
   contacts: any[];
@@ -15,25 +17,25 @@ interface ContactListProps {
 export const ContactList = ({ contacts, onViewDetails, onAddContact, isPro = false, type = 'seniors' }: ContactListProps) => {
   if (contacts.length === 0) {
     return (
-      <Card className="glass-card">
-        <CardContent className="flex flex-col items-center justify-center p-4 sm:p-8">
+      <HolographicCard className="w-full">
+        <HolographicCardContent className="flex flex-col items-center justify-center p-6 sm:p-10">
           {type === 'facilities' ? (
-            <Building className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-4" />
+            <Building className="h-12 w-12 sm:h-16 sm:w-16 text-holo-blue mb-6 opacity-60 neon-glow" />
           ) : (
-            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-4" />
+            <Users className="h-12 w-12 sm:h-16 sm:w-16 text-holo-blue mb-6 opacity-60 neon-glow" />
           )}
-          <h3 className="text-base sm:text-lg font-medium mb-1">
+          <h3 className="text-lg sm:text-xl font-medium mb-2">
             No {type === 'facilities' ? 'facility contacts' : 'senior clients'} found
           </h3>
-          <p className="text-muted-foreground mb-4 text-sm text-center">
+          <p className="text-muted-foreground mb-6 text-center max-w-md">
             Try adjusting your search terms or add a new {type === 'facilities' ? 'facility contact' : 'senior client'}.
           </p>
-          <Button onClick={onAddContact} size="sm">
+          <HolographicButton onClick={onAddContact} variant="glowing">
             <Plus className="h-4 w-4 mr-2" />
             Add {type === 'facilities' ? 'Facility Contact' : 'Senior Client'}
-          </Button>
-        </CardContent>
-      </Card>
+          </HolographicButton>
+        </HolographicCardContent>
+      </HolographicCard>
     );
   }
 
@@ -45,6 +47,8 @@ export const ContactList = ({ contacts, onViewDetails, onAddContact, isPro = fal
           contact={contact}
           onViewDetails={onViewDetails}
           isPro={isPro}
+          style={{ animationDelay: `${index * 100}ms` }}
+          className="float-card"
         />
       ))}
     </div>
