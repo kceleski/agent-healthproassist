@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Filter, Download, Plus, Search, X } from "lucide-react";
+import { Filter, Download, Plus, Search, X, Users, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
