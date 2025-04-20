@@ -310,27 +310,33 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="px-1 sm:px-4 md:container mx-auto">
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
+    <div className="flex flex-col w-full min-h-screen p-4 space-y-6">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
         <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
         <SetupGuideButton />
       </div>
       
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+      {/* Stats Grid - Responsive grid that becomes single column on mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <Card key={i} className="glass-card animate-zoom-in" style={{ animationDelay: `${i * 100}ms` }}>
-            <CardHeader className="flex flex-row items-center justify-between p-3 sm:pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+          <Card 
+            key={i} 
+            className="glass-card animate-zoom-in transition-all duration-300 hover:shadow-lg"
+            style={{ animationDelay: `${i * 100}ms` }}
+          >
+            <CardHeader className="flex flex-row items-center justify-between p-4">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
               {stat.icon}
             </CardHeader>
-            <CardContent className="px-3 pb-3 pt-0">
-              <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
+            <CardContent className="p-4 pt-0">
+              <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
               <Link 
                 to={stat.link} 
-                className="text-healthcare-600 text-xs sm:text-sm font-medium inline-flex items-center mt-2 hover:underline"
+                className="text-healthcare-600 text-sm font-medium inline-flex items-center mt-2 hover:underline"
               >
                 View details
                 <ArrowUpRight className="ml-1 h-3 w-3" />
@@ -340,69 +346,83 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mt-3 sm:mt-6">
+      {/* Main Content Area - Flexible layout that adapts to screen size */}
+      <div className="flex flex-col lg:flex-row gap-6">
         {isPro ? (
           <>
-            <Card className="lg:col-span-2 glass-card animate-zoom-in" style={{ animationDelay: '400ms' }}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base sm:text-lg">Recent Facilities</CardTitle>
-                    <CardDescription>Facilities you've recently interacted with</CardDescription>
+            {/* Facilities Section - Takes 2/3 of the space on large screens */}
+            <div className="flex-grow lg:w-2/3">
+              <Card className="h-full glass-card animate-zoom-in">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">Recent Facilities</CardTitle>
+                      <CardDescription>Facilities you've recently interacted with</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/facilities">
+                        <span>View all</span>
+                        <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </Link>
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/facilities">
-                      <span className="hidden sm:inline">View all</span>
-                      <ArrowUpRight className="h-3 w-3 sm:ml-1" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0 sm:p-6">
-                <div className="rounded-lg border overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-muted/50">
-                      <tr>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Facility</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3">Type</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden sm:table-cell">Location</th>
-                        <th className="text-xs font-medium text-muted-foreground text-left p-2 sm:p-3 hidden md:table-cell">Last Contact</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recentFacilities.map((facility) => (
-                        <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
-                          <td className="p-2 sm:p-3">
-                            <Link to={`/facilities/${facility.id}`} className="font-medium text-xs sm:text-sm text-healthcare-700 hover:underline truncate block max-w-[120px] sm:max-w-none">
-                              {facility.name}
-                            </Link>
-                          </td>
-                          <td className="p-2 sm:p-3 text-xs sm:text-sm">{facility.type}</td>
-                          <td className="p-2 sm:p-3 text-xs hidden sm:table-cell">
-                            <div className="flex items-center">
-                              <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
-                              {facility.location}
-                            </div>
-                          </td>
-                          <td className="p-2 sm:p-3 text-xs text-muted-foreground hidden md:table-cell">{facility.lastContacted}</td>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-lg border overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="text-xs font-medium text-left p-3">Facility</th>
+                          <th className="text-xs font-medium text-left p-3">Type</th>
+                          <th className="text-xs font-medium text-left p-3 hidden md:table-cell">Location</th>
+                          <th className="text-xs font-medium text-left p-3 hidden lg:table-cell">Last Contact</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-            {renderCalendarCard()}
+                      </thead>
+                      <tbody>
+                        {recentFacilities.map((facility) => (
+                          <tr key={facility.id} className="border-t hover:bg-muted/30 transition-colors">
+                            <td className="p-3">
+                              <Link to={`/facilities/${facility.id}`} className="font-medium text-sm text-healthcare-700 hover:underline">
+                                {facility.name}
+                              </Link>
+                            </td>
+                            <td className="p-3 text-sm">{facility.type}</td>
+                            <td className="p-3 hidden md:table-cell">
+                              <div className="flex items-center text-sm">
+                                <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
+                                {facility.location}
+                              </div>
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground hidden lg:table-cell">{facility.lastContacted}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Calendar Section - Takes 1/3 of the space on large screens */}
+            <div className="lg:w-1/3">
+              {renderCalendarCard()}
+            </div>
           </>
         ) : (
           <>
-            {renderNotificationsCard()}
-            {renderCalendarCard()}
+            {/* Basic tier layout - Equal columns on large screens */}
+            <div className="lg:w-1/2">
+              {renderNotificationsCard()}
+            </div>
+            <div className="lg:w-1/2">
+              {renderCalendarCard()}
+            </div>
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 mt-3 sm:mt-6">
+      {/* Referrals Section - Full width */}
+      <div className="w-full">
         {renderReferralsCard()}
       </div>
     </div>
