@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -151,14 +152,14 @@ const DashboardLayout = () => {
         </Sheet>
       ) : (
         <SidebarProvider defaultOpen={!isMobile}>
-          <Sidebar>
+          <Sidebar className="h-screen flex-shrink-0">
             <SidebarContents />
           </Sidebar>
         </SidebarProvider>
       )}
       
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-1 flex flex-col overflow-hidden h-screen">
+        <header className="flex-shrink-0 sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-14 items-center px-4">
             {isMobile && (
               <Button 
@@ -181,8 +182,8 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto animate-fade-in">
-          <div className="p-4 md:p-6 h-full">
+        <main className="flex-1 overflow-auto h-[calc(100vh-3.5rem)]">
+          <div className="h-full">
             <Outlet />
           </div>
         </main>

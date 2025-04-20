@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, DollarSign, User, ArrowUpRight, Calendar, Globe, Users, Bell, FileText } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -8,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import AddToTaskButton from "@/components/todos/AddToTaskButton";
 import SetupGuideButton from "@/components/dashboard/SetupGuideButton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const DashboardPage = () => {
@@ -183,21 +181,18 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header Section - Taking minimal space */}
-      <div className="flex items-center justify-between py-2">
+    <div className="h-full flex flex-col p-4 md:p-6">
+      <div className="flex items-center justify-between py-2 mb-4">
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Dashboard</h1>
         <SetupGuideButton />
       </div>
       
-      {/* Main Content - No ScrollArea to avoid double scrolling */}
-      <div className="flex-1 flex flex-col gap-4">
-        {/* Stats Cards - Responsive grid */}
+      <div className="flex-1 flex flex-col gap-4 min-h-0">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat, i) => (
             <Card 
               key={i} 
-              className="glass-card animate-zoom-in transition-all duration-300 hover:shadow-lg h-full"
+              className="glass-card animate-zoom-in transition-all duration-300 hover:shadow-lg"
               style={{ animationDelay: `${i * 100}ms` }}
             >
               <CardHeader className="flex flex-row items-center justify-between p-3">
@@ -221,190 +216,192 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        {/* Dynamic Layout Based on User Tier - Better use of space */}
         {isPro ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
-            {/* Facilities Table - Takes more space */}
-            <Card className="glass-card lg:col-span-2 h-full flex flex-col">
-              <CardHeader className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base">Recent Facilities</CardTitle>
-                    <CardDescription>Facilities you've recently interacted with</CardDescription>
-                  </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/facilities">
-                      <span className="text-xs">View all</span>
-                      <ArrowUpRight className="h-3 w-3 ml-1" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0 overflow-hidden flex-1 flex flex-col">
-                <div className="flex-1 overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs font-medium w-[40%]">Facility</TableHead>
-                        <TableHead className="text-xs font-medium w-[20%]">Type</TableHead>
-                        <TableHead className="text-xs font-medium hidden md:table-cell w-[25%]">Location</TableHead>
-                        <TableHead className="text-xs font-medium hidden lg:table-cell w-[15%]">Last Contact</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentFacilities.map((facility) => (
-                        <TableRow key={facility.id}>
-                          <TableCell className="font-medium text-xs p-2">
-                            <Link to={`/facilities/${facility.id}`} className="text-healthcare-700 hover:underline">
-                              {facility.name}
-                            </Link>
-                          </TableCell>
-                          <TableCell className="text-xs p-2">{facility.type}</TableCell>
-                          <TableCell className="hidden md:table-cell text-xs p-2">
-                            <div className="flex items-center">
-                              <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
-                              {facility.location}
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden lg:table-cell text-xs text-muted-foreground p-2">{facility.lastContacted}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Calendar Card */}
-            <Card className="glass-card h-full flex flex-col">
-              <CardHeader className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base">Upcoming Appointments</CardTitle>
-                    <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
-                  </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/calendar" className="text-xs flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">Add</span>
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 pt-0 flex-1 overflow-auto">
-                <div className="space-y-2">
-                  {upcomingAppointments.map((appointment) => (
-                    <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
-                      <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
-                        <Calendar className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
-                        <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
-                      </div>
-                      <AddToTaskButton
-                        actionText={`Prepare for ${appointment.title}`}
-                        size="sm"
-                        variant="outline"
-                        className="hidden sm:flex"
-                      />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 flex-1">
+            <div className="lg:col-span-2 h-full flex flex-col">
+              <Card className="glass-card h-full flex flex-col">
+                <CardHeader className="p-3 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Recent Facilities</CardTitle>
+                      <CardDescription>Facilities you've recently interacted with</CardDescription>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/facilities">
+                        <span className="text-xs">View all</span>
+                        <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0 overflow-hidden flex-1 flex flex-col min-h-0">
+                  <div className="overflow-auto flex-1">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs font-medium w-[40%]">Facility</TableHead>
+                          <TableHead className="text-xs font-medium w-[20%]">Type</TableHead>
+                          <TableHead className="text-xs font-medium hidden md:table-cell w-[25%]">Location</TableHead>
+                          <TableHead className="text-xs font-medium hidden lg:table-cell w-[15%]">Last Contact</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {recentFacilities.map((facility) => (
+                          <TableRow key={facility.id}>
+                            <TableCell className="font-medium text-xs p-2">
+                              <Link to={`/facilities/${facility.id}`} className="text-healthcare-700 hover:underline">
+                                {facility.name}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-xs p-2">{facility.type}</TableCell>
+                            <TableCell className="hidden md:table-cell text-xs p-2">
+                              <div className="flex items-center">
+                                <Globe className="h-3 w-3 mr-1 text-muted-foreground" />
+                                {facility.location}
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell text-xs text-muted-foreground p-2">{facility.lastContacted}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="h-full flex flex-col">
+              <Card className="glass-card h-full flex flex-col">
+                <CardHeader className="p-3 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Upcoming Appointments</CardTitle>
+                      <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/calendar" className="text-xs flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        <span className="hidden sm:inline">Add</span>
+                      </Link>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
+                  <div className="space-y-2">
+                    {upcomingAppointments.map((appointment) => (
+                      <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
+                        <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
+                          <Calendar className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
+                          <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
+                        </div>
+                        <AddToTaskButton
+                          actionText={`Prepare for ${appointment.title}`}
+                          size="sm"
+                          variant="outline"
+                          className="hidden sm:flex"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-            {/* Notifications Card for Basic Tier */}
-            <Card className="glass-card h-full flex flex-col">
-              <CardHeader className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base">Notifications</CardTitle>
-                    <CardDescription className="text-xs">Recent updates and alerts</CardDescription>
-                  </div>
-                  <Button variant="outline" size="sm" className="text-xs">
-                    <Bell className="h-3 w-3 mr-1" />
-                    <span className="hidden sm:inline">Mark all read</span>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 pt-0 flex-1 overflow-auto">
-                <div className="space-y-2">
-                  {notifications.map((notification) => (
-                    <div key={notification.id} className="flex items-start gap-3 p-2 rounded-lg border">
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 
-                        ${notification.type === 'info' ? 'bg-blue-100 text-blue-700' : 
-                          notification.type === 'reminder' ? 'bg-amber-100 text-amber-700' : 
-                          notification.type === 'warning' ? 'bg-orange-100 text-orange-700' : 
-                          'bg-green-100 text-green-700'}`}>
-                        <Bell className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-xs truncate">{notification.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.message}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{notification.time}</p>
-                      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0 flex-1">
+            <div className="h-full flex flex-col">
+              <Card className="glass-card h-full flex flex-col">
+                <CardHeader className="p-3 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Notifications</CardTitle>
+                      <CardDescription className="text-xs">Recent updates and alerts</CardDescription>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <Button variant="outline" size="sm" className="text-xs">
+                      <Bell className="h-3 w-3 mr-1" />
+                      <span className="hidden sm:inline">Mark all read</span>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
+                  <div className="space-y-2">
+                    {notifications.map((notification) => (
+                      <div key={notification.id} className="flex items-start gap-3 p-2 rounded-lg border">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 
+                          ${notification.type === 'info' ? 'bg-blue-100 text-blue-700' : 
+                            notification.type === 'reminder' ? 'bg-amber-100 text-amber-700' : 
+                            notification.type === 'warning' ? 'bg-orange-100 text-orange-700' : 
+                            'bg-green-100 text-green-700'}`}>
+                          <Bell className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-xs truncate">{notification.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{notification.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            {/* Calendar Card for Basic Tier */}
-            <Card className="glass-card h-full flex flex-col">
-              <CardHeader className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base">Upcoming Appointments</CardTitle>
-                    <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
-                  </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/calendar" className="text-xs flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">Add</span>
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 pt-0 flex-1 overflow-auto">
-                <div className="space-y-2">
-                  {upcomingAppointments.map((appointment) => (
-                    <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
-                      <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
-                        <Calendar className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
-                        <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
-                      </div>
+            <div className="h-full flex flex-col">
+              <Card className="glass-card h-full flex flex-col">
+                <CardHeader className="p-3 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Upcoming Appointments</CardTitle>
+                      <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/calendar" className="text-xs flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        <span className="hidden sm:inline">Add</span>
+                      </Link>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
+                  <div className="space-y-2">
+                    {upcomingAppointments.map((appointment) => (
+                      <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
+                        <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
+                          <Calendar className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
+                          <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
-        {/* Referrals Table - Full Width with optimized display */}
-        <Card className="glass-card flex flex-col">
-          <CardHeader className="p-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Recent Referrals</CardTitle>
-                <CardDescription className="text-xs">New client referrals requiring your attention</CardDescription>
+        <div className="flex-shrink-0">
+          <Card className="glass-card flex flex-col">
+            <CardHeader className="p-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Recent Referrals</CardTitle>
+                  <CardDescription className="text-xs">New client referrals requiring your attention</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleViewAllReferrals} className="text-xs">
+                  <FileText className="h-3 w-3 mr-1" />
+                  <span className="hidden sm:inline">View All</span>
+                </Button>
               </div>
-              <Button variant="outline" size="sm" onClick={handleViewAllReferrals} className="text-xs">
-                <FileText className="h-3 w-3 mr-1" />
-                <span className="hidden sm:inline">View All</span>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0 overflow-hidden flex-1">
-            <div className="h-full overflow-auto">
+            </CardHeader>
+            <CardContent className="p-0 overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -435,9 +432,9 @@ const DashboardPage = () => {
                   ))}
                 </TableBody>
               </Table>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
