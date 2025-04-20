@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Filter, Download, Plus, Search, X, Users, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -209,13 +210,17 @@ const ContactsPage = () => {
             </TabsContent>
           </Tabs>
         ) : (
-          <ContactList
-            contacts={filteredSeniors}
-            onViewDetails={openContactDetails}
-            onAddContact={() => setIsContactDialogOpen(true)}
-            type="seniors"
-            isPro={isProUser}
-          />
+          <Tabs value="seniors" className="w-full">
+            <TabsContent value="seniors">
+              <ContactList
+                contacts={filteredSeniors}
+                onViewDetails={openContactDetails}
+                onAddContact={() => setIsContactDialogOpen(true)}
+                type="seniors"
+                isPro={isProUser}
+              />
+            </TabsContent>
+          </Tabs>
         )}
 
         <ContactDetails
