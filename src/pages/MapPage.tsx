@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,10 @@ import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Map, Search, Heart, ArrowLeft } from "lucide-react";
-
-const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
+import { WorkflowMapContainer } from '../components/map/WorkflowMapContainer';
+import { getLocations } from '../services/locationService';
+import { Location } from '../types/location';
+import { SERP_API_KEY } from '../lib/constants';
 
 // Define careTypes and amenities that were missing
 const careTypes = [
@@ -56,6 +58,9 @@ const MapPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Facility[]>([]);
   const [savedFacilities, setSavedFacilities] = useState<string[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [userRole, setUserRole] = useState<'provider' | 'specialist' | 'patient' | 'facility'>('patient');
+  const [useNewMap, setUseNewMap] = useState<boolean>(false);
 
   // Initialize map and load search params
   useEffect(() => {
@@ -71,7 +76,19 @@ const MapPage = () => {
       setSavedFacilities(JSON.parse(saved));
     }
 
-    if (isPro) {
+    // Load locations for the new map
+    const fetchLocations = async () => {
+      try {
+        const data = await getLocations();
+        setLocations(data);
+      } catch (err) {
+        console.error('Error fetching locations:', err);
+      }
+    };
+    
+    fetchLocations();
+
+    if (isPro && !useNewMap) {
       const checkSP = setInterval(function() {
         if (typeof window.SP !== 'undefined') {
           clearInterval(checkSP);
@@ -90,14 +107,14 @@ const MapPage = () => {
         clearInterval(checkSP);
       };
     }
-  }, [isPro]);
+  }, [isPro, useNewMap]);
 
   // Perform search when parameters are loaded
   useEffect(() => {
-    if (searchParams && searchParams.query) {
+    if (searchParams && searchParams.query && !useNewMap) {
       performSearch(searchParams.query);
     }
-  }, [searchParams]);
+  }, [searchParams, useNewMap]);
 
   // Save/unsave facility
   const toggleSaveFacility = (facility: Facility) => {
@@ -156,7 +173,7 @@ const MapPage = () => {
         
         setSearchResults(facilities);
         
-        if (window.SP && isPro) {
+        if (window.SP && isPro && !useNewMap) {
           window.SP.map.clearMarkers();
           
           facilities.forEach((facility: Facility) => {
@@ -179,7 +196,7 @@ const MapPage = () => {
             window.SP.map.setLocation(searchParams.location);
           }
         } else {
-          if (window.SP) {
+          if (window.SP && !useNewMap) {
             window.SP.map.setLocation(query);
           }
         }
@@ -189,7 +206,7 @@ const MapPage = () => {
         setSearchResults([]);
         toast.error("No facilities found matching your criteria.");
         
-        if (window.SP) {
+        if (window.SP && !useNewMap) {
           window.SP.map.setLocation(searchParams.location);
         }
       }
@@ -204,6 +221,21 @@ const MapPage = () => {
   const saveFacilityDetails = (facility: Facility) => {
     // Save to session storage for viewing details
     sessionStorage.setItem('currentFacility', JSON.stringify(facility));
+  };
+
+  // Handle role change (for demo purposes)
+  const handleRoleChange = (role: 'provider' | 'specialist' | 'patient' | 'facility') => {
+    setUserRole(role);
+  };
+
+  // Handle referral action
+  const handleReferralAction = async (action: string, locationId: string, data?: any) => {
+    // This would be an API call in a real implementation
+    console.log(`Referral action: ${action} for location ${locationId}`, data);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    toast.success(`${action} request submitted successfully`);
+    return true;
   };
 
   return (
@@ -236,226 +268,297 @@ const MapPage = () => {
         </div>
       </div>
       
-      {searchParams && (
-        <Alert className="mb-6 bg-healthcare-50">
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="font-medium">Search Query:</span> 
-            <span className="text-healthcare-700">{searchParams.location}</span>
-            
-            {searchParams.careType !== "any" && (
-              <Badge variant="outline" className="bg-healthcare-100">
-                {careTypes.find(type => type.id === searchParams.careType)?.label}
-              </Badge>
-            )}
-            
-            {searchParams.amenities && searchParams.amenities.map((amenityId: string) => (
-              <Badge key={amenityId} variant="outline" className="bg-healthcare-100">
-                {amenities.find(a => a.id === amenityId)?.label}
-              </Badge>
-            ))}
-          </div>
-          <AlertDescription>
-            <div className="flex mt-2 gap-2">
-              <Button 
-                asChild 
-                variant="outline" 
-                size="sm"
-              >
-                <Link to="/search">Modify Search</Link>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => searchParams && performSearch(searchParams.query)}
-                disabled={isLoading}
-              >
-                Refresh Results
-              </Button>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {!searchParams && (
-        <Alert className="mb-6">
-          <AlertDescription>
-            No search criteria found. Please return to the search page to start a new search.
-            <div className="mt-2">
-              <Button 
-                asChild 
-                variant="default" 
-                size="sm"
-              >
-                <Link to="/search">Go to Search</Link>
-              </Button>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-healthcare-50 p-4 rounded-lg mb-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-healthcare-600" />
-                Interactive Map
-              </h2>
-              {isPro ? (
-                <Badge className="bg-healthcare-600">Pro Map Features Enabled</Badge>
-              ) : (
-                <Badge variant="outline" className="text-healthcare-600">
-                  <Link to="/profile" className="hover:underline">Upgrade to Pro</Link>
-                </Badge>
-              )}
-            </div>
-          </div>
-          
-          <div id="storepoint-container" data-map-id="1645a775a8a422"></div>
-          
-          <style>
-            {`
-              #storepoint-container {
-                height: 650px;
-                width: 100%;
-                border-radius: 10px;
-                box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-                margin-bottom: 20px;
-              }
-
-              .storepoint-map .marker {
-                transform: scale(1.2);
-              }
-
-              .gm-style-iw {
-                max-width: 350px !important;
-                padding: 16px !important;
-              }
-
-              .storepoint-list-item {
-                padding: 14px;
-                border-bottom: 1px solid #eee;
-                transition: background 0.2s ease;
-              }
-
-              .storepoint-list-item:hover {
-                background: #f7f7f7;
-              }
-
-              #storepoint-tag-dropdown {
-                display: none !important;
-              }
-
-              @media (max-width: 768px) {
-                #storepoint-container {
-                  height: 500px;
-                }
-              }
-
-              @media (max-width: 480px) {
-                #storepoint-container {
-                  height: 400px;
-                }
-              }
-            `}
-          </style>
-          
-          <Helmet>
-            <script>
-              {`
-                (function(){
-                  var a=document.createElement("script");
-                  a.type="text/javascript";
-                  a.async=!0;
-                  a.src="https://cdn.storepoint.co/api/v1/js/1645a775a8a422.js";
-                  var b=document.getElementsByTagName("script")[0];
-                  b.parentNode.insertBefore(a,b);
-                }());
-              `}
-            </script>
-          </Helmet>
+      {/* Map Type Toggle */}
+      <div className="mb-6">
+        <div className="flex justify-center space-x-4">
+          <Button 
+            variant={!useNewMap ? "default" : "outline"} 
+            onClick={() => setUseNewMap(false)}
+          >
+            Standard Map
+          </Button>
+          <Button 
+            variant={useNewMap ? "default" : "outline"} 
+            onClick={() => setUseNewMap(true)}
+          >
+            Enhanced AI Map
+          </Button>
         </div>
-        
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Search Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center p-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthcare-600"></div>
-                </div>
-              ) : searchResults.length > 0 ? (
-                <div className="divide-y">
-                  {searchResults.map((facility) => (
-                    <div key={facility.id} className="py-4">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-medium">{facility.name}</h3>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={savedFacilities.includes(facility.id) ? 'text-red-500' : ''}
-                          onClick={() => toggleSaveFacility(facility)}
-                        >
-                          <Heart className="h-4 w-4" fill={savedFacilities.includes(facility.id) ? 'currentColor' : 'none'} />
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{facility.address}</p>
-                      {facility.rating > 0 && (
-                        <div className="flex items-center mt-1">
-                          <span className="text-yellow-500 mr-1">★</span>
-                          <span className="text-sm">{facility.rating.toFixed(1)}</span>
-                        </div>
-                      )}
-                      <div className="mt-3 flex gap-2">
-                        <Button
-                          asChild 
-                          variant="outline"
-                          size="sm"
-                          onClick={() => saveFacilityDetails(facility)}
-                        >
-                          <Link to={`/facilities/${facility.id}`}>View Details</Link>
-                        </Button>
-                        {facility.url && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                          >
-                            <a 
-                              href={facility.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                            >
-                              Visit Website
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center py-8 text-muted-foreground">
-                  No results found. Try modifying your search criteria.
-                </p>
-              )}
-              
-              <div className="mt-4 pt-4 border-t">
-                <Button
-                  asChild
-                  variant="default"
-                  className="w-full"
-                >
-                  <Link to="/favorites">
-                    <Heart className="h-4 w-4 mr-2" />
-                    View Saved Facilities
-                  </Link>
-                </Button>
+      </div>
+      
+      {useNewMap ? (
+        <>
+          {/* Role switcher (for demo purposes) */}
+          <div className="mb-6">
+            <div className="flex justify-center space-x-2">
+              <Button 
+                variant={userRole === 'patient' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => handleRoleChange('patient')}
+              >
+                View as Patient
+              </Button>
+              <Button 
+                variant={userRole === 'provider' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => handleRoleChange('provider')}
+              >
+                View as Provider
+              </Button>
+              <Button 
+                variant={userRole === 'specialist' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => handleRoleChange('specialist')}
+              >
+                View as Specialist
+              </Button>
+              <Button 
+                variant={userRole === 'facility' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => handleRoleChange('facility')}
+              >
+                View as Facility
+              </Button>
+            </div>
+          </div>
+          
+          {/* New Map Implementation */}
+          <WorkflowMapContainer 
+            locations={locations} 
+            userRole={userRole}
+            onReferralAction={handleReferralAction}
+            clientData={userRole === 'provider' || userRole === 'specialist' ? {
+              name: "John Smith",
+              age: 78,
+              careLevel: ["Medium Care"],
+              medicalNeeds: ["Medication Management", "Mobility Assistance"],
+              insurance: ["Medicare"],
+              budget: 4500
+            } : undefined}
+          />
+        </>
+      ) : (
+        <>
+          {searchParams && (
+            <Alert className="mb-6 bg-healthcare-50">
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="font-medium">Search Query:</span> 
+                <span className="text-healthcare-700">{searchParams.location}</span>
+                
+                {searchParams.careType !== "any" && (
+                  <Badge variant="outline" className="bg-healthcare-100">
+                    {careTypes.find(type => type.id === searchParams.careType)?.label}
+                  </Badge>
+                )}
+                
+                {searchParams.amenities && searchParams.amenities.map((amenityId: string) => (
+                  <Badge key={amenityId} variant="outline" className="bg-healthcare-100">
+                    {amenities.find(a => a.id === amenityId)?.label}
+                  </Badge>
+                ))}
               </div>
-            </CardContent>
+              <AlertDescription>
+                <div className="flex mt-2 gap-2">
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    <Link to="/search">Modify Search</Link>
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => searchParams && performSearch(searchParams.query)}
+                    disabled={isLoading}
+                  >
+                    Refresh Results
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {!searchParams && (
+            <Alert className="mb-6">
+              <AlertDescription>
+                No search criteria found. Please return to the search page to start a new search.
+                <div className="mt-2">
+                  <Button 
+                    asChild 
+                    variant="default" 
+                    size="sm"
+                  >
+                    <Link to="/search">Go to Search</Link>
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="bg-healthcare-50 p-4 rounded-lg mb-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-healthcare-600" />
+                    Interactive Map
+                  </h2>
+                  {isPro ? (
+                    <Badge className="bg-healthcare-600">Pro Map Features Enabled</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-healthcare-600">
+                      <Link to="/profile" className="hover:underline">Upgrade to Pro</Link>
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              
+              <div id="storepoint-container" data-map-id="1645a775a8a422"></div>
+              
+              <style>
+                {`
+                  #storepoint-container {
+                    height: 650px;
+                    width: 100%;
+                    border-radius: 10px;
+                    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+                    margin-bottom: 20px;
+                  }
+
+                  .storepoint-map .marker {
+                    transform: scale(1.2);
+                  }
+
+                  .gm-style-iw {
+                    max-width: 350px !important;
+                    padding: 16px !important;
+                  }
+
+                  .storepoint-list-item {
+                    padding: 14px;
+                    border-bottom: 1px solid #eee;
+                    transition: background 0.2s ease;
+                  }
+
+                  .storepoint-list-item:hover {
+                    background: #f7f7f7;
+                  }
+
+                  #storepoint-tag-dropdown {
+                    display: none !important;
+                  }
+
+                  @media (max-width: 768px) {
+                    #storepoint-container {
+                      height: 500px;
+                    }
+                  }
+
+                  @media (max-width: 480px) {
+                    #storepoint-container {
+                      height: 400px;
+                    }
+                  }
+                `}
+              </style>
+              
+              <Helmet>
+                <script>
+                  {`
+                    (function(){
+                      var a=document.createElement("script");
+                      a.type="text/javascript";
+                      a.async=!0;
+                      a.src="https://cdn.storepoint.co/api/v1/js/1645a775a8a422.js";
+                      var b=document.getElementsByTagName("script")[0];
+                      b.parentNode.insertBefore(a,b);
+                    }());
+                  `}
+                </script>
+              </Helmet>
+            </div>
+            
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Search Results</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="flex justify-center p-8">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthcare-600"></div>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="divide-y">
+                      {searchResults.map((facility) => (
+                        <div key={facility.id} className="py-4">
+                          <div className="flex justify-between items-start">
+                            <h3 className="font-medium">{facility.name}</h3>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={savedFacilities.includes(facility.id) ? 'text-red-500' : ''}
+                              onClick={() => toggleSaveFacility(facility)}
+                            >
+                              <Heart className="h-4 w-4" fill={savedFacilities.includes(facility.id) ? 'currentColor' : 'none'} />
+                            </Button>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{facility.address}</p>
+                          {facility.rating > 0 && (
+                            <div className="flex items-center mt-1">
+                              <span className="text-yellow-500 mr-1">★</span>
+                              <span className="text-sm">{facility.rating.toFixed(1)}</span>
+                            </div>
+                          )}
+                          <div className="mt-3 flex gap-2">
+                            <Button
+                              asChild 
+                              variant="outline"
+                              size="sm"
+                              onClick={() => saveFacilityDetails(facility)}
+                            >
+                              <Link to={`/facilities/${facility.id}`}>View Details</Link>
+                            </Button>
+                            {facility.url && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                              >
+                                <a 
+                                  href={facility.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                >
+                                  Visit Website
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center py-8 text-muted-foreground">
+                      No results found. Try modifying your search criteria.
+                    </p>
+                  )}
+                  
+                  <div className="mt-4 pt-4 border-t">
+                    <Button
+                      asChild
+                      variant="default"
+                      className="w-full"
+                    >
+                      <Link to="/favorites">
+                        <Heart className="h-4 w-4 mr-2" />
+                        View Saved Facilities
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
           </Card>
         </div>
       </div>
