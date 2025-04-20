@@ -35,25 +35,24 @@ export interface HolographicButtonProps
   asChild?: boolean;
 }
 
-const HolographicButton = React.forwardRef<
-  HTMLButtonElement,
-  HolographicButtonProps
->(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-  
-  return (
-    <Comp
-      className={cn(holographicButtonVariants({ variant, size, className }))}
-      ref={ref}
-      {...props}
-    >
-      {props.children}
-      <span className="absolute inset-0 overflow-hidden rounded-md">
-        <span className="absolute -inset-[400%] animate-holographic-shine bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_100%] opacity-0 group-hover:opacity-100"></span>
-      </span>
-    </Comp>
-  );
-});
+const HolographicButton = React.forwardRef<HTMLButtonElement, HolographicButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    
+    return (
+      <Comp
+        className={cn(holographicButtonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      >
+        {props.children}
+        <span className="absolute inset-0 overflow-hidden rounded-md">
+          <span className="absolute -inset-[400%] animate-holographic-shine bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_100%] opacity-0 group-hover:opacity-100"></span>
+        </span>
+      </Comp>
+    );
+  }
+);
 
 HolographicButton.displayName = "HolographicButton";
 

@@ -1,7 +1,6 @@
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, Building, Users } from "lucide-react";
+import { Building, Users, Plus } from "lucide-react";
 import { ContactCard } from "./ContactCard";
 import { HolographicCard, HolographicCardContent } from "@/components/ui/holographic-card";
 import { HolographicButton } from "@/components/ui/holographic-button";

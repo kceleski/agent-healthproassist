@@ -492,6 +492,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          feature_key: string
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          feature_key: string
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          feature_key?: string
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       interactions: {
         Row: {
           contact_id: string
@@ -616,6 +643,35 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      subscription_features: {
+        Row: {
+          created_at: string | null
+          feature_id: string | null
+          id: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Insert: {
+          created_at?: string | null
+          feature_id?: string | null
+          id?: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Update: {
+          created_at?: string | null
+          feature_id?: string | null
+          id?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_features_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -774,10 +830,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_feature_enabled: {
+        Args: {
+          feature_key: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      subscription_tier: "free" | "basic" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -892,6 +954,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_tier: ["free", "basic", "premium"],
+    },
   },
 } as const
