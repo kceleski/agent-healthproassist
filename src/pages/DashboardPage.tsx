@@ -181,13 +181,13 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="h-full flex flex-col p-4 md:p-6">
-      <div className="flex items-center justify-between py-2 mb-4">
+    <div className="p-4 md:p-6 h-full overflow-auto">
+      <div className="flex items-center justify-between pb-4">
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Dashboard</h1>
         <SetupGuideButton />
       </div>
       
-      <div className="flex-1 flex flex-col gap-4 min-h-0">
+      <div className="space-y-4">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat, i) => (
             <Card 
@@ -217,10 +217,10 @@ const DashboardPage = () => {
         </div>
 
         {isPro ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 flex-1">
-            <div className="lg:col-span-2 h-full flex flex-col">
-              <Card className="glass-card h-full flex flex-col">
-                <CardHeader className="p-3 flex-shrink-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <Card className="glass-card h-full">
+                <CardHeader className="p-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-base">Recent Facilities</CardTitle>
@@ -234,8 +234,8 @@ const DashboardPage = () => {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="p-0 overflow-hidden flex-1 flex flex-col min-h-0">
-                  <div className="overflow-auto flex-1">
+                <CardContent className="p-0 overflow-hidden">
+                  <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -270,9 +270,9 @@ const DashboardPage = () => {
               </Card>
             </div>
             
-            <div className="h-full flex flex-col">
-              <Card className="glass-card h-full flex flex-col">
-                <CardHeader className="p-3 flex-shrink-0">
+            <div>
+              <Card className="glass-card h-full">
+                <CardHeader className="p-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-base">Upcoming Appointments</CardTitle>
@@ -286,7 +286,7 @@ const DashboardPage = () => {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
+                <CardContent className="p-3 pt-0">
                   <div className="space-y-2">
                     {upcomingAppointments.map((appointment) => (
                       <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
@@ -312,129 +312,123 @@ const DashboardPage = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0 flex-1">
-            <div className="h-full flex flex-col">
-              <Card className="glass-card h-full flex flex-col">
-                <CardHeader className="p-3 flex-shrink-0">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-base">Notifications</CardTitle>
-                      <CardDescription className="text-xs">Recent updates and alerts</CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm" className="text-xs">
-                      <Bell className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">Mark all read</span>
-                    </Button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card className="glass-card h-full">
+              <CardHeader className="p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">Notifications</CardTitle>
+                    <CardDescription className="text-xs">Recent updates and alerts</CardDescription>
                   </div>
-                </CardHeader>
-                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
-                  <div className="space-y-2">
-                    {notifications.map((notification) => (
-                      <div key={notification.id} className="flex items-start gap-3 p-2 rounded-lg border">
-                        <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 
-                          ${notification.type === 'info' ? 'bg-blue-100 text-blue-700' : 
-                            notification.type === 'reminder' ? 'bg-amber-100 text-amber-700' : 
-                            notification.type === 'warning' ? 'bg-orange-100 text-orange-700' : 
-                            'bg-green-100 text-green-700'}`}>
-                          <Bell className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-xs truncate">{notification.title}</h4>
-                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.message}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{notification.time}</p>
-                        </div>
+                  <Button variant="outline" size="sm" className="text-xs">
+                    <Bell className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Mark all read</span>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 pt-0">
+                <div className="space-y-2">
+                  {notifications.map((notification) => (
+                    <div key={notification.id} className="flex items-start gap-3 p-2 rounded-lg border">
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 
+                        ${notification.type === 'info' ? 'bg-blue-100 text-blue-700' : 
+                          notification.type === 'reminder' ? 'bg-amber-100 text-amber-700' : 
+                          notification.type === 'warning' ? 'bg-orange-100 text-orange-700' : 
+                          'bg-green-100 text-green-700'}`}>
+                        <Bell className="h-4 w-4" />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-xs truncate">{notification.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{notification.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
             
-            <div className="h-full flex flex-col">
-              <Card className="glass-card h-full flex flex-col">
-                <CardHeader className="p-3 flex-shrink-0">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-base">Upcoming Appointments</CardTitle>
-                      <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/calendar" className="text-xs flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        <span className="hidden sm:inline">Add</span>
-                      </Link>
-                    </Button>
+            <Card className="glass-card h-full">
+              <CardHeader className="p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">Upcoming Appointments</CardTitle>
+                    <CardDescription className="text-xs">Your scheduled meetings</CardDescription>
                   </div>
-                </CardHeader>
-                <CardContent className="p-3 pt-0 flex-1 overflow-auto min-h-0">
-                  <div className="space-y-2">
-                    {upcomingAppointments.map((appointment) => (
-                      <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
-                        <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
-                          <Calendar className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
-                          <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
-                        </div>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/calendar" className="text-xs flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span className="hidden sm:inline">Add</span>
+                    </Link>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 pt-0">
+                <div className="space-y-2">
+                  {upcomingAppointments.map((appointment) => (
+                    <div key={appointment.id} className="flex items-start gap-3 p-2 rounded-lg border">
+                      <div className="bg-healthcare-100 text-healthcare-700 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
+                        <Calendar className="h-4 w-4" />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-xs truncate">{appointment.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">{appointment.date}</p>
+                        <p className="text-xs mt-0.5 truncate">Client: {appointment.client}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
-        <div className="flex-shrink-0">
-          <Card className="glass-card flex flex-col">
-            <CardHeader className="p-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base">Recent Referrals</CardTitle>
-                  <CardDescription className="text-xs">New client referrals requiring your attention</CardDescription>
-                </div>
-                <Button variant="outline" size="sm" onClick={handleViewAllReferrals} className="text-xs">
-                  <FileText className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">View All</span>
-                </Button>
+        <Card className="glass-card">
+          <CardHeader className="p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base">Recent Referrals</CardTitle>
+                <CardDescription className="text-xs">New client referrals requiring your attention</CardDescription>
               </div>
-            </CardHeader>
-            <CardContent className="p-0 overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-medium p-2 w-[30%]">Client Name</TableHead>
-                    <TableHead className="text-xs font-medium p-2 w-[10%]">Age</TableHead>
-                    <TableHead className="text-xs font-medium p-2 w-[20%]">Needs</TableHead>
-                    <TableHead className="text-xs font-medium p-2 hidden md:table-cell w-[20%]">Referred By</TableHead>
-                    <TableHead className="text-xs font-medium p-2 hidden sm:table-cell w-[10%]">Date</TableHead>
-                    <TableHead className="text-xs font-medium p-2 w-[10%]">Action</TableHead>
+              <Button variant="outline" size="sm" onClick={handleViewAllReferrals} className="text-xs">
+                <FileText className="h-3 w-3 mr-1" />
+                <span className="hidden sm:inline">View All</span>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs font-medium p-2 w-[30%]">Client Name</TableHead>
+                  <TableHead className="text-xs font-medium p-2 w-[10%]">Age</TableHead>
+                  <TableHead className="text-xs font-medium p-2 w-[20%]">Needs</TableHead>
+                  <TableHead className="text-xs font-medium p-2 hidden md:table-cell w-[20%]">Referred By</TableHead>
+                  <TableHead className="text-xs font-medium p-2 hidden sm:table-cell w-[10%]">Date</TableHead>
+                  <TableHead className="text-xs font-medium p-2 w-[10%]">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentReferrals.map((referral) => (
+                  <TableRow key={referral.id}>
+                    <TableCell className="p-2 text-xs font-medium">{referral.name}</TableCell>
+                    <TableCell className="p-2 text-xs">{referral.age}</TableCell>
+                    <TableCell className="p-2">
+                      <Badge variant="outline" className="bg-healthcare-50 text-xs">
+                        {referral.needsType}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 hidden md:table-cell text-xs text-muted-foreground">{referral.referredBy}</TableCell>
+                    <TableCell className="p-2 hidden sm:table-cell text-xs text-muted-foreground">{referral.date}</TableCell>
+                    <TableCell className="p-2">
+                      <Button size="sm" variant="outline" className="text-xs h-7 px-2" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentReferrals.map((referral) => (
-                    <TableRow key={referral.id}>
-                      <TableCell className="p-2 text-xs font-medium">{referral.name}</TableCell>
-                      <TableCell className="p-2 text-xs">{referral.age}</TableCell>
-                      <TableCell className="p-2">
-                        <Badge variant="outline" className="bg-healthcare-50 text-xs">
-                          {referral.needsType}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="p-2 hidden md:table-cell text-xs text-muted-foreground">{referral.referredBy}</TableCell>
-                      <TableCell className="p-2 hidden sm:table-cell text-xs text-muted-foreground">{referral.date}</TableCell>
-                      <TableCell className="p-2">
-                        <Button size="sm" variant="outline" className="text-xs h-7 px-2" onClick={() => handleProcessReferral(referral.id, referral.name)}>Process</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -182,10 +182,8 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto h-[calc(100vh-3.5rem)]">
-          <div className="h-full">
-            <Outlet />
-          </div>
+        <main className="flex-1 overflow-auto">
+          <Outlet />
         </main>
       </div>
     </div>

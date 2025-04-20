@@ -12,7 +12,7 @@ const MainLayout = () => {
       <DIDScriptHead />
       <AvatarResponseProvider>
         <Navbar />
-        <main className="flex-grow animate-fade-in">
+        <main className="flex-grow">
           <Outlet />
           <AvatarIntegration />
         </main>
