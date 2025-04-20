@@ -1,6 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/lib/database.types';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface SearchResultData {
   query: string;
@@ -11,6 +10,7 @@ export interface SearchResultData {
   user_id?: string;
 }
 
+// Function to save search result to Supabase
 export const saveSearchResult = async (searchData: SearchResultData) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -42,6 +42,7 @@ export const saveSearchResult = async (searchData: SearchResultData) => {
   }
 };
 
+// Function to get search results for a specific user
 export const getSearchResults = async (userId: string) => {
   try {
     const { data, error } = await supabase
@@ -58,3 +59,4 @@ export const getSearchResults = async (userId: string) => {
     return [];
   }
 };
+
