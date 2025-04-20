@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -286,3 +288,4 @@ const MapPage = () => {
 };
 
 export default MapPage;
+
