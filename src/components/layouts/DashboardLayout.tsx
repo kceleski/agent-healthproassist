@@ -1,9 +1,7 @@
-
-import { useState, useEffect } from 'react';
-import { Link, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { cn } from '@/lib/utils';
 import { 
   Building, 
   Home, 
@@ -78,7 +76,6 @@ const DashboardLayout = () => {
 
   const menuItems = isPro ? proMenuItems : basicMenuItems;
 
-  // Create a separate functional component for the sidebar content
   const SidebarContents = () => (
     <>
       <SidebarHeader className="p-4">
@@ -145,7 +142,7 @@ const DashboardLayout = () => {
   );
 
   return (
-    <div className="min-h-screen flex w-full">
+    <div className="h-screen flex w-full overflow-hidden">
       {isMobile ? (
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetContent side="left" className="w-[80%] p-0">
@@ -160,9 +157,9 @@ const DashboardLayout = () => {
         </SidebarProvider>
       )}
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 items-center">
+          <div className="flex h-14 items-center px-4">
             {isMobile && (
               <Button 
                 variant="ghost" 
@@ -185,7 +182,7 @@ const DashboardLayout = () => {
         </header>
         
         <main className="flex-1 overflow-auto animate-fade-in">
-          <div className="container py-6">
+          <div className="p-4 md:p-6 h-full">
             <Outlet />
           </div>
         </main>
