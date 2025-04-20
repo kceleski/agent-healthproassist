@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
+import { useState, useEffect } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,8 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Search, Heart, ArrowLeft } from "lucide-react";
 import GoogleMapsView from "@/components/maps/GoogleMapsView";
+import { saveSearchResult } from '@/services/searchResultService';
 
-// Define careTypes and amenities that were missing
 const careTypes = [
   { id: "any", label: "Any Care Type" },
   { id: "assisted_living", label: "Assisted Living" },
@@ -55,7 +54,6 @@ const MapPage = () => {
   const [searchResults, setSearchResults] = useState<Facility[]>([]);
   const [savedFacilities, setSavedFacilities] = useState<string[]>([]);
 
-  // Load search params and saved facilities
   useEffect(() => {
     const params = sessionStorage.getItem('facilitySearchParams');
     if (params) {
@@ -68,7 +66,6 @@ const MapPage = () => {
     }
   }, []);
 
-  // Save/unsave facility
   const toggleSaveFacility = (facility: Facility) => {
     setSavedFacilities(prev => {
       let updated;
@@ -80,7 +77,6 @@ const MapPage = () => {
         updated = [...prev, facility.id];
         toast.success(`Added ${facility.name} to favorites`);
         
-        // Also save the facility details
         const savedDetails = localStorage.getItem('facilityDetails');
         const details = savedDetails ? JSON.parse(savedDetails) : {};
         details[facility.id] = facility;
@@ -93,8 +89,28 @@ const MapPage = () => {
   };
 
   const saveFacilityDetails = (facility: Facility) => {
-    // Save to session storage for viewing details
     sessionStorage.setItem('currentFacility', JSON.stringify(facility));
+  };
+
+  const handleRefreshSearch = async () => {
+    if (searchParams) {
+      setIsLoading(true);
+      try {
+        const query = searchParams.query;
+        await saveSearchResult({
+          query,
+          location: searchParams.location,
+          facility_type: searchParams.careType,
+          amenities: searchParams.amenities,
+          results: []
+        });
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error refreshing search:', error);
+        toast.error('Failed to refresh search');
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
@@ -158,7 +174,7 @@ const MapPage = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => searchParams && performSearch(searchParams.query)}
+                onClick={handleRefreshSearch}
                 disabled={isLoading}
               >
                 Refresh Results
