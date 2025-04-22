@@ -7,29 +7,7 @@ import NotificationsTab from "./tabs/NotificationsTab";
 import BioTab from "./tabs/BioTab";
 import FinishTab from "./tabs/FinishTab";
 import { Progress } from "@/components/ui/progress";
-import { UserProfile } from "@/types/profile";
-
-export interface WelcomeTabsProps {
-  preferences: {
-    notification_preferences: {
-      email: boolean;
-      sms: boolean;
-      inApp: boolean;
-    };
-    communication_preferences: {
-      receiveUpdates: boolean;
-      receiveReferrals: boolean;
-      allowContactSharing: boolean;
-    };
-    bio?: string;
-    default_location?: string;
-  };
-  loading: boolean;
-  onInputChange: (field: string, value: string) => void;
-  onNotificationChange: (field: "email" | "sms" | "inApp", value: boolean) => void;
-  onCommunicationPrefChange: (field: "receiveUpdates" | "receiveReferrals" | "allowContactSharing", value: boolean) => void;
-  onSave: () => void;
-}
+import { WelcomeTabsProps } from "@/types/profile";
 
 const WelcomeTabs = ({
   preferences,
@@ -57,12 +35,12 @@ const WelcomeTabs = ({
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <Progress value={progress} className="h-2 mt-4 bg-white/20" />
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="welcome">Welcome</TabsTrigger>
-        <TabsTrigger value="location">Location</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="bio">Your Bio</TabsTrigger>
-        <TabsTrigger value="finish">Finish</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-5 gap-1 mb-4">
+        <TabsTrigger value="welcome" className="text-xs sm:text-sm">Welcome</TabsTrigger>
+        <TabsTrigger value="location" className="text-xs sm:text-sm">Location</TabsTrigger>
+        <TabsTrigger value="notifications" className="text-xs sm:text-sm">Notifications</TabsTrigger>
+        <TabsTrigger value="bio" className="text-xs sm:text-sm">Your Bio</TabsTrigger>
+        <TabsTrigger value="finish" className="text-xs sm:text-sm">Finish</TabsTrigger>
       </TabsList>
       
       <TabsContent value="welcome">
