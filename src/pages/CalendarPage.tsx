@@ -106,7 +106,6 @@ const CalendarPage = () => {
   const [isReminderSettingsOpen, setIsReminderSettingsOpen] = useState(false);
 
   useEffect(() => {
-    // Check for tab parameter in URL
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
     if (tab === 'todo') {
@@ -116,7 +115,6 @@ const CalendarPage = () => {
     }
   }, [location]);
 
-  // Get events for the selected date
   const getEventsForDate = (date: Date | undefined) => {
     if (!date) return [];
     return appointments.filter(apt => 
@@ -126,17 +124,14 @@ const CalendarPage = () => {
     );
   };
 
-  // Event handler for calendar date selection
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
   };
 
-  // Open appointment details dialog
   const handleAppointmentClick = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
   };
 
-  // Get badge color based on appointment type
   const getAppointmentBadgeColor = (type: Appointment['type']) => {
     switch (type) {
       case 'tour':
@@ -205,238 +200,238 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      <TabsContent value="calendar" className="m-0 p-0">
-        <div className="flex items-center gap-2 mb-4">
-          <Tabs defaultValue="month" className="w-fit" onValueChange={(value) => setView(value as 'month' | 'week' | 'day')}>
-            <TabsList>
-              <TabsTrigger value="month">Month</TabsTrigger>
-              <TabsTrigger value="week">Week</TabsTrigger>
-              <TabsTrigger value="day">Day</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+      <Tabs value={activeTab}>
+        <TabsContent value="calendar">
+          <div className="flex items-center gap-2 mb-4">
+            <Tabs defaultValue="month" className="w-fit" onValueChange={(value) => setView(value as 'month' | 'week' | 'day')}>
+              <TabsList>
+                <TabsTrigger value="month">Month</TabsTrigger>
+                <TabsTrigger value="week">Week</TabsTrigger>
+                <TabsTrigger value="day">Day</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 glass-card">
-            <CardHeader>
-              <CardTitle>
-                {view === 'month' ? (
-                  <span>Calendar {selectedDate ? `- ${format(selectedDate, 'MMMM yyyy')}` : ''}</span>
-                ) : view === 'week' ? (
-                  <span>Week View</span>
-                ) : (
-                  <span>Day View {selectedDate ? `- ${format(selectedDate, 'EEEE, MMMM d, yyyy')}` : ''}</span>
-                )}
-              </CardTitle>
-              <CardDescription>
-                Select a date to see scheduled appointments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                className="rounded-md border shadow p-3 pointer-events-auto"
-              />
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2 glass-card">
+              <CardHeader>
+                <CardTitle>
+                  {view === 'month' ? (
+                    <span>Calendar {selectedDate ? `- ${format(selectedDate, 'MMMM yyyy')}` : ''}</span>
+                  ) : view === 'week' ? (
+                    <span>Week View</span>
+                  ) : (
+                    <span>Day View {selectedDate ? `- ${format(selectedDate, 'EEEE, MMMM d, yyyy')}` : ''}</span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  Select a date to see scheduled appointments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  className="rounded-md border shadow p-3 pointer-events-auto"
+                />
+              </CardContent>
+            </Card>
 
-          <Card className="glass-card">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>
+                  {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select a date'}
+                </CardTitle>
+                <CardDescription>
+                  {getEventsForDate(selectedDate).length === 0 
+                    ? 'No appointments scheduled' 
+                    : `${getEventsForDate(selectedDate).length} appointments scheduled`}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {getEventsForDate(selectedDate).length === 0 ? (
+                    <div className="text-center py-8 border rounded-lg">
+                      <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground">No appointments for this date</p>
+                      <Button variant="outline" className="mt-4" onClick={() => setIsAddEventOpen(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Appointment
+                      </Button>
+                    </div>
+                  ) : (
+                    getEventsForDate(selectedDate).map((appointment) => (
+                      <div 
+                        key={appointment.id} 
+                        className="p-3 border rounded-lg hover:bg-muted/30 transition-colors cursor-pointer"
+                        onClick={() => handleAppointmentClick(appointment)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <h4 className="font-medium">{appointment.title}</h4>
+                          <Badge className={getAppointmentBadgeColor(appointment.type)}>
+                            {appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}
+                          </Badge>
+                        </div>
+                        <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{appointment.startTime} - {appointment.endTime}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span>{appointment.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <User className="h-3.5 w-3.5" />
+                            <span>{appointment.client}</span>
+                          </div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t flex justify-between">
+                          <Button variant="outline" size="sm" onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedAppointment(appointment);
+                            setIsReminderSettingsOpen(true);
+                          }}>
+                            <Bell className="h-3.5 w-3.5 mr-1" />
+                            Set Reminder
+                          </Button>
+                          <AddToTaskButton
+                            actionText={`Prepare for ${appointment.title}`}
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="glass-card mt-6">
             <CardHeader>
-              <CardTitle>
-                {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select a date'}
-              </CardTitle>
-              <CardDescription>
-                {getEventsForDate(selectedDate).length === 0 
-                  ? 'No appointments scheduled' 
-                  : `${getEventsForDate(selectedDate).length} appointments scheduled`}
-              </CardDescription>
+              <CardTitle>Upcoming Schedule</CardTitle>
+              <CardDescription>Your next 7 days at a glance</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {getEventsForDate(selectedDate).length === 0 ? (
-                  <div className="text-center py-8 border rounded-lg">
-                    <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">No appointments for this date</p>
-                    <Button variant="outline" className="mt-4" onClick={() => setIsAddEventOpen(true)}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Appointment
-                    </Button>
-                  </div>
-                ) : (
-                  getEventsForDate(selectedDate).map((appointment) => (
-                    <div 
-                      key={appointment.id} 
-                      className="p-3 border rounded-lg hover:bg-muted/30 transition-colors cursor-pointer"
-                      onClick={() => handleAppointmentClick(appointment)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <h4 className="font-medium">{appointment.title}</h4>
-                        <Badge className={getAppointmentBadgeColor(appointment.type)}>
+                {appointments.slice(0, 4).map((appointment) => (
+                  <div key={appointment.id} className="flex gap-4 p-3 border rounded-lg">
+                    <div className="bg-healthcare-100 text-healthcare-700 h-12 w-12 rounded-full flex flex-col items-center justify-center shrink-0">
+                      <span className="text-xs font-bold">{format(appointment.date, 'MMM')}</span>
+                      <span className="text-sm font-bold">{format(appointment.date, 'd')}</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">{appointment.title}</h4>
+                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{appointment.startTime}</span>
+                        <Badge className={getAppointmentBadgeColor(appointment.type)} variant="outline">
                           {appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}
                         </Badge>
                       </div>
-                      <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-3.5 w-3.5" />
-                          <span>{appointment.startTime} - {appointment.endTime}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-3.5 w-3.5" />
-                          <span>{appointment.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="h-3.5 w-3.5" />
-                          <span>{appointment.client}</span>
-                        </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t flex justify-between">
-                        <Button variant="outline" size="sm" onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedAppointment(appointment);
-                          setIsReminderSettingsOpen(true);
-                        }}>
-                          <Bell className="h-3.5 w-3.5 mr-1" />
-                          Set Reminder
-                        </Button>
-                        <AddToTaskButton
-                          actionText={`Prepare for ${appointment.title}`}
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        />
+                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <User className="h-3.5 w-3.5" />
+                        <span>{appointment.client}</span>
                       </div>
                     </div>
-                  ))
-                )}
+                    <AddToTaskButton
+                      actionText={`Prepare for ${appointment.title}`}
+                      size="sm"
+                      variant="outline"
+                    />
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
-        </div>
+        </TabsContent>
+        
+        <TabsContent value="todo">
+          <TodoList />
+        </TabsContent>
 
-        {/* Schedule Summary */}
-        <Card className="glass-card mt-6">
-          <CardHeader>
-            <CardTitle>Upcoming Schedule</CardTitle>
-            <CardDescription>Your next 7 days at a glance</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {appointments.slice(0, 4).map((appointment) => (
-                <div key={appointment.id} className="flex gap-4 p-3 border rounded-lg">
-                  <div className="bg-healthcare-100 text-healthcare-700 h-12 w-12 rounded-full flex flex-col items-center justify-center shrink-0">
-                    <span className="text-xs font-bold">{format(appointment.date, 'MMM')}</span>
-                    <span className="text-sm font-bold">{format(appointment.date, 'd')}</span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{appointment.title}</h4>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>{appointment.startTime}</span>
-                      <Badge className={getAppointmentBadgeColor(appointment.type)} variant="outline">
-                        {appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                      <User className="h-3.5 w-3.5" />
-                      <span>{appointment.client}</span>
-                    </div>
-                  </div>
-                  <AddToTaskButton
-                    actionText={`Prepare for ${appointment.title}`}
-                    size="sm"
-                    variant="outline"
-                  />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="todo" className="m-0 p-0">
-        <TodoList />
-      </TabsContent>
-
-      <TabsContent value="settings" className="m-0 p-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Bell className="h-5 w-5 text-healthcare-600" />
-                Reminder Settings
-              </CardTitle>
-              <CardDescription>
-                Configure how you receive reminders for your appointments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  You can set up email and SMS reminders for individual appointments from the calendar view.
-                  Click on an appointment and select "Set Reminder".
-                </p>
-                
-                {isPro ? (
-                  <>
-                    <div className="border p-3 rounded-lg">
-                      <h4 className="font-medium">Default Reminder Settings</h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        These settings will apply to all new appointments unless overridden.
+        <TabsContent value="settings">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-healthcare-600" />
+                  Reminder Settings
+                </CardTitle>
+                <CardDescription>
+                  Configure how you receive reminders for your appointments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    You can set up email and SMS reminders for individual appointments from the calendar view.
+                    Click on an appointment and select "Set Reminder".
+                  </p>
+                  
+                  {isPro ? (
+                    <>
+                      <div className="border p-3 rounded-lg">
+                        <h4 className="font-medium">Default Reminder Settings</h4>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          These settings will apply to all new appointments unless overridden.
+                        </p>
+                        <ReminderSettings 
+                          appointmentId="default" 
+                          existingReminders={[]}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="border p-4 rounded-lg bg-muted/20 text-center">
+                      <Bell className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                      <h3 className="text-lg font-medium">Upgrade to Pro</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Unlock advanced reminder features including default settings, recurring reminders,
+                        and batch management.
                       </p>
-                      <ReminderSettings 
-                        appointmentId="default" 
-                        existingReminders={[]}
-                      />
+                      <Button>Upgrade Now</Button>
                     </div>
-                  </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  External Calendar Sync
+                </CardTitle>
+                <CardDescription>
+                  Connect to your favorite calendar services
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isPro ? (
+                  <CalendarSync />
                 ) : (
                   <div className="border p-4 rounded-lg bg-muted/20 text-center">
-                    <Bell className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                    <Link className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                     <h3 className="text-lg font-medium">Upgrade to Pro</h3>
                     <p className="text-muted-foreground mb-4">
-                      Unlock advanced reminder features including default settings, recurring reminders,
-                      and batch management.
+                      Connect with Google Calendar, Outlook, and Apple Calendar
+                      with our Pro subscription.
                     </p>
                     <Button>Upgrade Now</Button>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                External Calendar Sync
-              </CardTitle>
-              <CardDescription>
-                Connect to your favorite calendar services
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isPro ? (
-                <CalendarSync />
-              ) : (
-                <div className="border p-4 rounded-lg bg-muted/20 text-center">
-                  <Link className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="text-lg font-medium">Upgrade to Pro</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Connect with Google Calendar, Outlook, and Apple Calendar
-                    with our Pro subscription.
-                  </p>
-                  <Button>Upgrade Now</Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      {/* Appointment Details Dialog */}
       {selectedAppointment && (
         <Dialog open={!!selectedAppointment} onOpenChange={() => setSelectedAppointment(null)}>
           <DialogContent className="sm:max-w-[500px]">
@@ -498,7 +493,6 @@ const CalendarPage = () => {
         </Dialog>
       )}
 
-      {/* Add Event Dialog */}
       <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -608,7 +602,6 @@ const CalendarPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Reminder Settings Dialog */}
       <Dialog open={isReminderSettingsOpen} onOpenChange={setIsReminderSettingsOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
