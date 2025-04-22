@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
@@ -7,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Search, Building, MapPin, Star, Trash2, ExternalLink } from "lucide-react";
 
@@ -26,7 +31,7 @@ interface Facility {
 const FavoritesPage = () => {
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
+  const [facilityType, setFacilityType] = useState("all");
   const [facilityNotes, setFacilityNotes] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -65,7 +70,6 @@ const FavoritesPage = () => {
   };
 
   const removeFacility = (facilityId: string) => {
-    // Remove from IDs list
     const savedIds = localStorage.getItem('savedFacilities');
     if (savedIds) {
       const ids = JSON.parse(savedIds) as string[];
@@ -73,7 +77,6 @@ const FavoritesPage = () => {
       localStorage.setItem('savedFacilities', JSON.stringify(updatedIds));
     }
     
-    // Update UI
     setFacilities(current => current.filter(f => f.id !== facilityId));
     toast.success("Facility removed from favorites");
   };
@@ -83,20 +86,18 @@ const FavoritesPage = () => {
   };
 
   const saveFacilityDetails = (facility: Facility) => {
-    // Save to session storage for viewing details
     sessionStorage.setItem('currentFacility', JSON.stringify(facility));
   };
 
-  // Filter facilities based on search term and active tab
   const filteredFacilities = facilities.filter(facility => {
     const matchesSearch = 
       facility.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       facility.address.toLowerCase().includes(searchTerm.toLowerCase());
     
-    if (activeTab === "all") return matchesSearch;
-    if (activeTab === "assisted" && facility.description?.toLowerCase().includes("assisted")) return matchesSearch;
-    if (activeTab === "memory" && facility.description?.toLowerCase().includes("memory")) return matchesSearch;
-    if (activeTab === "skilled" && facility.description?.toLowerCase().includes("skilled")) return matchesSearch;
+    if (facilityType === "all") return matchesSearch;
+    if (facilityType === "assisted" && facility.description?.toLowerCase().includes("assisted")) return matchesSearch;
+    if (facilityType === "memory" && facility.description?.toLowerCase().includes("memory")) return matchesSearch;
+    if (facilityType === "skilled" && facility.description?.toLowerCase().includes("skilled")) return matchesSearch;
     
     return false;
   });
@@ -132,25 +133,35 @@ const FavoritesPage = () => {
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <CardTitle>Your Saved Facilities</CardTitle>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search facilities..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 w-[250px]"
-              />
+            <div className="relative flex items-center gap-4">
+              <div className="relative flex-grow">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search facilities..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 w-[250px]"
+                />
+              </div>
+              <div>
+                <Label className="mr-2">Facility Type:</Label>
+                <Select 
+                  value={facilityType} 
+                  onValueChange={setFacilityType}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Facilities</SelectItem>
+                    <SelectItem value="assisted">Assisted Living</SelectItem>
+                    <SelectItem value="memory">Memory Care</SelectItem>
+                    <SelectItem value="skilled">Skilled Nursing</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-          
-          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mt-2">
-            <TabsList>
-              <TabsTrigger value="all">All Facilities</TabsTrigger>
-              <TabsTrigger value="assisted">Assisted Living</TabsTrigger>
-              <TabsTrigger value="memory">Memory Care</TabsTrigger>
-              <TabsTrigger value="skilled">Skilled Nursing</TabsTrigger>
-            </TabsList>
-          </Tabs>
         </CardHeader>
         
         <CardContent>
