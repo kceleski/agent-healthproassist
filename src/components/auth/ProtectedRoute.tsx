@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   
   // Use environment variable to bypass authentication in development
-  const isDevelopment = import.meta.env.VITE_DEVELOPMENT_MODE === true;
+  const isDevelopment = true; // Hardcoded to true for development purposes
 
   if (loading) {
     return (

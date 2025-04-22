@@ -34,7 +34,14 @@ import MainLayout from "./components/layouts/MainLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -68,7 +75,7 @@ const App = () => (
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/saved-searches" element={<SavedSearchesPage />} />
-                <Route path="/facilities" element={<FavoritesPage />} />
+                <Route path="/facilities" element={<FacilitiesPage />} />
                 <Route path="/facilities/:id" element={<FacilityDetailPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
