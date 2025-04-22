@@ -1,6 +1,6 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 
 interface AISearchFilters {
   facilityType?: string[];
@@ -26,6 +26,7 @@ export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void)
     
     const connect = () => {
       try {
+        console.log('Connecting to AI search service at:', wsUrl);
         ws = new WebSocket(wsUrl);
         
         ws.onopen = () => {
@@ -79,6 +80,9 @@ export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void)
         ws.onerror = (error) => {
           console.error('AI search WebSocket error:', error);
           setIsConnected(false);
+          
+          // Fall back to local simulation if connection fails
+          fallbackToLocalSimulation();
         };
         
         setSocket(ws);
@@ -91,7 +95,15 @@ export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void)
       }
     };
     
-    connect();
+    // Don't establish WebSocket connection if we're on a page that doesn't need it
+    // This prevents unnecessary connections when not needed
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/search') || currentPath.includes('/map')) {
+      connect();
+    } else {
+      // Set connected to true for other pages so the UI doesn't show loading state
+      setIsConnected(true);
+    }
     
     // Clean up on unmount
     return () => {

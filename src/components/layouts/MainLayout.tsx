@@ -4,8 +4,14 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/navigation/Footer';
 import AvatarIntegration from '@/components/AvatarIntegration';
 import { AvatarResponseProvider } from '@/context/AvatarResponseContext';
+import { useEffect } from 'react';
 
 const MainLayout = () => {
+  // Add a log to verify the layout is rendering
+  useEffect(() => {
+    console.log('MainLayout mounted');
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <AvatarResponseProvider>
