@@ -8,7 +8,7 @@ const supabaseUrl = "https://zpfaojrmcozacnsnwmra.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmFvanJtY296YWNuc253bXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDI1NjYsImV4cCI6MjA1Nzg3ODU2Nn0.p6zCt1HzmKCkBHbairGysWtWo22d6m2rJY3q3yE58gc";
 
 // Singleton pattern to prevent multiple instances
-let supabaseInstance: ReturnType<typeof createClient>;
+let supabaseInstance: ReturnType<typeof createClient<Database>>;
 
 export const supabase = (() => {
   if (!supabaseInstance) {

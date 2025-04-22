@@ -40,13 +40,17 @@ export const getConnectedCalendars = async (userId: string): Promise<CalendarSyn
 
     if (error) throw error;
     
-    // Ensure the provider is of type CalendarProvider
+    // Ensure each item conforms to CalendarSync interface
     const validProviders: CalendarProvider[] = ['google', 'outlook', 'apple'];
     const calendars: CalendarSync[] = (data || []).map(item => ({
-      ...item,
+      id: item.id as string,
+      user_id: item.user_id as string,
       provider: validProviders.includes(item.provider as any) 
         ? (item.provider as CalendarProvider) 
-        : 'google' // default fallback
+        : 'google', // default fallback
+      connected: Boolean(item.connected),
+      last_synced: item.last_synced as string | undefined,
+      calendar_id: item.calendar_id as string | undefined
     }));
     
     return calendars;

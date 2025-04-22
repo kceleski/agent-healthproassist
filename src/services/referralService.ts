@@ -27,11 +27,16 @@ export async function createReferral(userId: string, referralData: ReferralData)
     
     if (error) throw error;
     
-    // Create notification for the referral
-    await createReferralNotification(userId, data[0].id, referralData.client_id, referralData.facility_id);
-    
-    toast.success('Referral created successfully');
-    return data[0];
+    if (data && data.length > 0) {
+      // Create notification for the referral
+      const referralId = data[0].id as string;
+      await createReferralNotification(userId, referralId, referralData.client_id, referralData.facility_id);
+      
+      toast.success('Referral created successfully');
+      return data[0];
+    } else {
+      throw new Error("No data returned after inserting referral");
+    }
   } catch (error) {
     console.error('Error creating referral:', error);
     toast.error('Failed to create referral');

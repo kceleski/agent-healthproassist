@@ -18,7 +18,35 @@ export function useUserProfile(userId?: string) {
         .single();
 
       if (error) throw error;
-      return data as UserProfile;
+      
+      // Ensure the returned data conforms to UserProfile type by setting defaults
+      const userProfile: UserProfile = {
+        id: data?.id || '',
+        company: data?.company,
+        job_title: data?.job_title,
+        bio: data?.bio,
+        avatar_url: data?.avatar_url,
+        address: data?.address,
+        city: data?.city,
+        state: data?.state,
+        zip_code: data?.zip_code,
+        default_location: data?.default_location,
+        preferred_contact_method: data?.preferred_contact_method,
+        notification_preferences: data?.notification_preferences || {
+          email: true,
+          sms: false,
+          inApp: true
+        },
+        communication_preferences: data?.communication_preferences || {
+          receiveUpdates: true,
+          receiveReferrals: true,
+          allowContactSharing: false
+        },
+        created_at: data?.created_at,
+        updated_at: data?.updated_at
+      };
+      
+      return userProfile;
     },
     enabled: !!userId,
   });

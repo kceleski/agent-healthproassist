@@ -26,16 +26,21 @@ export const createReminder = async (reminder: Omit<Reminder, 'sent'>): Promise<
 
     if (error) throw error;
     
-    // Ensure the type is of ReminderType
+    // Ensure the returned data conforms to Reminder interface
     const validTypes: ReminderType[] = ['email', 'sms'];
-    const validType = validTypes.includes(data.type as any) 
-      ? (data.type as ReminderType) 
-      : 'email'; // default fallback
+    const validTimeBefore: ReminderTime[] = ['15min', '30min', '1hour', '1day'];
     
     const reminderData: Reminder = {
-      ...data,
-      type: validType,
-      time_before: data.time_before as ReminderTime
+      id: data.id as string,
+      appointment_id: data.appointment_id as string,
+      user_id: data.user_id as string,
+      type: validTypes.includes(data.type as any) 
+        ? (data.type as ReminderType) 
+        : 'email', // default fallback
+      time_before: validTimeBefore.includes(data.time_before as any)
+        ? (data.time_before as ReminderTime)
+        : '30min', // default fallback
+      sent: Boolean(data.sent)
     };
     
     return reminderData;
@@ -59,13 +64,16 @@ export const getRemindersByAppointmentId = async (appointmentId: string): Promis
     const validTimeBefore: ReminderTime[] = ['15min', '30min', '1hour', '1day'];
     
     const reminders: Reminder[] = (data || []).map(item => ({
-      ...item,
+      id: item.id as string,
+      appointment_id: item.appointment_id as string,
+      user_id: item.user_id as string,
       type: validTypes.includes(item.type as any) 
         ? (item.type as ReminderType) 
         : 'email', // default fallback
       time_before: validTimeBefore.includes(item.time_before as any)
         ? (item.time_before as ReminderTime)
-        : '30min' // default fallback
+        : '30min', // default fallback
+      sent: Boolean(item.sent)
     }));
     
     return reminders;

@@ -18,14 +18,14 @@ export const createTodoItem = async (todo: Omit<TodoItem, 'completed' | 'created
     
     // Transform the data to match TodoItem interface
     const todoItem: TodoItem = {
-      id: data.id,
-      user_id: data.assigned_to || data.user_id,
-      title: data.title,
-      description: data.description,
-      due_date: data.due_date,
+      id: data.id as string,
+      user_id: data.assigned_to as string || data.user_id as string,
+      title: data.title as string,
+      description: data.description as string | undefined,
+      due_date: data.due_date as string | undefined,
       priority: data.priority as 'low' | 'medium' | 'high',
       completed: data.status === 'completed',
-      created_at: data.created_at
+      created_at: data.created_at as string | undefined
     };
     
     return todoItem;
@@ -47,14 +47,14 @@ export const getTodoItems = async (userId: string): Promise<TodoItem[]> => {
     
     // Transform the data to match TodoItem interface
     const todoItems: TodoItem[] = (data || []).map(item => ({
-      id: item.id,
-      user_id: item.assigned_to || item.user_id,
-      title: item.title,
-      description: item.description,
-      due_date: item.due_date,
+      id: item.id as string,
+      user_id: item.assigned_to as string || item.user_id as string,
+      title: item.title as string,
+      description: item.description as string | undefined,
+      due_date: item.due_date as string | undefined,
       priority: item.priority as 'low' | 'medium' | 'high',
       completed: item.status === 'completed',
-      created_at: item.created_at
+      created_at: item.created_at as string | undefined
     }));
     
     return todoItems;
