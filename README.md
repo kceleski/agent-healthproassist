@@ -3,53 +3,105 @@
 
 ## Overview
 
-HealthProAssist is an innovative AI-powered healthcare assistant that combines advanced conversational AI with interactive avatar technology to provide personalized healthcare support.
+HealthProAssist is a modern web-based healthcare assistant platform that combines conversational AI, secure authentication, and interactive avatar technology. It is designed to provide personalized healthcare support through an intuitive and responsive user interface.
+
+---
+
+## Table of Contents
+
+- [Project Architecture](#project-architecture)
+- [Technologies Used](#technologies-used)
+- [Key Features](#key-features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [Deployment](#deployment)
+- [Security Notes](#security-notes)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+
+---
+
+## Project Architecture
+
+HealthProAssist utilizes a modular, scalable architecture based on modern fullstack best practices:
+
+- **Frontend:** Built with React, Vite, Typescript, and Tailwind CSS. The UI leverages shadcn/ui component library for accessible, beautiful components and Lucide icons for consistent iconography.
+- **Routing & State:** Uses React Router DOM for SPA navigation and @tanstack/react-query for data fetching and server-side state management.
+- **Authentication:** Handles user authentication and session management through Supabase.
+- **Backend:** Supabase (hosted PostgreSQL database, managed API, Auth) acts as the backend-as-a-service (BaaS) platform.
+- **AI Integration:** Features conversational AI using OpenAI's Assistant API, with responses rendered visually using D-ID's talking avatar technology.
+- **Deployment:** Ready for zero-config deployment on platforms like Vercel, Netlify, or any static hosting service.
+
+## Technologies Used
+
+- **React** (with Typescript): Main UI framework
+- **Vite:** Blazing-fast developer server and build tool
+- **Tailwind CSS:** Utility-first CSS framework for rapid UI styling
+- **shadcn/ui:** Headless, accessible components for React
+- **Lucide-react:** SVG icon library
+- **@tanstack/react-query:** Data fetching and caching
+- **Supabase:** Managed backend services (PostgreSQL, Auth, Storage, Edge Functions)
+- **OpenAI Assistant API:** Conversational AI engine
+- **D-ID API:** Talking avatar integration for dynamic AI responses
+- **Sonner:** For toast notifications and feedback
+
+**Other utilities:**
+- `react-hook-form`, `zod`: For form management and schema validation
+- `date-fns`: Modern date utility library
+
+---
 
 ## Key Features
 
-- 🤖 AI-Powered Conversation: Powered by OpenAI's Assistant API
-- 👥 Interactive Talking Avatar: Utilizes D-ID's advanced avatar technology
-- 🔒 Secure Authentication: Built with Supabase authentication
-- 🌐 Web-Based Platform: Accessible through a modern, responsive web interface
+- 🤖 **AI-Powered Conversation:** Personalized health support powered by OpenAI Assistant API
+- 👥 **Interactive Avatar:** Visual AI responses using D-ID's avatar/video technology
+- 🔒 **Secure Authentication:** User login, registration, and session management via Supabase
+- 📊 **Modern UI:** Responsive & accessible design with shadcn/ui and Tailwind CSS
+- 🌎 **Location Search:** Facility, contact, calendar, and medical record management (modular pages)
+- 🔔 **Real-Time Notifications:** Toast & in-app notifications for key user actions
+- 🏥 **Cloud-Hosted Backend:** Supabase for managed database, edge functions, and user profiles
+
+---
 
 ## Prerequisites
 
-Before getting started, ensure you have the following:
+Before getting started, ensure you have:
 
-### API Keys
-1. OpenAI API Key
-   - Access to the Assistants API
-   - Create an account at [OpenAI Platform](https://platform.openai.com/)
+1. **Node.js** (v18+ recommended)
+2. **API Keys** for:
+    - **OpenAI** (Assistant API): [OpenAI Platform](https://platform.openai.com/)
+    - **D-ID** (Avatar API): [D-ID Developer Portal](https://www.d-id.com/)
+    - **Supabase** (Project URL & ANON Key): [Supabase Dashboard](https://supabase.com/)
 
-2. D-ID API Key
-   - For talking avatar functionality
-   - Sign up at [D-ID Developer Portal](https://www.d-id.com/)
-
-3. Supabase Project
-   - Set up authentication and database
-   - Create a project at [Supabase](https://supabase.com/)
+---
 
 ## Installation
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/your-org/healthproassist.git
-   cd healthproassist
-   ```
+```bash
+git clone https://github.com/your-org/healthproassist.git
+cd healthproassist
+npm install
+```
 
-2. Install dependencies
-   ```bash
-   npm install
-   ```
+---
 
-3. Configure Environment Variables
-   Create a `.env` file with the following:
-   ```
-   VITE_OPENAI_API_KEY=your_openai_api_key
-   VITE_DID_API_KEY=your_did_api_key
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+## Environment Variables
+
+Create a `.env` file in the root project directory with:
+
+```
+VITE_OPENAI_API_KEY=your_openai_api_key
+VITE_DID_API_KEY=your_did_api_key
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+> ⚠️ **Do not commit your `.env` file or secrets.** For deployment, configure environment variables through your hosting provider.
+
+---
 
 ## Running the Application
 
@@ -57,28 +109,42 @@ Before getting started, ensure you have the following:
 npm run dev
 ```
 
+The app runs locally at [http://localhost:5173](http://localhost:5173) by default.
+
+---
+
 ## Deployment
 
-The application is ready to be deployed on platforms like Vercel, Netlify, or your preferred hosting service.
+HealthProAssist is ready for deployment on Vercel, Netlify, Cloudflare Pages, or any modern static platform. Be sure to configure the required environment variables in your hosting dashboard.
+
+---
 
 ## Security Notes
 
-- API keys are stored securely in environment variables
-- Sensitive information is never exposed client-side
-- Authentication is handled through Supabase
+- API keys are never exposed in client code; use environment variables and follow best practices.
+- Sensitive user data is protected with Supabase Auth and RLS (Row Level Security) policies.
+- Recommend disabling "Confirm Email" for testing, then enabling for production.
+
+---
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Submit a Pull Request
+
+---
 
 ## License
 
 Distributed under the MIT License.
 
+---
+
 ## Support
 
-For issues or questions, please open a GitHub issue or contact support@healthproassist.com.
+- For issues, open a GitHub issue
+- For direct contact: support@healthproassist.com
+
