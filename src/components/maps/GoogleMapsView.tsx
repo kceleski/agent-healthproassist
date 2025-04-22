@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +33,9 @@ const GoogleMapsView = () => {
         .not('longitude', 'is', null);
       
       if (error) throw error;
+      
+      // Log data for debugging
+      console.log('Fetched facilities:', data);
       return data as Facility[];
     }
   });
@@ -62,14 +65,14 @@ const GoogleMapsView = () => {
           <div className="flex items-center justify-center h-[600px] bg-slate-50 rounded-lg">
             <Loader2 className="h-8 w-8 animate-spin text-healthcare-600" />
           </div>
-        ) : (
+        ) : facilities && facilities.length > 0 ? (
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={mapCenter}
             zoom={12}
             options={defaultOptions}
           >
-            {facilities?.map((facility) => (
+            {facilities.map((facility) => (
               <MarkerF
                 key={facility.id}
                 position={{ 
@@ -116,6 +119,11 @@ const GoogleMapsView = () => {
               </InfoWindowF>
             )}
           </GoogleMap>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[600px] bg-slate-50 rounded-lg">
+            <p className="text-lg text-muted-foreground mb-2">No facility data available</p>
+            <p className="text-sm text-muted-foreground">Try searching for facilities first</p>
+          </div>
         )}
       </LoadScript>
     </div>

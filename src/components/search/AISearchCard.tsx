@@ -14,6 +14,7 @@ interface AISearchCardProps {
 export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
   const { toast } = useToast();
   const [aiQuery, setAIQuery] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const { sendMessage, isConnected } = useAISearch(onFiltersUpdate);
 
   const handleAISearch = () => {
@@ -26,7 +27,13 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
       return;
     }
 
+    setIsProcessing(true);
     sendMessage(aiQuery);
+    
+    // Reset processing state after a short delay
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 2000);
   };
 
   return (
@@ -47,11 +54,11 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
           />
           <Button 
             onClick={handleAISearch}
-            disabled={!isConnected}
+            disabled={!isConnected || isProcessing}
             className="bg-healthcare-600 hover:bg-healthcare-700"
           >
             <Bot className="h-4 w-4 mr-2" />
-            Ask AI
+            {isProcessing ? "Processing..." : "Ask AI"}
           </Button>
         </div>
         {!isConnected && (
@@ -59,6 +66,14 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
             Connecting to AI assistant...
           </p>
         )}
+        <div className="text-sm text-muted-foreground">
+          <p>Try queries like:</p>
+          <ul className="list-disc pl-5 mt-1 space-y-1">
+            <li>"Find memory care facilities in Phoenix with transportation services"</li>
+            <li>"Show me assisted living options with pet-friendly amenities"</li>
+            <li>"Nursing facilities with 24/7 medical staff near Scottsdale"</li>
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

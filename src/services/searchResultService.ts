@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 export interface SearchResultData {
   query: string;
@@ -27,13 +27,16 @@ export const saveSearchResult = async (searchData: SearchResultData) => {
         location: searchData.location,
         facility_type: searchData.facility_type,
         amenities: searchData.amenities,
-        results: JSON.stringify(searchData.results),
+        results: JSON.stringify(searchData.results || []), // Ensure results is never null
         user_id: user.id
       })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error inserting search result:', error);
+      throw error;
+    }
     
     return data;
   } catch (error) {
@@ -59,4 +62,3 @@ export const getSearchResults = async (userId: string) => {
     return [];
   }
 };
-

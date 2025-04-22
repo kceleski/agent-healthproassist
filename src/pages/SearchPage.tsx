@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { AISearchCard } from "@/components/search/AISearchCard";
 import { SearchCriteriaCard } from "@/components/search/SearchCriteriaCard";
 import { SearchTipsCard } from "@/components/search/SearchTipsCard";
-import { saveSearchResult } from "@/services/searchService";
+import { saveSearchResult } from "@/services/searchResultService";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
@@ -93,6 +93,8 @@ const SearchPage = () => {
       
       query += " senior care facility";
       
+      console.log("Search query:", query);
+      
       // Store search parameters in session storage for the map page
       sessionStorage.setItem('facilitySearchParams', JSON.stringify({
         query,
@@ -102,13 +104,17 @@ const SearchPage = () => {
       }));
       
       // Save search result to database
-      await saveSearchResult({
-        query,
-        location,
-        facility_type: selectedCareType,
-        amenities: selectedAmenities,
-        results: []
-      });
+      try {
+        await saveSearchResult({
+          query,
+          location,
+          facility_type: selectedCareType,
+          amenities: selectedAmenities,
+          results: []
+        });
+      } catch (error) {
+        console.error('Error saving search result:', error);
+      }
       
       // Navigate to map page
       navigate('/map');
@@ -119,12 +125,13 @@ const SearchPage = () => {
         description: "An error occurred while searching. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="container max-w-5xl mx-auto">
+    <div className="container max-w-5xl mx-auto py-6">
       <Helmet>
         <title>Search Facilities - HealthProAssist</title>
         <meta name="description" content="Search for senior care facilities based on location, care type, and amenities." />
