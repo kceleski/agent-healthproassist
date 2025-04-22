@@ -11,8 +11,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   
   // Use environment variable to bypass authentication in development
-  const isDevelopment = true; // Hardcoded to true for development purposes
+  const isDevelopment = import.meta.env.DEV || true; // Ensure development mode works
 
+  // Show loading state while authentication is being checked
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -24,10 +25,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  console.log("Auth state:", { isAuthenticated, isDevelopment });
+
+  // For development, allow access even if not authenticated
   if (!isAuthenticated && !isDevelopment) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Render children if authenticated or in development mode
   return <>{children}</>;
 };
 

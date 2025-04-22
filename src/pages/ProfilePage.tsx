@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,7 +26,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Check, CreditCard, Lock, Save, User, ArrowRight } from "lucide-react";
 
@@ -72,15 +71,36 @@ const securityFormSchema = z.object({
 });
 
 const ProfilePage = () => {
-  const { toast } = useToast();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
+  
+  console.log("ProfilePage rendering with user:", user);
+
+  useEffect(() => {
+    // Check if component is mounted properly
+    console.log("ProfilePage mounted");
+    
+    try {
+      // Add error boundary
+      if (!user && !import.meta.env.DEV) {
+        console.warn("No user available in ProfilePage");
+      }
+    } catch (error) {
+      console.error("Error in ProfilePage useEffect:", error);
+      setRenderError(error instanceof Error ? error.message : "Unknown error");
+    }
+
+    return () => {
+      console.log("ProfilePage unmounted");
+    };
+  }, [user]);
   
   // Profile form
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.name || "",
+      name: user?.name || "User",
       email: user?.email || "",
       phone: "(415) 555-1234",
       companyName: "Healthcare Placements Inc.",
@@ -117,9 +137,8 @@ const ProfilePage = () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been updated successfully.",
+    toast.success("Profile updated", {
+      description: "Your profile information has been updated successfully."
     });
     
     setIsSubmitting(false);
@@ -132,9 +151,8 @@ const ProfilePage = () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
-    toast({
-      title: "Notification preferences updated",
-      description: "Your notification preferences have been saved.",
+    toast.success("Notification preferences updated", {
+      description: "Your notification preferences have been saved."
     });
     
     setIsSubmitting(false);
@@ -147,9 +165,8 @@ const ProfilePage = () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully.",
+    toast.success("Password updated", {
+      description: "Your password has been changed successfully."
     });
     
     securityForm.reset({
@@ -161,8 +178,41 @@ const ProfilePage = () => {
     setIsSubmitting(false);
   };
 
+  // If there's a rendering error, show it
+  if (renderError) {
+    return (
+      <div className="p-6 bg-destructive/10 rounded-lg">
+        <h2 className="text-xl font-bold text-destructive">Error Rendering Profile</h2>
+        <p className="mt-2">{renderError}</p>
+        <Button 
+          variant="outline" 
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
+          Reload Page
+        </Button>
+      </div>
+    );
+  }
+
+  // If there's no user but we're somehow on this page, show a message
+  if (!user && !import.meta.env.DEV) {
+    return (
+      <div className="p-6">
+        <h2 className="text-xl font-bold">Profile Not Available</h2>
+        <p className="mt-2">Please login to view your profile.</p>
+        <Button 
+          className="mt-4 bg-healthcare-600"
+          onClick={() => window.location.href = "/login"}
+        >
+          Go to Login
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-muted-foreground">
@@ -213,7 +263,7 @@ const ProfilePage = () => {
               <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
-                  <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
                   <h4 className="text-sm font-medium">Profile Photo</h4>
@@ -348,7 +398,7 @@ const ProfilePage = () => {
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
                 <div className="space-y-1">
-                  <h4 className="font-medium">Current Plan: Basic</h4>
+                  <h4 className="font-medium">Current Plan: {user?.subscription || 'Basic'}</h4>
                   <p className="text-sm text-muted-foreground">
                     $49/month • Renewal on Nov 1, 2023
                   </p>

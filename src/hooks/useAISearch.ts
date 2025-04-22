@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,9 +15,9 @@ export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void)
 
   // Connect to the Supabase edge function via WebSocket
   useEffect(() => {
-    // Get the Supabase project ID from the URL
-    const supabaseUrl = new URL(supabase.supabaseUrl);
-    const projectRef = supabaseUrl.hostname.split('.')[0];
+    // Get the Supabase project URL and extract project reference
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zpfaojrmcozacnsnwmra.supabase.co';
+    const projectRef = supabaseUrl.match(/https:\/\/(.*?)\.supabase\.co/)?.[1] || 'zpfaojrmcozacnsnwmra';
     
     // Construct WebSocket URL to the edge function
     const wsUrl = `wss://${projectRef}.supabase.co/functions/v1/ai-search`;
