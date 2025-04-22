@@ -1,31 +1,84 @@
 
-# HealthProAssist AI Assistant Integration
+# HealthProAssist AI Healthcare Assistant
 
-This application integrates OpenAI's Assistant API with D-ID's talking avatar technology to create an interactive healthcare assistant.
+## Overview
 
-## Setup Instructions
+HealthProAssist is an innovative AI-powered healthcare assistant that combines advanced conversational AI with interactive avatar technology to provide personalized healthcare support.
 
-### Requirements
+## Key Features
 
-To use this application, you'll need:
-1. An OpenAI API key with access to the Assistants API
-2. A D-ID API key for the talking avatar functionality
-3. An Assistant ID from OpenAI (you need to create this in the OpenAI platform)
+- 🤖 AI-Powered Conversation: Powered by OpenAI's Assistant API
+- 👥 Interactive Talking Avatar: Utilizes D-ID's advanced avatar technology
+- 🔒 Secure Authentication: Built with Supabase authentication
+- 🌐 Web-Based Platform: Accessible through a modern, responsive web interface
 
-### Creating an OpenAI Assistant
+## Prerequisites
 
-1. Go to the [OpenAI platform](https://platform.openai.com/assistants)
-2. Create a new assistant focused on healthcare advice
-3. Copy the Assistant ID and replace `"YOUR_ASSISTANT_ID"` in the code
+Before getting started, ensure you have the following:
 
-### Getting Started
+### API Keys
+1. OpenAI API Key
+   - Access to the Assistants API
+   - Create an account at [OpenAI Platform](https://platform.openai.com/)
 
-1. Enter your OpenAI API key and D-ID API key in the application
-2. Start asking health-related questions to interact with the AI assistant
-3. The AI's responses will be animated using the D-ID talking avatar
+2. D-ID API Key
+   - For talking avatar functionality
+   - Sign up at [D-ID Developer Portal](https://www.d-id.com/)
 
-## Important Notes
+3. Supabase Project
+   - Set up authentication and database
+   - Create a project at [Supabase](https://supabase.com/)
 
-- API keys are stored in your browser's local storage only
-- The application maintains a conversation thread with the OpenAI assistant
-- For production use, API calls should be routed through a backend to protect API keys
+## Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/your-org/healthproassist.git
+   cd healthproassist
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Configure Environment Variables
+   Create a `.env` file with the following:
+   ```
+   VITE_OPENAI_API_KEY=your_openai_api_key
+   VITE_DID_API_KEY=your_did_api_key
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+## Running the Application
+
+```bash
+npm run dev
+```
+
+## Deployment
+
+The application is ready to be deployed on platforms like Vercel, Netlify, or your preferred hosting service.
+
+## Security Notes
+
+- API keys are stored securely in environment variables
+- Sensitive information is never exposed client-side
+- Authentication is handled through Supabase
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License.
+
+## Support
+
+For issues or questions, please open a GitHub issue or contact support@healthproassist.com.
