@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   company?: string;
@@ -23,4 +22,26 @@ export interface UserProfile {
   };
   created_at?: string;
   updated_at?: string;
+}
+
+export interface WelcomeTabsProps {
+  preferences: {
+    notification_preferences: {
+      email: boolean;
+      sms: boolean;
+      inApp: boolean;
+    };
+    communication_preferences: {
+      receiveUpdates: boolean;
+      receiveReferrals: boolean;
+      allowContactSharing: boolean;
+    };
+    bio?: string;
+    default_location?: string;
+  };
+  loading: boolean;
+  onInputChange: (field: string, value: string) => void;
+  onNotificationChange: (field: "email" | "sms" | "inApp", value: boolean) => void;
+  onCommunicationPrefChange: (field: "receiveUpdates" | "receiveReferrals" | "allowContactSharing", value: boolean) => void;
+  onSave: () => void;
 }

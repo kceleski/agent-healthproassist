@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
@@ -133,8 +134,8 @@ const FavoritesPage = () => {
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <CardTitle>Your Saved Facilities</CardTitle>
-            <div className="relative flex items-center gap-4">
-              <div className="relative flex-grow">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search facilities..."
@@ -143,8 +144,8 @@ const FavoritesPage = () => {
                   className="pl-8 w-[250px]"
                 />
               </div>
-              <div>
-                <Label className="mr-2">Facility Type:</Label>
+              <div className="flex items-center">
+                <Label className="mr-2 whitespace-nowrap">Facility Type:</Label>
                 <Select 
                   value={facilityType} 
                   onValueChange={setFacilityType}
@@ -152,7 +153,7 @@ const FavoritesPage = () => {
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select Type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" sideOffset={0} className="bg-white dark:bg-slate-900 border-white/30 dark:border-slate-700/30 z-50">
                     <SelectItem value="all">All Facilities</SelectItem>
                     <SelectItem value="assisted">Assisted Living</SelectItem>
                     <SelectItem value="memory">Memory Care</SelectItem>
