@@ -13,11 +13,13 @@ export interface SearchResultData {
 // Function to save search result to Supabase
 export const saveSearchResult = async (searchData: SearchResultData) => {
   try {
+    // Try to get the current user
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user) {
-      console.warn('No authenticated user. Search results not saved.');
-      return null;
+    // Check if there's an authenticated user
+    const userId = user?.id;
+    if (!userId) {
+      console.warn('No authenticated user. Search results will not be saved to user history.');
     }
 
     const { data, error } = await supabase
@@ -28,7 +30,7 @@ export const saveSearchResult = async (searchData: SearchResultData) => {
         facility_type: searchData.facility_type,
         amenities: searchData.amenities,
         results: JSON.stringify(searchData.results || []), // Ensure results is never null
-        user_id: user.id
+        user_id: userId // Will be null for non-authenticated users
       })
       .select()
       .single();

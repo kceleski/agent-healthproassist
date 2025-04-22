@@ -33,7 +33,16 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
     // Reset processing state after a short delay
     setTimeout(() => {
       setIsProcessing(false);
+      // Clear the input after processing
+      setAIQuery("");
     }, 2000);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAISearch();
+    }
   };
 
   return (
@@ -50,7 +59,9 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
             placeholder="E.g., 'Looking for memory care facilities in Phoenix with activities for seniors'"
             value={aiQuery}
             onChange={(e) => setAIQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1"
+            disabled={!isConnected || isProcessing}
           />
           <Button 
             onClick={handleAISearch}
