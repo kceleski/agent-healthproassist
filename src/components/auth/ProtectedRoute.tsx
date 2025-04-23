@@ -5,9 +5,9 @@ type ProtectedRouteProps = {
   children: React.ReactNode;
 };
 
-// TEMP: Auth is completely disabled for demo purposes!
+// Authentication is bypassed for demo purposes
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  // Directly render children, do NOT check authentication
+  // Directly render children, demo mode active
   console.log("Auth check bypassed - demo mode active");
   return <>{children}</>;
 };

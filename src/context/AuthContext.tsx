@@ -10,10 +10,12 @@ const DEMO_USER = {
   name: 'Demo User',
   demoTier: 'premium',
   subscription: 'premium',
+  role: 'Consultant', // Added role property
   user_metadata: {
     name: 'Demo User',
     demo_tier: 'premium',
-    subscription: 'premium'
+    subscription: 'premium',
+    role: 'Consultant' // Added role to metadata as well
   }
 };
 

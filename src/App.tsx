@@ -1,9 +1,8 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/context/AuthContext";
 import { Helmet } from "react-helmet";
@@ -55,9 +54,12 @@ const App = () => (
           </Helmet>
           <BrowserRouter>
             <Routes>
+              {/* Redirect root to dashboard for demo purposes */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              
               {/* Public routes */}
               <Route element={<MainLayout />}>
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
