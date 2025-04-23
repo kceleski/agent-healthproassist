@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Users, Building, DollarSign, Activity, Bell, FileText } from "lucide-react";
+import NotificationsOverview from "@/components/NotificationsOverview";
 
 const summaryStats = [
   {
@@ -83,11 +84,13 @@ const notifications = [
 export default function DashboardPage() {
   const { user } = useAuth();
   const initials = user?.name?.split(" ").map((n:string) => n[0]).join("") || "U";
+  
+  console.log("Rendering DashboardPage with user:", user);
 
   return (
     <div className="py-8 px-4 max-w-5xl mx-auto">
       {/* HEADER - avatar, summary, info */}
-      <Card className="glass-card mb-8">
+      <Card className="mb-8">
         <CardHeader className="pb-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -137,8 +140,9 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+      
       {/* BODY - Tabs style */}
-      <Card className="glass-card">
+      <Card>
         <CardContent>
           <Tabs defaultValue="activity" className="py-8">
             <TabsList className="gap-4 mb-6">
@@ -146,6 +150,7 @@ export default function DashboardPage() {
               <TabsTrigger value="clients">Clients</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
+            
             {/* ACTIVITY TAB */}
             <TabsContent value="activity" className="space-y-6">
               <div>
@@ -164,14 +169,15 @@ export default function DashboardPage() {
                 </div>
               </div>
             </TabsContent>
+            
             {/* CLIENTS TAB */}
             <TabsContent value="clients" className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Your Clients</h3>
-                {/* Could map user clients here */}
                 <div className="text-muted-foreground">Client details coming soon...</div>
               </div>
             </TabsContent>
+            
             {/* NOTIFICATIONS TAB */}
             <TabsContent value="notifications" className="space-y-6">
               <div>
@@ -196,4 +202,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
