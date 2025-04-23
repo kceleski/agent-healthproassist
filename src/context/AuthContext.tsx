@@ -104,7 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      
+      // Use signUp with auto sign in enabled
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -112,11 +114,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name,
             demo_tier: 'basic',
             subscription: 'basic'
-          }
+          },
+          // This ensures the user is automatically signed in after registration
+          emailRedirectTo: window.location.origin
         }
       });
       
       if (error) throw error;
+      
+      // If no session was created (which shouldn't happen but just in case)
+      if (!data.session) {
+        // Try to sign in with the credentials after registration
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (signInError) {
+          console.warn('Auto sign-in after registration failed:', signInError);
+          // We don't throw here as the account was created successfully
+        }
+      }
       
     } catch (error: any) {
       console.error('Registration failed:', error);

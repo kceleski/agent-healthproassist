@@ -56,7 +56,8 @@ const RegisterPage = () => {
         title: "Account created successfully!",
         description: "Welcome to HealthProAssist.",
       });
-      navigate("/dashboard");
+      // Navigate to welcome page instead of dashboard
+      navigate("/welcome");
     } catch (error) {
       // Error handling is done in the register function
       setIsLoading(false);
