@@ -55,6 +55,9 @@ const MapPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Facility[]>([]);
   const [savedFacilities, setSavedFacilities] = useState<string[]>([]);
+  const [savedSearches, setSavedSearches] = useState<any[]>([]);
+  const [showSavedSearches, setShowSavedSearches] = useState<boolean>(false);
+  const [searchSaved, setSearchSaved] = useState<boolean>(false);
 
   useEffect(() => {
     const params = sessionStorage.getItem('facilitySearchParams');
@@ -65,6 +68,12 @@ const MapPage = () => {
     const saved = localStorage.getItem('savedFacilities');
     if (saved) {
       setSavedFacilities(JSON.parse(saved));
+    }
+    
+    // Get saved searches from local storage
+    const searches = localStorage.getItem('savedSearches');
+    if (searches) {
+      setSavedSearches(JSON.parse(searches));
     }
   }, []);
 
@@ -113,6 +122,51 @@ const MapPage = () => {
         setIsLoading(false);
       }
     }
+  };
+  
+  const handleSaveSearch = () => {
+    if (searchParams && searchResults.length > 0) {
+      // Create a new saved search object
+      const newSavedSearch = {
+        id: Date.now().toString(),
+        query: searchParams.query,
+        location: searchParams.location,
+        careType: searchParams.careType,
+        amenities: searchParams.amenities,
+        results: searchResults,
+        date: new Date().toISOString()
+      };
+      
+      // Update savedSearches state and localStorage
+      const updatedSearches = [...savedSearches, newSavedSearch];
+      setSavedSearches(updatedSearches);
+      localStorage.setItem('savedSearches', JSON.stringify(updatedSearches));
+      
+      // Show saved confirmation
+      setSearchSaved(true);
+      toast.success('Search saved successfully');
+      
+      // Auto show the saved searches accordion
+      setTimeout(() => {
+        setShowSavedSearches(true);
+      }, 500);
+    } else {
+      toast.error('No search results to save');
+    }
+  };
+  
+  const loadSavedSearch = (savedSearch: any) => {
+    // Set the search parameters
+    setSearchParams(savedSearch);
+    sessionStorage.setItem('facilitySearchParams', JSON.stringify(savedSearch));
+    
+    // Load the results
+    setSearchResults(savedSearch.results || []);
+    
+    // Close the accordion
+    setShowSavedSearches(false);
+    
+    toast.success('Saved search loaded successfully');
   };
 
   return (
@@ -187,20 +241,7 @@ const MapPage = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MapPin className="h-5 w-5 mr-2" />
-                Interactive Facility Map
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <GoogleMapsView />
-            </CardContent>
-          </Card>
-        </div>
-
+        {/* LEFT COLUMN - Search Results */}
         <div>
           <Card>
             <CardHeader>
@@ -282,10 +323,145 @@ const MapPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* CENTER COLUMN - Map View */}
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MapPin className="h-5 w-5 mr-2" />
+                Interactive Facility Map
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <GoogleMapsView />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* RIGHT COLUMN - Filters and Save Search */}
+        <div>
+          {/* Save Search Section */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Save Your Search</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {searchSaved ? (
+                <div>
+                  <Button 
+                    variant="outline"
+                    className="w-full mb-4"
+                    onClick={() => setShowSavedSearches(!showSavedSearches)}
+                  >
+                    {showSavedSearches ? "Hide Saved Searches" : "View Saved Searches"}
+                  </Button>
+                  
+                  {showSavedSearches && savedSearches.length > 0 && (
+                    <div className="mt-4 space-y-2 border rounded-lg p-3">
+                      <h3 className="font-medium mb-2">Your Saved Searches</h3>
+                      {savedSearches.map((search) => (
+                        <div 
+                          key={search.id} 
+                          className="p-2 border rounded hover:bg-muted cursor-pointer"
+                          onClick={() => loadSavedSearch(search)}
+                        >
+                          <div className="font-medium">{search.location}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(search.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  variant="default"
+                  className="w-full"
+                  onClick={handleSaveSearch}
+                  disabled={!searchResults.length}
+                >
+                  Save This Search
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Filters Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Search Filters</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2">
+                {careTypes.map((type) => (
+                  <div key={type.id} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`care-type-${type.id}`}
+                      name="careType"
+                      className="mr-2"
+                      checked={searchParams?.careType === type.id}
+                      onChange={() => {
+                        if (searchParams) {
+                          const updatedParams = { ...searchParams, careType: type.id };
+                          setSearchParams(updatedParams);
+                        }
+                      }}
+                    />
+                    <label htmlFor={`care-type-${type.id}`} className="text-sm">
+                      {type.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-4">
+                <h3 className="font-medium mb-2">Amenities</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {amenities.map((amenity) => (
+                    <div key={amenity.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`amenity-${amenity.id}`}
+                        className="mr-2"
+                        checked={searchParams?.amenities?.includes(amenity.id) || false}
+                        onChange={() => {
+                          if (searchParams) {
+                            const updatedAmenities = searchParams.amenities?.includes(amenity.id)
+                              ? searchParams.amenities.filter((id: string) => id !== amenity.id)
+                              : [...(searchParams.amenities || []), amenity.id];
+                            
+                            const updatedParams = { 
+                              ...searchParams, 
+                              amenities: updatedAmenities 
+                            };
+                            setSearchParams(updatedParams);
+                          }
+                        }}
+                      />
+                      <label htmlFor={`amenity-${amenity.id}`} className="text-sm">
+                        {amenity.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                className="w-full mt-4"
+                onClick={handleRefreshSearch}
+              >
+                Apply Filters
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
 };
 
 export default MapPage;
-

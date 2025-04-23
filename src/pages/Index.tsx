@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,16 +15,13 @@ interface Message {
 
 // API keys
 const OPENAI_API_KEY = "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";
-const DID_API_KEY = "Z29vZ2xlLW9hdXRoMnwxMDczMTY2OTQxNDk2MjA5NTE1NzI6VHRmVE13cXBSQWk4eU5qTHpLT1J4"; 
 const ASSISTANT_ID = "asst_83MVmU8KUWFD8zsJOIVjh9i2";
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [showWidget, setShowWidget] = useState(false);
 
   // Assistant thread management
@@ -64,7 +62,7 @@ const Index = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Send message to OpenAI Assistant and animate the response with D-ID
+  // Send message to OpenAI Assistant
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
@@ -140,61 +138,8 @@ const Index = () => {
         const lastMessage = messagesData.data[0];
         const assistantResponse = lastMessage.content[0].text.value;
         
-        // 5. Send to D-ID for animation
-        const didResponse = await fetch('https://api.d-id.com/talks', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            script: {
-              type: 'text',
-              input: assistantResponse,
-              provider: {
-                type: 'microsoft',
-                voice_id: 'en-US-AriaNeural'
-              }
-            },
-            source_url: 'https://create-images-results.d-id.com/DefaultPresenters/Erica_f/image.jpeg',
-            config: { fluent: true, pad_audio: 0 }
-          })
-        });
-        
-        if (!didResponse.ok) throw new Error('Failed to create D-ID talk');
-        
-        const didData = await didResponse.json();
-        
-        // 6. Poll for D-ID result
-        let didStatus = 'created';
-        let resultUrl = '';
-        
-        while (didStatus !== 'done') {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const didStatusResponse = await fetch(`https://api.d-id.com/talks/${didData.id}`, {
-            headers: {
-              'Authorization': `Basic ${DID_API_KEY}`,
-            }
-          });
-          
-          if (!didStatusResponse.ok) throw new Error('Failed to check D-ID status');
-          
-          const didStatusData = await didStatusResponse.json();
-          didStatus = didStatusData.status;
-          
-          if (didStatus === 'done') {
-            resultUrl = didStatusData.result_url;
-          }
-        }
-        
-        // 7. Add assistant message to chat and play video
+        // 5. Add assistant message to chat
         setMessages(prev => [...prev, { role: 'assistant', content: assistantResponse }]);
-        
-        if (videoRef.current && resultUrl) {
-          videoRef.current.src = resultUrl;
-          videoRef.current.play();
-        }
       }
     } catch (error) {
       console.error('Error in chat process:', error);
@@ -282,30 +227,10 @@ const Index = () => {
                 </div>
               ) : (
                 <div className="w-full h-full flex flex-col items-center">
-                  {/* D-ID Avatar Container */}
-                  <div 
-                    id="avatar-container" 
-                    ref={avatarContainerRef} 
-                    className="w-full h-[350px] rounded-lg bg-gray-100 flex items-center justify-center"
-                  >
-                    {messages.length === 0 && (
-                      <div className="text-center text-muted-foreground">
-                        Your assistant will appear here
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Fallback video player for D-ID API responses */}
-                  {videoRef.current && (
-                    <video 
-                      ref={videoRef}
-                      className="w-full max-w-md rounded-lg shadow-lg mt-4"
-                      controls
-                      autoPlay
-                      playsInline
-                      style={{ display: videoRef.current.src ? 'block' : 'none' }}
-                    />
-                  )}
+                  <elevenlabs-convai 
+                    agent-id="R9M1zBEUj8fTGAij61wb" 
+                    className="w-full h-[350px] rounded-lg bg-gray-100"
+                  />
                 </div>
               )}
             </CardContent>
