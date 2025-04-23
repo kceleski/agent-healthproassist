@@ -1,19 +1,31 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
+import React, { createContext, useContext, useState } from 'react';
+import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-import { syncUserData, updateUserSubscription } from '@/services/userService';
 
-// Extend the User type to include our custom properties
-interface ExtendedUser extends User {
-  name?: string;
-  demoTier?: string;
-  subscription?: string;
-}
+// Mock user for demo purposes
+const DEMO_USER = {
+  id: 'demo-user-id',
+  email: 'demo@example.com',
+  name: 'Demo User',
+  demoTier: 'premium',
+  subscription: 'premium',
+  user_metadata: {
+    name: 'Demo User',
+    demo_tier: 'premium',
+    subscription: 'premium'
+  }
+};
+
+// Mock session for demo purposes
+const DEMO_SESSION = {
+  access_token: 'demo-token',
+  refresh_token: 'demo-refresh-token',
+  user: DEMO_USER
+} as unknown as Session;
 
 type AuthContextType = {
-  user: ExtendedUser | null;
+  user: typeof DEMO_USER | null;
   session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -29,214 +41,43 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<ExtendedUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  // For demo purposes, always provide an authenticated user
+  const [user] = useState(DEMO_USER);
+  const [session] = useState(DEMO_SESSION);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        
-        if (session?.user) {
-          // Extend the user with our custom properties
-          const extendedUser: ExtendedUser = {
-            ...session.user,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            demoTier: session.user.user_metadata?.demo_tier || 'basic',
-            subscription: session.user.user_metadata?.subscription || 'basic'
-          };
-          setUser(extendedUser);
-          
-          // If we have a user, sync their data to our users table
-          setTimeout(async () => {
-            await syncUserData(session.user.id, {
-              email: session.user.email || '',
-              full_name: session.user.user_metadata.name || ''
-            });
-          }, 0);
-        } else {
-          setUser(null);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        // Extend the user with our custom properties
-        const extendedUser: ExtendedUser = {
-          ...session.user,
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          demoTier: session.user.user_metadata?.demo_tier || 'basic',
-          subscription: session.user.user_metadata?.subscription || 'basic'
-        };
-        setUser(extendedUser);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      toast.error(error.message || 'Failed to sign in');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  // Mock implementations of auth functions for demo
+  const login = async () => {
+    toast.success("Demo login successful");
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    try {
-      setLoading(true);
-      
-      // Use signUp with auto sign in enabled
-      const { error, data } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            demo_tier: 'basic',
-            subscription: 'basic'
-          },
-          // This ensures the user is automatically signed in after registration
-          emailRedirectTo: window.location.origin
-        }
-      });
-      
-      if (error) throw error;
-      
-      // If no session was created (which shouldn't happen but just in case)
-      if (!data.session) {
-        // Try to sign in with the credentials after registration
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        
-        if (signInError) {
-          console.warn('Auto sign-in after registration failed:', signInError);
-          // We don't throw here as the account was created successfully
-        }
-      }
-      
-    } catch (error: any) {
-      console.error('Registration failed:', error);
-      toast.error(error.message || 'Failed to create account');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  const register = async () => {
+    toast.success("Demo registration successful");
   };
 
   const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+    toast.success("Demo logout successful");
   };
 
   // Demo features preserved from previous implementation
   const enableWarmLeads = async () => {
-    try {
-      setLoading(true);
-      if (user) {
-        // This would be implemented with a real database update in production
-        toast.success('Warm leads feature enabled!');
-      }
-    } catch (error) {
-      console.error('Enabling warm leads failed:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    toast.success('Demo: Warm leads feature enabled!');
+    return;
   };
 
   const useWarmLeadCredit = async (): Promise<boolean> => {
-    try {
-      setLoading(true);
-      if (user) {
-        // This would be implemented with a real database update in production
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Using warm lead credit failed:', error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    toast.success('Demo: Warm lead credit used!');
+    return true;
   };
 
-  const purchaseWarmLeadCredits = async (quantity: number): Promise<void> => {
-    try {
-      setLoading(true);
-      if (user) {
-        // This would be implemented with a real purchase flow in production
-        toast.success(`Purchased ${quantity} warm lead credits!`);
-      }
-    } catch (error) {
-      console.error('Purchasing warm lead credits failed:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  const purchaseWarmLeadCredits = async (): Promise<void> => {
+    toast.success(`Demo: Purchased warm lead credits!`);
+    return;
   };
 
   const updateDemoTier = async (tier: 'basic' | 'premium') => {
-    if (user) {
-      try {
-        // Update the user metadata in Supabase
-        const { data, error } = await supabase.auth.updateUser({
-          data: {
-            demo_tier: tier,
-            subscription: tier
-          }
-        });
-
-        if (error) throw error;
-
-        // Update local user state
-        setUser((prevUser) => {
-          if (!prevUser) return null;
-          return {
-            ...prevUser,
-            demoTier: tier,
-            subscription: tier,
-            user_metadata: {
-              ...prevUser.user_metadata,
-              demo_tier: tier,
-              subscription: tier
-            }
-          };
-        });
-
-        // Also update the user in the database via our service
-        await updateUserSubscription(user.id, tier);
-        
-        toast.success(`Upgraded to ${tier} tier!`);
-      } catch (error: any) {
-        console.error('Error updating tier:', error);
-        toast.error(error.message || 'Failed to update subscription tier');
-      }
-    }
+    toast.success(`Demo: Upgraded to ${tier} tier!`);
+    return;
   };
 
   return (
@@ -248,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        isAuthenticated: !!user,
+        isAuthenticated: true, // Always authenticated in demo mode
         enableWarmLeads,
         useWarmLeadCredit,
         purchaseWarmLeadCredits,

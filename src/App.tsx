@@ -64,12 +64,8 @@ const App = () => (
                 <Route path="/index" element={<Index />} />
               </Route>
               
-              {/* Protected routes */}
-              <Route element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }>
+              {/* All routes are now accessible without authentication for demo */}
+              <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/map" element={<MapPage />} />
