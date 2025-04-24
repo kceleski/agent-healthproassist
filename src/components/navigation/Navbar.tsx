@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const scrollDirection = useScrollDirection();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +43,6 @@ const Navbar = () => {
   };
 
   const handleAvaClick = () => {
-    // Trigger elevenlabs agent
     console.log('AVA clicked');
   };
 
@@ -50,9 +50,8 @@ const Navbar = () => {
     <header
       className={cn(
         'fixed bottom-0 left-0 right-0 z-40 transition-all duration-300',
-        scrolled
-          ? 'bg-white shadow-sm py-3'
-          : 'bg-white py-5'
+        scrolled ? 'bg-white shadow-sm py-3' : 'bg-white py-5',
+        scrollDirection === 'down' ? 'translate-y-full' : 'translate-y-0'
       )}
     >
       <div className="container flex items-center justify-between">
@@ -64,7 +63,6 @@ const Navbar = () => {
           />
         </Link>
 
-        {/* Desktop Menu */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             to="/"
@@ -97,7 +95,6 @@ const Navbar = () => {
           </Link>
         </nav>
 
-        {/* Desktop Auth Buttons - Moved to the far right with some left margin */}
         <div className="hidden md:flex items-center gap-4 ml-auto">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -136,7 +133,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -145,7 +141,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t animate-slide-in">
           <div className="container py-4 flex flex-col gap-4">
