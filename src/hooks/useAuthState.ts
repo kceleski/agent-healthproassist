@@ -21,7 +21,7 @@ export const useAuthState = () => {
             name: session.user.user_metadata?.full_name || session.user.email,
           };
           setUser(userData);
-        } else {
+        } else if (!user?.isDemo) { // Only clear user if not demo
           setUser(null);
         }
       }
@@ -45,9 +45,7 @@ export const useAuthState = () => {
     };
   }, []);
 
-  const toggleAvatar = () => {
-    setShowAvatar(!showAvatar);
-  };
+  const toggleAvatar = () => setShowAvatar(!showAvatar);
 
   return {
     user,
@@ -55,5 +53,6 @@ export const useAuthState = () => {
     loading,
     showAvatar,
     toggleAvatar,
+    setUser // Export setUser to allow demo login to update state
   };
 };

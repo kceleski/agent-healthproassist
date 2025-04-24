@@ -8,8 +8,13 @@ import { AuthAvatar } from '@/components/auth/AuthAvatar';
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, session, loading, showAvatar, toggleAvatar } = useAuthState();
-  const { login, register, logout } = useAuthOperations();
+  const { user, session, loading, showAvatar, toggleAvatar, setUser } = useAuthState();
+  const { login, register, logout, loginDemo } = useAuthOperations();
+
+  const handleLoginDemo = (type: 'basic' | 'premium') => {
+    const demoUser = loginDemo(type);
+    setUser(demoUser);
+  };
 
   return (
     <AuthContext.Provider
@@ -22,7 +27,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         isAuthenticated: !!user,
         showAvatar,
-        toggleAvatar
+        toggleAvatar,
+        loginDemo: handleLoginDemo
       }}
     >
       {children}

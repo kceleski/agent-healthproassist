@@ -26,7 +26,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, loginDemo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +53,11 @@ const LoginPage = () => {
     }
   };
 
+  const handleDemoLogin = (type: 'basic' | 'premium') => {
+    loginDemo(type);
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center">
       <div className="w-full max-w-md glass-card p-8 rounded-xl animate-zoom-in">
@@ -73,6 +78,35 @@ const LoginPage = () => {
             <p className="text-sm text-muted-foreground">
               Enter your credentials to access your account
             </p>
+          </div>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12"
+            onClick={() => handleDemoLogin('basic')}
+          >
+            Try Basic Demo
+          </Button>
+          <Button
+            type="button"
+            className="w-full h-12 bg-healthcare-600 hover:bg-healthcare-700"
+            onClick={() => handleDemoLogin('premium')}
+          >
+            Try Premium Demo
+          </Button>
+        </div>
+
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-muted-foreground">
+              Or continue with
+            </span>
           </div>
         </div>
 

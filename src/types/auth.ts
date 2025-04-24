@@ -5,6 +5,9 @@ export type AuthUser = {
   id: string;
   email?: string | null;
   name?: string;
+  subscription?: 'basic' | 'premium';
+  role?: string;
+  isDemo?: boolean;
 };
 
 export type AuthContextType = {
@@ -17,4 +20,5 @@ export type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loginDemo: (type: 'basic' | 'premium') => void;
 };
