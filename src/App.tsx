@@ -12,7 +12,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 // Pages
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import UnifiedRegisterPage from "./pages/UnifiedRegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import FacilitiesPage from "./pages/FacilitiesPage";
 import FacilityDetailPage from "./pages/FacilityDetailPage";
@@ -62,7 +62,7 @@ const App = () => (
               <Route element={<MainLayout />}>
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/register" element={<UnifiedRegisterPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
                 <Route path="/index" element={<Index />} />
                 <Route path="/welcome" element={<WelcomePage />} />

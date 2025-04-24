@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 // Create or update a user in our users table after authentication
-export async function syncUserData(userId: string, userData: { email: string, full_name?: string }) {
+export async function syncUserData(userId: string, userData: { email: string, full_name?: string, phone?: string }) {
   try {
     console.log("Syncing user data for:", userId, userData);
     
@@ -27,6 +27,7 @@ export async function syncUserData(userId: string, userData: { email: string, fu
         .update({
           email: userData.email,
           full_name: userData.full_name,
+          phone: userData.phone,
           updated_at: new Date().toISOString(),
           last_login: new Date().toISOString()
         })
@@ -47,6 +48,7 @@ export async function syncUserData(userId: string, userData: { email: string, fu
           id: userId,
           email: userData.email,
           full_name: userData.full_name,
+          phone: userData.phone,
           subscription: 'free', // Default subscription tier
           demo_tier: 'basic', // For demo purposes
           created_at: new Date().toISOString(),
@@ -96,7 +98,7 @@ export async function syncUserData(userId: string, userData: { email: string, fu
 }
 
 // Update user subscription tier
-export async function updateUserSubscription(userId: string, tier: 'free' | 'basic' | 'premium') {
+export async function updateUserSubscription(userId: string, tier: 'free' | 'basic' | 'premium' | 'standard') {
   try {
     const { error } = await supabase
       .from('users')

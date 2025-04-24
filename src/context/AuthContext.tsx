@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -171,7 +172,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         receiveUpdates: boolean;
         receiveReferrals: boolean;
         allowContactSharing: boolean;
-      }
+      },
+      company?: string,
+      job_title?: string,
+      headline?: string,
+      years_experience?: string,
+      phone?: string,
+      specializations?: string,
+      work_type?: 'agency' | 'independent',
+      agency_details?: {
+        name: string,
+        address?: string,
+        phone?: string,
+        website?: string
+      },
+      subscription_tier?: 'standard' | 'premium',
+      profile_image?: string
     }
   ) => {
     try {
@@ -200,23 +216,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log("User created successfully, syncing user data");
         await syncUserData(data.user.id, {
           email: data.user.email || '',
-          full_name: name
+          full_name: name,
+          phone: profileData?.phone
         });
         
         if (profileData) {
           console.log("Updating profile data:", profileData);
+          const updateData: any = {
+            bio: profileData.bio,
+            default_location: profileData.default_location,
+            notification_preferences: profileData.notification_preferences,
+            communication_preferences: profileData.communication_preferences,
+            company: profileData.company,
+            job_title: profileData.job_title,
+          };
+
+          // Add extended profile fields
+          if (profileData.headline) updateData.headline = profileData.headline;
+          if (profileData.years_experience) updateData.years_experience = profileData.years_experience;
+          if (profileData.specializations) updateData.specializations = profileData.specializations;
+          if (profileData.work_type) updateData.work_type = profileData.work_type;
+          if (profileData.agency_details) updateData.agency_details = profileData.agency_details;
+          if (profileData.profile_image) updateData.profile_image_status = profileData.profile_image;
+          
           const { error: profileError } = await supabase
             .from('user_profiles')
-            .update({
-              bio: profileData.bio,
-              default_location: profileData.default_location,
-              notification_preferences: profileData.notification_preferences,
-              communication_preferences: profileData.communication_preferences
-            })
+            .update(updateData)
             .eq('id', data.user.id);
             
           if (profileError) {
             console.error("Error updating profile data:", profileError);
+          }
+
+          // Update subscription tier if provided
+          if (profileData.subscription_tier) {
+            const { error: subscriptionError } = await supabase
+              .from('users')
+              .update({
+                subscription: profileData.subscription_tier,
+                demo_tier: profileData.subscription_tier
+              })
+              .eq('id', data.user.id);
+              
+            if (subscriptionError) {
+              console.error("Error updating subscription tier:", subscriptionError);
+            }
           }
         }
         

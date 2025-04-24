@@ -1,3 +1,4 @@
+
 export interface UserProfile {
   id: string;
   company?: string;
@@ -22,6 +23,17 @@ export interface UserProfile {
   };
   created_at?: string;
   updated_at?: string;
+  headline?: string;
+  years_experience?: string;
+  specializations?: string;
+  work_type?: 'agency' | 'independent';
+  agency_details?: {
+    name: string;
+    address?: string;
+    phone?: string;
+    website?: string;
+  };
+  profile_image_status?: string;
 }
 
 export interface WelcomeTabsProps {
