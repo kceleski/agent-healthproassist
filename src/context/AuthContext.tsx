@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -13,6 +12,8 @@ type AuthContextType = {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  showAvatar: boolean;
+  toggleAvatar: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -21,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAvatar, setShowAvatar] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -89,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Remove updateDemoTier method
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -146,6 +147,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const toggleAvatar = () => {
+    setShowAvatar(!showAvatar);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -155,10 +160,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        isAuthenticated: !!user
+        isAuthenticated: !!user,
+        showAvatar,
+        toggleAvatar
       }}
     >
       {children}
+      {showAvatar && user && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Health Assistant</span>
+                <Button variant="ghost" size="sm" onClick={toggleAvatar}>×</Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <elevenlabs-convai 
+                agent-id="R9M1zBEUj8fTGAij61wb" 
+                className="w-full h-[350px] rounded-lg bg-gray-100"
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

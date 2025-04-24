@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,8 +151,8 @@ const Index = () => {
   return (
     <div className="min-h-screen pt-20 pb-10 flex flex-col items-center bg-slate-50">
       <div className="container max-w-6xl flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-1/2 flex flex-col gap-4">
-          {/* Chat Interface */}
+        {/* Chat Interface */}
+        <div className="w-full flex flex-col gap-4">
           <Card>
             <CardHeader>
               <CardTitle>AI Health Assistant</CardTitle>
@@ -210,29 +209,6 @@ const Index = () => {
               </Button>
               
               {showWidget && <HealthProAssistWidget />}
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="w-full md:w-1/2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Health Assistant Avatar</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                  <p className="mt-4 text-muted-foreground">Processing your request...</p>
-                </div>
-              ) : (
-                <div className="w-full h-full flex flex-col items-center">
-                  <elevenlabs-convai 
-                    agent-id="R9M1zBEUj8fTGAij61wb" 
-                    className="w-full h-[350px] rounded-lg bg-gray-100"
-                  />
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
