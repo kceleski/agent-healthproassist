@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -21,7 +20,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         setSession(session);
         if (session?.user) {
-          // Sync user data with our custom users table
           if (event === 'SIGNED_IN') {
             await syncUserData(session.user.id, {
               email: session.user.email || '',
@@ -29,7 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
           }
           
-          // Fetch both role and profile data
           const { data: roleData } = await supabase
             .from('user_roles')
             .select('role')
@@ -56,17 +53,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Then check for existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
-        // Sync user data with our custom users table
         await syncUserData(session.user.id, {
           email: session.user.email || '',
           full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name
         });
         
-        // Fetch both role and profile data
         Promise.all([
           supabase
             .from('user_roles')
@@ -103,9 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log("Login attempt with email:", email);
       
-      // Special handling for demo accounts - using hardcoded credentials
       if (email === 'demo.basic@healthproassist.com') {
-        // For demo purposes - using a very strong password that meets requirements
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.basic@healthproassist.com',
           password: 'Passw0rd!Demo123' 
@@ -118,14 +110,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         toast.success("Logged in as Demo Basic User");
-        
-        // Redirect to welcome page after successful demo login
         window.location.href = "/welcome";
         return;
       }
       
       if (email === 'demo.premium@healthproassist.com') {
-        // For demo purposes - using a very strong password that meets requirements
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.premium@healthproassist.com',
           password: 'Passw0rd!Demo123'
@@ -138,13 +127,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         toast.success("Logged in as Demo Premium User");
-        
-        // Redirect to welcome page after successful demo login
         window.location.href = "/welcome";
         return;
       }
       
-      // Regular user login
       const { data, error } = await supabase.auth.signInWithPassword({ 
         email, 
         password 
@@ -152,7 +138,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) throw error;
       
-      // After successful login, sync user data
       if (data.user) {
         await syncUserData(data.user.id, {
           email: data.user.email || '',
@@ -170,7 +155,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (
+    name: string, 
+    email: string, 
+    password: string,
+    profileData?: {
+      bio?: string,
+      default_location?: string,
+      notification_preferences?: {
+        email: boolean;
+        sms: boolean;
+        inApp: boolean;
+      },
+      communication_preferences?: {
+        receiveUpdates: boolean;
+        receiveReferrals: boolean;
+        allowContactSharing: boolean;
+      }
+    }
+  ) => {
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.signUp({
@@ -186,12 +189,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       
-      // After successful registration, sync user data
       if (data.user) {
         await syncUserData(data.user.id, {
           email: data.user.email || '',
           full_name: name
         });
+        
+        if (profileData) {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .update({
+              bio: profileData.bio,
+              default_location: profileData.default_location,
+              notification_preferences: profileData.notification_preferences,
+              communication_preferences: profileData.communication_preferences
+            })
+            .eq('id', data.user.id);
+            
+          if (profileError) {
+            console.error("Error updating profile data:", profileError);
+          }
+        }
       }
       
       toast.success("Registration successful! Please check your email to confirm your account.");

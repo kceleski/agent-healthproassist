@@ -14,7 +14,25 @@ export type AuthContextType = {
   session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string, 
+    email: string, 
+    password: string,
+    profileData?: {
+      bio?: string,
+      default_location?: string,
+      notification_preferences?: {
+        email: boolean;
+        sms: boolean;
+        inApp: boolean;
+      },
+      communication_preferences?: {
+        receiveUpdates: boolean;
+        receiveReferrals: boolean;
+        allowContactSharing: boolean;
+      }
+    }
+  ) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   showAvatar: boolean;
