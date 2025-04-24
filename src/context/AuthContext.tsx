@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { AuthUser } from '@/types/auth';
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -14,6 +14,8 @@ type AuthContextType = {
   isAuthenticated: boolean;
   updateDemoTier: (tier: 'basic' | 'premium') => void;
 };
+
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -57,22 +59,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
-        supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            const userData: AuthUser = {
-              id: session.user.id,
-              email: session.user.email,
-              name: profile?.name || session.user.email,
-              subscription: profile?.subscription || 'basic',
-              role: profile?.role || 'user',
-              demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
-            };
-            setUser(userData);
-          });
+        // Fetch both role and profile data
+        Promise.all([
+          supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .single(),
+          supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+        ]).then(([{ data: roleData }, { data: profile }]) => {
+          const userData: AuthUser = {
+            id: session.user.id,
+            email: session.user.email,
+            name: profile?.name || session.user.email,
+            subscription: profile?.subscription || 'basic',
+            role: roleData?.role || 'user',
+            demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
+          };
+          setUser(userData);
+        });
       }
       setLoading(false);
     });
