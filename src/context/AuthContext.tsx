@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -24,13 +25,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .from('user_roles')
             .select('role')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
 
           const { data: profile } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
 
           const userData: AuthUser = {
             id: session.user.id,
@@ -56,12 +57,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .from('user_roles')
             .select('role')
             .eq('user_id', session.user.id)
-            .single(),
+            .maybeSingle(),
           supabase
             .from('user_profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single()
+            .maybeSingle()
         ]).then(([{ data: roleData }, { data: profile }]) => {
           const userData: AuthUser = {
             id: session.user.id,
@@ -84,12 +85,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      // Check if this is a demo account login
+      if (email === 'demo.basic@healthproassist.com' && password === 'demoBasic123') {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: 'demo.basic@healthproassist.com',
+          password: 'demoBasic123'
+        });
+        
+        if (error) throw error;
+        toast.success("Logged in as Demo Basic User");
+        return;
+      }
+      
+      if (email === 'demo.premium@healthproassist.com' && password === 'demoPremium123') {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: 'demo.premium@healthproassist.com',
+          password: 'demoPremium123'
+        });
+        
+        if (error) throw error;
+        toast.success("Logged in as Demo Premium User");
+        return;
+      }
+      
+      // Regular user login
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
       
       if (error) throw error;
       
       toast.success("Logged in successfully");
     } catch (error: any) {
+      console.error("Login error:", error);
       toast.error(error.message || "Failed to login");
       throw error;
     } finally {

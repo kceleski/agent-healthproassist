@@ -46,11 +46,35 @@ const LoginPage = () => {
   const onSubmit = async (values: FormValues) => {
     try {
       setIsLoading(true);
+      console.log("Attempting login with:", values.email);
       await login(values.email, values.password);
       // Success handled by auth context
+      console.log("Login successful, navigating to:", from);
+      navigate(from);
+    } catch (error: any) {
+      console.error("Login error in form:", error);
+      // Error handling is done in the login function
+      setIsLoading(false);
+    }
+  };
+
+  // Special handling for demo accounts for easier login
+  const loginAsDemoBasic = async () => {
+    try {
+      setIsLoading(true);
+      await login("demo.basic@healthproassist.com", "demoBasic123");
       navigate(from);
     } catch (error) {
-      // Error handling is done in the login function
+      setIsLoading(false);
+    }
+  };
+
+  const loginAsDemoPremium = async () => {
+    try {
+      setIsLoading(true);
+      await login("demo.premium@healthproassist.com", "demoPremium123");
+      navigate(from);
+    } catch (error) {
       setIsLoading(false);
     }
   };
@@ -127,6 +151,39 @@ const LoginPage = () => {
             </Button>
           </form>
         </Form>
+
+        {/* Demo account login buttons */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or use demo accounts</span>
+            </div>
+          </div>
+          
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={loginAsDemoBasic}
+              disabled={isLoading}
+              className="h-12"
+            >
+              Demo Basic
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={loginAsDemoPremium}
+              disabled={isLoading}
+              className="h-12"
+            >
+              Demo Premium
+            </Button>
+          </div>
+        </div>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
