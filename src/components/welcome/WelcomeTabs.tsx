@@ -32,6 +32,11 @@ const WelcomeTabs = ({
     }
   };
 
+  const handleCancel = () => {
+    // Navigate back to dashboard
+    window.location.href = "/dashboard";
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <Progress value={progress} className="h-2 mt-4 bg-white/20" />
@@ -81,6 +86,7 @@ const WelcomeTabs = ({
           loading={loading}
           onBack={() => handleTabChange("bio")}
           onSave={onSave}
+          onCancel={handleCancel}
         />
       </TabsContent>
     </Tabs>

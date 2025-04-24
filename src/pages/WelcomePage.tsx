@@ -1,11 +1,11 @@
 
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import WelcomeTabs from "@/components/welcome/WelcomeTabs";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { UserProfile } from "@/types/profile";
+import { toast } from "sonner";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -13,13 +13,15 @@ const WelcomePage = () => {
   const { profile, updateProfile, isLoading } = useUserProfile(user?.id);
   
   const handleInputChange = (field: string, value: string) => {
-    updateProfile({ [field]: value });
+    if (!profile) return;
+    updateProfile({ ...profile, [field]: value });
   };
 
   const handleNotificationChange = (field: "email" | "sms" | "inApp", value: boolean) => {
     if (!profile) return;
     
     updateProfile({
+      ...profile,
       notification_preferences: {
         ...profile.notification_preferences,
         [field]: value
@@ -34,6 +36,7 @@ const WelcomePage = () => {
     if (!profile) return;
     
     updateProfile({
+      ...profile,
       communication_preferences: {
         ...profile.communication_preferences,
         [field]: value
@@ -44,9 +47,11 @@ const WelcomePage = () => {
   const savePreferences = async () => {
     try {
       await updateProfile(profile as UserProfile);
+      toast.success("Preferences saved successfully!");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error saving preferences:", error);
+      toast.error("Failed to save preferences. Please try again.");
     }
   };
   
