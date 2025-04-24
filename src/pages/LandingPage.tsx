@@ -26,7 +26,6 @@ const LandingPage = () => {
   const [activeTab, setActiveTab] = useState<'monthly' | 'annual'>('monthly');
   const [animationStarted, setAnimationStarted] = useState(false);
 
-  // Start animations when component mounts
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimationStarted(true);
@@ -145,7 +144,6 @@ const LandingPage = () => {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
       <section className="pt-32 pb-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-healthcare-50 to-white pointer-events-none" />
         <div className="container relative z-10">
@@ -157,30 +155,52 @@ const LandingPage = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
                 Streamline Senior Care Placement With Confidence
               </h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                HealthProAssist empowers placement agents with a comprehensive database of senior living facilities and powerful tools to manage contacts, track payments, and grow your business.
+              <p className="text-xl text-muted-foreground mb-12">
+                HealthProAssist empowers placement agents with powerful tools to manage healthcare facilities,
+                track payments, and grow your business.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" className="text-md">
-                  <Link to="/register">Get Started Today</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="text-md">
-                  <Link to="/#features" className="group flex items-center gap-2">
-                    Explore Features 
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <Link
+                  to="/register"
+                  className="group relative overflow-hidden rounded-lg bg-healthcare-600 p-6 hover:bg-healthcare-700 transition-all duration-300"
+                >
+                  <div className="flex flex-col items-start text-white">
+                    <h3 className="text-lg font-semibold mb-2">New to HealthProAssist?</h3>
+                    <p className="text-sm text-healthcare-100 mb-4">Create an account and start managing your healthcare placements today</p>
+                    <span className="inline-flex items-center text-sm font-medium">
+                      Get Started
+                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/login"
+                  className="group relative overflow-hidden rounded-lg bg-white border-2 border-healthcare-200 p-6 hover:border-healthcare-300 transition-all duration-300"
+                >
+                  <div className="flex flex-col items-start">
+                    <h3 className="text-lg font-semibold mb-2 text-healthcare-800">Already a Member?</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Log in to your account to access your dashboard</p>
+                    <span className="inline-flex items-center text-sm font-medium text-healthcare-600 group-hover:text-healthcare-700">
+                      Sign In
+                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
 
           <div className="mt-16 relative max-w-6xl mx-auto">
             <div className="glass-card rounded-xl p-4 md:p-8 shadow-xl overflow-hidden bg-white/90 animate-zoom-in">
-              {/* Interactive Animated Healthcare Placement Scene */}
               <div className="health-placement-scene">
                 <div className="scene-background"></div>
                 
-                {/* Sparkles throughout the scene */}
                 {sparkles.map((sparkle) => (
                   <div 
                     key={sparkle.id}
@@ -193,21 +213,17 @@ const LandingPage = () => {
                   ></div>
                 ))}
 
-                {/* Agent Section - Left Side */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{left: '10%', bottom: '25%', animationDelay: '0.3s'}}>
                   
-                  {/* Background pulse effect for agent */}
                   <div className="burst-circle bg-healthcare-200" style={{width: '150px', height: '150px', left: '-35px', top: '-35px'}}></div>
                   
-                  {/* Agent character */}
                   <div className="relative">
                     <div className="bg-white p-3 rounded-full shadow-lg mb-3 floating">
                       <div className="bg-healthcare-600 p-3 rounded-full">
                         <Users className="w-10 h-10 text-white" />
                       </div>
                       
-                      {/* Badge with notification */}
                       <div className="absolute top-0 right-0">
                         <div className="bg-healthcare-100 p-1 rounded-full">
                           <CheckCircle className="w-5 h-5 text-healthcare-600" />
@@ -216,7 +232,6 @@ const LandingPage = () => {
                       </div>
                     </div>
                     
-                    {/* Agent device showing app */}
                     <div className="relative floating-delay-2">
                       <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[150px]">
                         <div className="bg-healthcare-50 rounded-md p-1 mb-2">
@@ -244,7 +259,6 @@ const LandingPage = () => {
                       </div>
                     </div>
                     
-                    {/* Agent speech bubble */}
                     <div className="absolute top-8 right-[-110px] floating-delay-1">
                       <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
                         <p className="text-sm">Finding you the <span className="text-healthcare-600 font-medium">perfect match!</span></p>
@@ -254,7 +268,6 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Warm Leads Feature - Top */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{left: '50%', top: '5%', transform: 'translateX(-50%)', zIndex: 20, animationDelay: '0.5s'}}>
                   <div className="bg-healthcare-600 text-white px-4 py-3 rounded-xl shadow-lg floating-delay-4">
@@ -275,14 +288,11 @@ const LandingPage = () => {
                   <div className="h-24 w-2 bg-gradient-to-b from-healthcare-600 to-transparent mx-auto"></div>
                 </div>
 
-                {/* Family Group - Right Side */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{right: '10%', bottom: '25%', animationDelay: '0.6s'}}>
                   
-                  {/* Background pulse effect for family */}
                   <div className="burst-circle bg-healthcare-100" style={{width: '180px', height: '180px', left: '-50px', top: '-30px'}}></div>
                   
-                  {/* Family group characters */}
                   <div className="relative">
                     <div className="flex items-end space-x-2 mb-3">
                       <div className="bg-white p-2 rounded-full shadow-lg floating-delay-1">
@@ -300,7 +310,6 @@ const LandingPage = () => {
                       </div>
                     </div>
                     
-                    {/* Family speech bubble */}
                     <div className="absolute top-6 left-[-140px] floating-delay-2">
                       <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
                         <p className="text-sm">We need <span className="text-healthcare-600 font-medium">compassionate care</span> for Mom.</p>
@@ -308,7 +317,6 @@ const LandingPage = () => {
                       <div className="w-3 h-3 bg-white border-r border-b border-healthcare-100 absolute -right-1 top-3 transform rotate-45"></div>
                     </div>
                     
-                    {/* Family checklist */}
                     <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[160px] floating-delay-4">
                       <div className="text-xs font-semibold text-healthcare-700 mb-1 flex items-center">
                         <FileText className="w-3 h-3 mr-1" />
@@ -336,7 +344,6 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Facility Cluster - Top */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{right: '20%', top: '15%', zIndex: 5, animationDelay: '0.8s'}}>
                   <div className="flex flex-col items-center floating-delay-1">
@@ -382,11 +389,9 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Matching Process - Center */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 15, animationDelay: '1.2s'}}>
                   <div className="flex flex-col items-center justify-center">
-                    {/* Connection hub */}
                     <div className="relative">
                       <div className="bg-healthcare-100 p-4 rounded-full shadow-lg pulsing">
                         <div className="bg-healthcare-600 p-3 rounded-full relative spinning">
@@ -395,7 +400,6 @@ const LandingPage = () => {
                         </div>
                       </div>
                       
-                      {/* Calendar/Appointments */}
                       <div className="absolute -right-16 -top-16 floating-delay-1">
                         <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
                           <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
@@ -407,7 +411,6 @@ const LandingPage = () => {
                         </div>
                       </div>
                       
-                      {/* Payment/Commission */}
                       <div className="absolute -left-20 -bottom-14 floating-delay-2">
                         <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
                           <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
@@ -419,7 +422,6 @@ const LandingPage = () => {
                       </div>
                     </div>
                     
-                    {/* Connector lines to characters */}
                     <div className="absolute" style={{left: '-120px', top: '50%', width: '120px', height: '2px'}}>
                       <div className="connector w-full">
                         <div className="connector-dot"></div>
@@ -440,7 +442,6 @@ const LandingPage = () => {
                   </div>
                 </div>
                 
-                {/* Successful Placement Result - Bottom */}
                 <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
                     style={{left: '50%', bottom: '5%', transform: 'translateX(-50%)', zIndex: 25, animationDelay: '1.5s'}}>
                   <div className="bg-white rounded-xl shadow-lg border border-healthcare-100 p-3 max-w-xs mx-auto text-center bouncing">
@@ -470,7 +471,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -490,7 +490,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-20 bg-gradient-to-b from-white to-healthcare-50">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -513,7 +512,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section id="testimonials" className="py-20 bg-white">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -548,7 +546,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
       <section id="pricing" className="py-20 bg-healthcare-50">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -627,7 +624,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-white">
         <div className="container">
           <div className="glass-card bg-gradient-to-r from-healthcare-600 to-healthcare-800 text-white rounded-xl p-12 max-w-4xl mx-auto">
