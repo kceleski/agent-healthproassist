@@ -1,14 +1,40 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
 import { getUserTier } from '@/utils/subscription';
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import ReminderSettings from "@/components/calendar/ReminderSettings";
-import CalendarSync from "@/components/calendar/CalendarSync";
-import TodoList from "@/components/todos/TodoList";
-import AddToTaskButton from "@/components/todos/AddToTaskButton";
+import {
+  Bell,
+  CalendarIcon,
+  Clock,
+  FileText,
+  Link,
+  MapPin,
+  Plus,
+  User,
+  Users,
+} from "lucide-react";
 
 // Types
 type Appointment = {

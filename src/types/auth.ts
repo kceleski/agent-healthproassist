@@ -1,9 +1,8 @@
 
 export type AuthUser = {
   id: string;
-  email: string | undefined;
+  email: string | null;
   name?: string;
   subscription?: string;
   role?: string;
-  demoTier?: 'basic' | 'premium';
 };
