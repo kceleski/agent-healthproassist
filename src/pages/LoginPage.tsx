@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,11 +15,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, LogIn } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -32,6 +32,7 @@ const LoginPage = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Get the redirect path from location state or use default
   const from = (location.state as any)?.from?.pathname || "/dashboard";
 
   const form = useForm<FormValues>({
@@ -46,10 +47,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await login(values.email, values.password);
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
+      // Success handled by auth context
       navigate(from);
     } catch (error) {
       // Error handling is done in the login function
@@ -70,10 +68,10 @@ const LoginPage = () => {
 
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-md bg-healthcare-600 flex items-center justify-center">
-            <ShieldCheck className="h-5 w-5 text-white" />
+            <LogIn className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Sign in to HealthProAssist</h1>
+            <h1 className="text-2xl font-bold">Sign in to your account</h1>
             <p className="text-sm text-muted-foreground">
               Enter your credentials to access your account
             </p>
@@ -81,7 +79,7 @@ const LoginPage = () => {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="email"
@@ -89,12 +87,12 @@ const LoginPage = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="name@example.com" 
-                      type="email" 
+                    <Input
+                      placeholder="name@example.com"
+                      type="email"
                       autoComplete="email"
                       className="h-12"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -108,31 +106,21 @@ const LoginPage = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="••••••••" 
-                      type="password" 
+                    <Input
+                      placeholder="••••••••"
+                      type="password"
                       autoComplete="current-password"
                       className="h-12"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <Link
-                  to="/forgot-password"
-                  className="font-medium text-healthcare-600 hover:text-healthcare-500"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full h-12 bg-healthcare-600 hover:bg-healthcare-700"
+            <Button
+              type="submit"
+              className="w-full h-12 bg-healthcare-600 hover:bg-healthcare-700 mt-6"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign in"}
@@ -146,7 +134,7 @@ const LoginPage = () => {
             to="/register"
             className="font-medium text-healthcare-600 hover:text-healthcare-500"
           >
-            Create an account
+            Create one
           </Link>
         </div>
       </div>

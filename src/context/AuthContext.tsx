@@ -1,49 +1,20 @@
 
-import React, { createContext, useContext, useState } from 'react';
-import { Session } from '@supabase/supabase-js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase'; // Use a single Supabase client instance
 
-// Update the user type to include all properties consistently
-type DemoUser = {
+// Type for authenticated user
+type AuthUser = {
   id: string;
-  email: string;
-  name: string;
-  demoTier: string;
-  subscription: string;
-  role: string;
-  user_metadata: {
-    name: string;
-    demo_tier: string;
-    subscription: string;
-    role: string;
-  }
+  email: string | undefined;
+  name?: string;
+  subscription?: string;
+  role?: string;
 };
-
-// Mock user for demo purposes
-const DEMO_USER: DemoUser = {
-  id: 'demo-user-id',
-  email: 'demo@example.com',
-  name: 'Demo User',
-  demoTier: 'premium',
-  subscription: 'premium',
-  role: 'Consultant',
-  user_metadata: {
-    name: 'Demo User',
-    demo_tier: 'premium',
-    subscription: 'premium',
-    role: 'Consultant'
-  }
-};
-
-// Mock session for demo purposes
-const DEMO_SESSION = {
-  access_token: 'demo-token',
-  refresh_token: 'demo-refresh-token',
-  user: DEMO_USER
-} as unknown as Session;
 
 type AuthContextType = {
-  user: typeof DEMO_USER | null;
+  user: AuthUser | null;
   session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -59,42 +30,153 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // For demo purposes, always provide an authenticated user
-  const [user] = useState(DEMO_USER);
-  const [session] = useState(DEMO_SESSION);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock implementations of auth functions for demo
-  const login = async () => {
-    toast.success("Demo login successful");
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        const userData: AuthUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.user_metadata?.name as string,
+          subscription: session.user.user_metadata?.subscription as string,
+          role: session.user.user_metadata?.role as string,
+        };
+        setUser(userData);
+      }
+      setLoading(false);
+    });
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change event:', event);
+      setSession(session);
+      
+      if (event === 'SIGNED_IN' && session?.user) {
+        const userData: AuthUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.user_metadata?.name as string,
+          subscription: session.user.user_metadata?.subscription as string,
+          role: session.user.user_metadata?.role as string,
+        };
+        setUser(userData);
+        toast.success("Signed in successfully!");
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        toast.success("Signed out successfully!");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast.success("Logged in successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to login");
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const register = async () => {
-    toast.success("Demo registration successful");
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          data: {
+            name,
+            subscription: 'basic',
+            role: 'Consultant',
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+      
+      toast.success("Registration successful! Please check your email to confirm your account.");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to register");
+      console.error('Registration error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    toast.success("Demo logout successful");
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast.success("Logged out successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to logout");
+      console.error('Logout error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Demo features preserved from previous implementation
+  // Legacy features preserved but now using real auth data
   const enableWarmLeads = async () => {
-    toast.success('Demo: Warm leads feature enabled!');
+    if (user) {
+      toast.success('Warm leads feature enabled!');
+    } else {
+      toast.error('You need to be logged in to enable warm leads');
+    }
     return;
   };
 
   const useWarmLeadCredit = async (): Promise<boolean> => {
-    toast.success('Demo: Warm lead credit used!');
-    return true;
+    if (user) {
+      toast.success('Warm lead credit used!');
+      return true;
+    }
+    toast.error('You need to be logged in to use warm lead credits');
+    return false;
   };
 
   const purchaseWarmLeadCredits = async (): Promise<void> => {
-    toast.success(`Demo: Purchased warm lead credits!`);
+    if (user) {
+      toast.success(`Purchased warm lead credits!`);
+    } else {
+      toast.error('You need to be logged in to purchase credits');
+    }
     return;
   };
 
   const updateDemoTier = async (tier: 'basic' | 'premium') => {
-    toast.success(`Demo: Upgraded to ${tier} tier!`);
+    if (user) {
+      toast.success(`Account upgraded to ${tier} tier!`);
+    } else {
+      toast.error('You need to be logged in to upgrade');
+    }
     return;
   };
 
@@ -107,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        isAuthenticated: true, // Always authenticated in demo mode
+        isAuthenticated: !!user,
         enableWarmLeads,
         useWarmLeadCredit,
         purchaseWarmLeadCredits,

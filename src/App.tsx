@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/context/AuthContext";
 import { Helmet } from "react-helmet";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
@@ -31,7 +33,6 @@ import WelcomePage from "./pages/WelcomePage";
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,8 +55,8 @@ const App = () => (
           </Helmet>
           <BrowserRouter>
             <Routes>
-              {/* Redirect root to dashboard for demo purposes */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              {/* Redirect root to landing page */}
+              <Route path="/" element={<Navigate to="/landing" replace />} />
               
               {/* Public routes */}
               <Route element={<MainLayout />}>
@@ -64,23 +65,71 @@ const App = () => (
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/ava-logo" element={<AvaLogoDemo />} />
                 <Route path="/index" element={<Index />} />
+                <Route path="/welcome" element={<WelcomePage />} />
               </Route>
               
-              {/* All routes are now accessible without authentication for demo */}
+              {/* Protected routes */}
               <Route element={<DashboardLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/map" element={<MapPage />} />
-                <Route path="/favorites" element={<FavoritesPage />} />
-                <Route path="/saved-searches" element={<SavedSearchesPage />} />
-                <Route path="/facilities" element={<FacilitiesPage />} />
-                <Route path="/facilities/:id" element={<FacilityDetailPage />} />
-                <Route path="/contacts" element={<ContactsPage />} />
-                <Route path="/payments" element={<PaymentsPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/medical-records" element={<ClientMedicalRecordsPage />} />
-                <Route path="/welcome" element={<WelcomePage />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/search" element={
+                  <ProtectedRoute>
+                    <SearchPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/map" element={
+                  <ProtectedRoute>
+                    <MapPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/favorites" element={
+                  <ProtectedRoute>
+                    <FavoritesPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/saved-searches" element={
+                  <ProtectedRoute>
+                    <SavedSearchesPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/facilities" element={
+                  <ProtectedRoute>
+                    <FacilitiesPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/facilities/:id" element={
+                  <ProtectedRoute>
+                    <FacilityDetailPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/contacts" element={
+                  <ProtectedRoute>
+                    <ContactsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payments" element={
+                  <ProtectedRoute>
+                    <PaymentsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/calendar" element={
+                  <ProtectedRoute>
+                    <CalendarPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/medical-records" element={
+                  <ProtectedRoute>
+                    <ClientMedicalRecordsPage />
+                  </ProtectedRoute>
+                } />
               </Route>
               
               <Route path="*" element={<NotFound />} />
