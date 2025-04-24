@@ -97,8 +97,8 @@ const Navbar = () => {
           </Link>
         </nav>
 
-        {/* Desktop Auth Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop Auth Buttons - Moved to the far right with some left margin */}
+        <div className="hidden md:flex items-center gap-4 ml-auto">
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
