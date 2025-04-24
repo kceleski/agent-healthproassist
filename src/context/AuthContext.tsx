@@ -13,6 +13,7 @@ type AuthContextType = {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  updateDemoTier: (tier: 'basic' | 'premium') => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,7 +40,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email,
             name: profile?.name || session.user.email,
             subscription: profile?.subscription || 'basic',
-            role: profile?.role || 'user'
+            role: profile?.role || 'user',
+            demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
           };
           setUser(userData);
         } else {
@@ -63,7 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: session.user.email,
               name: profile?.name || session.user.email,
               subscription: profile?.subscription || 'basic',
-              role: profile?.role || 'user'
+              role: profile?.role || 'user',
+              demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
             };
             setUser(userData);
           });
@@ -75,6 +78,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, []);
+
+  const updateDemoTier = (tier: 'basic' | 'premium') => {
+    if (user?.id) {
+      localStorage.setItem(`demoTier_${user.id}`, tier);
+      setUser(prev => prev ? { ...prev, demoTier: tier } : null);
+      toast.success(`Demo tier updated to ${tier}`);
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -142,6 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         isAuthenticated: !!user,
+        updateDemoTier
       }}
     >
       {children}

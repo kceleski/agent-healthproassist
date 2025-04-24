@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { getUserTier } from "@/utils/subscription";
 
 export type SubscriptionTier = "basic" | "premium";
 
@@ -14,8 +15,8 @@ interface SubscriptionToggleProps {
 
 export const SubscriptionToggle = ({ className }: SubscriptionToggleProps) => {
   const { user, updateDemoTier } = useAuth();
-  // Use subscription as primary and demoTier as fallback
-  const currentTier = user?.subscription === "premium" || user?.demoTier === "premium" ? "premium" : "basic";
+  // Get current tier using the utility function
+  const currentTier = getUserTier(user);
   const [isPro, setIsPro] = useState(currentTier === "premium");
   
   const handleToggleChange = (checked: boolean) => {

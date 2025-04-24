@@ -5,4 +5,5 @@ export type AuthUser = {
   name?: string;
   subscription?: string;
   role?: string;
+  demoTier?: string;
 };

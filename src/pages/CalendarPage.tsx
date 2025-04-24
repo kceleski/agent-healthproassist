@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { useLocation } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,12 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import AddToTaskButton from "@/components/todos/AddToTaskButton";
+import { TodoList } from "@/components/todos/TodoList";
+import ReminderSettings from "@/components/calendar/ReminderSettings";
+import CalendarSync from "@/components/calendar/CalendarSync";
 
 // Types
 type Appointment = {
