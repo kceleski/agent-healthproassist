@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
@@ -14,8 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, LogIn } from "lucide-react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -26,12 +27,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get the redirect path from location state or use welcome as default
   const from = (location.state as any)?.from?.pathname || "/welcome";
 
   const form = useForm<FormValues>({
@@ -45,37 +44,11 @@ const LoginPage = () => {
   const onSubmit = async (values: FormValues) => {
     try {
       setIsLoading(true);
-      console.log("Attempting login with:", values.email);
       await login(values.email, values.password);
-      // Success handled by auth context
-      console.log("Login successful, navigating to:", from);
+      toast.success("Logged in successfully");
       navigate(from);
     } catch (error: any) {
-      console.error("Login error in form:", error);
-      // Error handling is done in the login function
-      setIsLoading(false);
-    }
-  };
-
-  // Special handling for demo accounts for easier login
-  const loginAsDemoBasic = async () => {
-    try {
-      setIsLoading(true);
-      // Use the special demo account credentials
-      await login("demo.basic@healthproassist.com", "Passw0rd!Demo123");
-      // The redirection is handled in the login function
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
-
-  const loginAsDemoPremium = async () => {
-    try {
-      setIsLoading(true);
-      // Use the special demo account credentials
-      await login("demo.premium@healthproassist.com", "Passw0rd!Demo123");
-      // The redirection is handled in the login function
-    } catch (error) {
+      toast.error(error.message || "Failed to login");
       setIsLoading(false);
     }
   };
@@ -152,39 +125,6 @@ const LoginPage = () => {
             </Button>
           </form>
         </Form>
-
-        {/* Demo account login buttons */}
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or use demo accounts</span>
-            </div>
-          </div>
-          
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={loginAsDemoBasic}
-              disabled={isLoading}
-              className="h-12"
-            >
-              Demo Basic
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={loginAsDemoPremium}
-              disabled={isLoading}
-              className="h-12"
-            >
-              Demo Premium
-            </Button>
-          </div>
-        </div>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
