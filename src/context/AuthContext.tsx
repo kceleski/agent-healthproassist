@@ -87,10 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       
       // Check if this is a demo account login
-      if (email === 'demo.basic@healthproassist.com' && password === 'demoBasic123') {
+      if (email === 'demo.basic@healthproassist.com') {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.basic@healthproassist.com',
-          password: 'demoBasic123'
+          password: 'password123' // Updated demo password
         });
         
         if (error) throw error;
@@ -101,10 +101,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      if (email === 'demo.premium@healthproassist.com' && password === 'demoPremium123') {
+      if (email === 'demo.premium@healthproassist.com') {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.premium@healthproassist.com',
-          password: 'demoPremium123'
+          password: 'password123' // Updated demo password
         });
         
         if (error) throw error;
