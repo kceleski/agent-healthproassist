@@ -28,9 +28,19 @@ const ContactsPage = () => {
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("seniors");
+  const [isProUser, setIsProUser] = useState(false);
   
-  const isProUser = getUserTier(user) === "premium";
-
+  useEffect(() => {
+    const checkUserTier = async () => {
+      if (user) {
+        const tier = await getUserTier(user);
+        setIsProUser(tier === 'premium');
+      }
+    };
+    
+    checkUserTier();
+  }, [user]);
+  
   useEffect(() => {
     localStorage.setItem("seniorClients", JSON.stringify(seniorsData));
     setFilteredSeniors(seniorsData);

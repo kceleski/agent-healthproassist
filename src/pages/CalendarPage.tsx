@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { useLocation } from "react-router-dom";
@@ -112,7 +111,7 @@ const appointments: Appointment[] = [
 const CalendarPage = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const isPro = getUserTier(user) === 'premium';
+  const [isPro, setIsPro] = useState(false);
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -120,6 +119,17 @@ const CalendarPage = () => {
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'calendar' | 'todo' | 'settings'>('calendar');
   const [isReminderSettingsOpen, setIsReminderSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    const checkUserTier = async () => {
+      if (user) {
+        const tier = await getUserTier(user);
+        setIsPro(tier === 'premium');
+      }
+    };
+    
+    checkUserTier();
+  }, [user]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

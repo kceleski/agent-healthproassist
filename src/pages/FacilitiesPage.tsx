@@ -66,8 +66,18 @@ const DEFAULT_LOCATION = "Phoenix, Arizona";
 const FacilitiesPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const userTier = getUserTier(user);
-  const isPro = userTier === 'premium';
+  const [isPro, setIsPro] = useState(false);
+  
+  useEffect(() => {
+    const checkUserTier = async () => {
+      if (user) {
+        const tier = await getUserTier(user);
+        setIsPro(tier === 'premium');
+      }
+    };
+    
+    checkUserTier();
+  }, [user]);
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);

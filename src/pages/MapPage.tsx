@@ -49,7 +49,7 @@ interface Facility {
 
 const MapPage = () => {
   const { user } = useAuth();
-  const isPro = getUserTier(user) === 'premium';
+  const [isPro, setIsPro] = useState(false);
   
   const [searchParams, setSearchParams] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -75,6 +75,17 @@ const MapPage = () => {
       setSavedSearches(JSON.parse(searches));
     }
   }, []);
+
+  useEffect(() => {
+    const checkUserTier = async () => {
+      if (user) {
+        const tier = await getUserTier(user);
+        setIsPro(tier === 'premium');
+      }
+    };
+    
+    checkUserTier();
+  }, [user]);
 
   const toggleSaveFacility = (facility: Facility) => {
     setSavedFacilities(prev => {

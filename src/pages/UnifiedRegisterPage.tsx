@@ -180,10 +180,10 @@ const UnifiedRegisterPage = () => {
       
       // Register the user with Supabase
       await register(
-        formData.name,
         formData.email, 
         formData.password,
         {
+          name: formData.name,
           bio: formData.bio,
           default_location: formData.serviceLocations,
           notification_preferences: formData.notification_preferences,

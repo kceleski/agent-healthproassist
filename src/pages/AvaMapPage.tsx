@@ -27,7 +27,7 @@ type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'lo
 
 const AvaMapPage = () => {
   const { user } = useAuth();
-  const isPro = getUserTier(user) === 'premium';
+  const [isPro, setIsPro] = useState(false);
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -109,6 +109,18 @@ const AvaMapPage = () => {
       };
     }
   }, [isPro]);
+
+  // Load user tier on component mount
+  useEffect(() => {
+    const checkUserTier = async () => {
+      if (user) {
+        const tier = await getUserTier(user);
+        setIsPro(tier === 'premium');
+      }
+    };
+    
+    checkUserTier();
+  }, [user]);
 
   // Apply map filters
   const applyMapFilters = (filterType: FilterType, location: LocationArea) => {
