@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { AuthUser, AuthContextType } from '@/types/auth';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { syncUserData } from '@/services/userService';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -20,6 +21,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         setSession(session);
         if (session?.user) {
+          // Sync user data with our custom users table
+          if (event === 'SIGNED_IN') {
+            await syncUserData(session.user.id, {
+              email: session.user.email || '',
+              full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name
+            });
+          }
+          
           // Fetch both role and profile data
           const { data: roleData } = await supabase
             .from('user_roles')
@@ -48,9 +57,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
+        // Sync user data with our custom users table
+        await syncUserData(session.user.id, {
+          email: session.user.email || '',
+          full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name
+        });
+        
         // Fetch both role and profile data
         Promise.all([
           supabase
@@ -130,12 +145,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // Regular user login
-      const { error } = await supabase.auth.signInWithPassword({ 
+      const { data, error } = await supabase.auth.signInWithPassword({ 
         email, 
         password 
       });
       
       if (error) throw error;
+      
+      // After successful login, sync user data
+      if (data.user) {
+        await syncUserData(data.user.id, {
+          email: data.user.email || '',
+          full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name
+        });
+      }
       
       toast.success("Logged in successfully");
     } catch (error: any) {
@@ -150,17 +173,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name
+            name,
+            full_name: name
           }
         }
       });
 
       if (error) throw error;
+      
+      // After successful registration, sync user data
+      if (data.user) {
+        await syncUserData(data.user.id, {
+          email: data.user.email || '',
+          full_name: name
+        });
+      }
       
       toast.success("Registration successful! Please check your email to confirm your account.");
     } catch (error: any) {
