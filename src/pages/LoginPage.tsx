@@ -61,8 +61,9 @@ const LoginPage = () => {
   const loginAsDemoBasic = async () => {
     try {
       setIsLoading(true);
-      await login("demo.basic@healthproassist.com", "password123");
-      // The redirection is now handled in the login function itself
+      // Use the special demo account credentials
+      await login("demo.basic@healthproassist.com", "Passw0rd!Demo123");
+      // The redirection is handled in the login function
     } catch (error) {
       setIsLoading(false);
     }
@@ -71,8 +72,9 @@ const LoginPage = () => {
   const loginAsDemoPremium = async () => {
     try {
       setIsLoading(true);
-      await login("demo.premium@healthproassist.com", "password123");
-      // The redirection is now handled in the login function itself
+      // Use the special demo account credentials
+      await login("demo.premium@healthproassist.com", "Passw0rd!Demo123");
+      // The redirection is handled in the login function
     } catch (error) {
       setIsLoading(false);
     }

@@ -86,14 +86,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // Check if this is a demo account login
+      console.log("Login attempt with email:", email);
+      
+      // Special handling for demo accounts - using hardcoded credentials
       if (email === 'demo.basic@healthproassist.com') {
+        // For demo purposes - using a very strong password that meets requirements
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.basic@healthproassist.com',
-          password: 'password123' // Use consistent password
+          password: 'Passw0rd!Demo123' 
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Demo basic login error:", error);
+          toast.error("Demo account login failed. Please try again.");
+          throw error;
+        }
+        
         toast.success("Logged in as Demo Basic User");
         
         // Redirect to welcome page after successful demo login
@@ -102,12 +110,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (email === 'demo.premium@healthproassist.com') {
+        // For demo purposes - using a very strong password that meets requirements
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.premium@healthproassist.com',
-          password: 'password123' // Use consistent password
+          password: 'Passw0rd!Demo123'
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Demo premium login error:", error);
+          toast.error("Demo account login failed. Please try again.");
+          throw error;
+        }
+        
         toast.success("Logged in as Demo Premium User");
         
         // Redirect to welcome page after successful demo login
