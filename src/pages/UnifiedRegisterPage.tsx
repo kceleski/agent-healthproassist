@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import WelcomeTabs from "@/components/welcome/WelcomeTabs";
-import { UserProfile } from "@/types/profile";
 import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
@@ -57,6 +56,7 @@ const UnifiedRegisterPage = () => {
           toast.error(err.message);
         });
       } else {
+        console.error("Validation error:", error);
         toast.error("Please check your registration information");
       }
     }
@@ -92,6 +92,16 @@ const UnifiedRegisterPage = () => {
   const savePreferences = async () => {
     try {
       setLoading(true);
+      console.log("Starting registration process with data:", {
+        name: formData.name,
+        email: formData.email,
+        profileData: {
+          bio: formData.bio,
+          default_location: formData.default_location,
+          notification_preferences: formData.notification_preferences,
+          communication_preferences: formData.communication_preferences
+        }
+      });
       
       // Now we actually register the user with Supabase
       await register(

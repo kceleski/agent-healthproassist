@@ -5,13 +5,22 @@ import { toast } from 'sonner';
 // Create or update a user in our users table after authentication
 export async function syncUserData(userId: string, userData: { email: string, full_name?: string }) {
   try {
-    const { data: existingUser } = await supabase
+    console.log("Syncing user data for:", userId, userData);
+    
+    // First check if the user exists in our users table
+    const { data: existingUser, error: fetchError } = await supabase
       .from('users')
       .select('id')
       .eq('id', userId)
       .single();
     
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error("Error fetching user data:", fetchError);
+      throw fetchError;
+    }
+    
     if (existingUser) {
+      console.log("Updating existing user:", existingUser);
       // Update existing user
       const { error } = await supabase
         .from('users')
@@ -23,8 +32,14 @@ export async function syncUserData(userId: string, userData: { email: string, fu
         })
         .eq('id', userId);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating user:", error);
+        throw error;
+      }
+      
+      console.log("User updated successfully");
     } else {
+      console.log("Creating new user");
       // Create new user
       const { error } = await supabase
         .from('users')
@@ -39,7 +54,38 @@ export async function syncUserData(userId: string, userData: { email: string, fu
           last_login: new Date().toISOString()
         });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating user:", error);
+        throw error;
+      }
+      
+      console.log("User created successfully");
+    }
+    
+    // Also ensure we have a user profile record
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
+      
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error("Error fetching user profile:", profileError);
+    }
+    
+    if (!profileData) {
+      console.log("Creating new user profile");
+      const { error } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: userId,
+        });
+        
+      if (error) {
+        console.error("Error creating user profile:", error);
+      } else {
+        console.log("User profile created successfully");
+      }
     }
     
     return true;

@@ -176,6 +176,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ) => {
     try {
       setLoading(true);
+      console.log("Attempting to register user:", { name, email });
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -187,15 +189,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Registration error:", error);
+        throw error;
+      }
+      
+      console.log("Registration response:", data);
       
       if (data.user) {
+        console.log("User created successfully, syncing user data");
         await syncUserData(data.user.id, {
           email: data.user.email || '',
           full_name: name
         });
         
         if (profileData) {
+          console.log("Updating profile data:", profileData);
           const { error: profileError } = await supabase
             .from('user_profiles')
             .update({
@@ -210,10 +219,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error("Error updating profile data:", profileError);
           }
         }
+        
+        // Set the user in state
+        const userData: AuthUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: name
+        };
+        
+        setUser(userData);
+        setSession(data.session);
       }
       
       toast.success("Registration successful! Please check your email to confirm your account.");
     } catch (error: any) {
+      console.error("Registration error:", error);
       toast.error(error.message || "Failed to register");
       throw error;
     } finally {

@@ -11,13 +11,15 @@ let supabaseInstance: ReturnType<typeof createClient<Database>>;
 
 export const supabase = (() => {
   if (!supabaseInstance) {
+    console.log("Initializing Supabase client");
     supabaseInstance = createClient<Database>(
       supabaseUrl,
       supabaseAnonKey,
       {
         auth: {
           persistSession: true,
-          autoRefreshToken: true
+          autoRefreshToken: true,
+          storageKey: 'healthProAssistAuthToken'
         }
       }
     );
