@@ -14,6 +14,7 @@ interface SubscriptionToggleProps {
 
 export const SubscriptionToggle = ({ className }: SubscriptionToggleProps) => {
   const { user, updateDemoTier } = useAuth();
+  // Use subscription as primary and demoTier as fallback
   const currentTier = user?.subscription === "premium" || user?.demoTier === "premium" ? "premium" : "basic";
   const [isPro, setIsPro] = useState(currentTier === "premium");
   

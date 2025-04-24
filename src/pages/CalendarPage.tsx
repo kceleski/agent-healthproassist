@@ -1,25 +1,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Plus, Clock, MapPin, User, Users, FileText, Bell, Link } from "lucide-react";
-import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+import { getUserTier } from '@/utils/subscription';
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import ReminderSettings from "@/components/calendar/ReminderSettings";
@@ -95,8 +78,7 @@ const appointments: Appointment[] = [
 const CalendarPage = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const demoTier = user?.demoTier || user?.subscription || 'basic';
-  const isPro = demoTier === 'premium';
+  const isPro = getUserTier(user) === 'premium';
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);

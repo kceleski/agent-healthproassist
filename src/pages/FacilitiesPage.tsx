@@ -36,6 +36,7 @@ import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { getUserTier } from '@/utils/subscription';
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
 
@@ -65,8 +66,8 @@ const DEFAULT_LOCATION = "Phoenix, Arizona";
 const FacilitiesPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const demoTier = user?.demoTier || user?.subscription || 'basic';
-  const isPro = demoTier === 'premium';
+  const userTier = getUserTier(user);
+  const isPro = userTier === 'premium';
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<FacilityType[]>([]);

@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
+import { getUserTier } from '@/utils/subscription';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -49,7 +49,7 @@ interface Facility {
 
 const MapPage = () => {
   const { user } = useAuth();
-  const isPro = (user?.demoTier || user?.subscription) === 'premium';
+  const isPro = getUserTier(user) === 'premium';
   
   const [searchParams, setSearchParams] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -70,7 +70,6 @@ const MapPage = () => {
       setSavedFacilities(JSON.parse(saved));
     }
     
-    // Get saved searches from local storage
     const searches = localStorage.getItem('savedSearches');
     if (searches) {
       setSavedSearches(JSON.parse(searches));
@@ -126,7 +125,6 @@ const MapPage = () => {
   
   const handleSaveSearch = () => {
     if (searchParams && searchResults.length > 0) {
-      // Create a new saved search object
       const newSavedSearch = {
         id: Date.now().toString(),
         query: searchParams.query,
@@ -137,16 +135,13 @@ const MapPage = () => {
         date: new Date().toISOString()
       };
       
-      // Update savedSearches state and localStorage
       const updatedSearches = [...savedSearches, newSavedSearch];
       setSavedSearches(updatedSearches);
       localStorage.setItem('savedSearches', JSON.stringify(updatedSearches));
       
-      // Show saved confirmation
       setSearchSaved(true);
       toast.success('Search saved successfully');
       
-      // Auto show the saved searches accordion
       setTimeout(() => {
         setShowSavedSearches(true);
       }, 500);
@@ -156,14 +151,11 @@ const MapPage = () => {
   };
   
   const loadSavedSearch = (savedSearch: any) => {
-    // Set the search parameters
     setSearchParams(savedSearch);
     sessionStorage.setItem('facilitySearchParams', JSON.stringify(savedSearch));
     
-    // Load the results
     setSearchResults(savedSearch.results || []);
     
-    // Close the accordion
     setShowSavedSearches(false);
     
     toast.success('Saved search loaded successfully');
@@ -241,7 +233,6 @@ const MapPage = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN - Search Results */}
         <div>
           <Card>
             <CardHeader>
@@ -324,7 +315,6 @@ const MapPage = () => {
           </Card>
         </div>
 
-        {/* CENTER COLUMN - Map View */}
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
@@ -339,9 +329,7 @@ const MapPage = () => {
           </Card>
         </div>
 
-        {/* RIGHT COLUMN - Filters and Save Search */}
         <div>
-          {/* Save Search Section */}
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Save Your Search</CardTitle>
@@ -388,7 +376,6 @@ const MapPage = () => {
             </CardContent>
           </Card>
           
-          {/* Filters Section */}
           <Card>
             <CardHeader>
               <CardTitle>Search Filters</CardTitle>

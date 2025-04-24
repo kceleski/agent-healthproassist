@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Loader2, MapPin, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
+import { getUserTier } from '@/utils/subscription';
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
@@ -27,7 +27,7 @@ type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'lo
 
 const AvaMapPage = () => {
   const { user } = useAuth();
-  const isPro = (user?.demoTier || user?.subscription) === 'premium';
+  const isPro = getUserTier(user) === 'premium';
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -538,4 +538,3 @@ const AvaMapPage = () => {
 };
 
 export default AvaMapPage;
-

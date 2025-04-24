@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Filter, Download, Plus, Search, X, Users, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { getUserTier } from '@/utils/subscription';
 import { ContactList } from "@/components/contacts/ContactList";
 import { ContactDetails } from "@/components/contacts/ContactDetails";
 import AddSeniorClientForm from "@/components/contacts/AddSeniorClientForm";
@@ -29,8 +29,7 @@ const ContactsPage = () => {
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("seniors");
   
-  const userTier = user?.demoTier || user?.subscription || 'basic';
-  const isProUser = userTier === "premium";
+  const isProUser = getUserTier(user) === "premium";
 
   useEffect(() => {
     localStorage.setItem("seniorClients", JSON.stringify(seniorsData));

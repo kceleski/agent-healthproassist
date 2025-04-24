@@ -1,17 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase'; // Use a single Supabase client instance
-
-// Type for authenticated user
-type AuthUser = {
-  id: string;
-  email: string | undefined;
-  name?: string;
-  subscription?: string;
-  role?: string;
-};
+import { AuthUser } from '@/types/auth';
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -35,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -45,13 +35,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: session.user.user_metadata?.name as string,
           subscription: session.user.user_metadata?.subscription as string,
           role: session.user.user_metadata?.role as string,
+          demoTier: session.user.user_metadata?.demoTier as 'basic' | 'premium'
         };
         setUser(userData);
       }
       setLoading(false);
     });
 
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state change event:', event);
       setSession(session);
@@ -63,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: session.user.user_metadata?.name as string,
           subscription: session.user.user_metadata?.subscription as string,
           role: session.user.user_metadata?.role as string,
+          demoTier: session.user.user_metadata?.demoTier as 'basic' | 'premium'
         };
         setUser(userData);
         toast.success("Signed in successfully!");
@@ -107,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name,
             subscription: 'basic',
             role: 'Consultant',
+            demoTier: 'basic'
           },
         },
       });
@@ -143,7 +135,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Legacy features preserved but now using real auth data
   const enableWarmLeads = async () => {
     if (user) {
       toast.success('Warm leads feature enabled!');
@@ -173,7 +164,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateDemoTier = async (tier: 'basic' | 'premium') => {
     if (user) {
-      toast.success(`Account upgraded to ${tier} tier!`);
+      const updatedUser = { ...user, demoTier: tier };
+      setUser(updatedUser);
+      
+      try {
+        const { error } = await supabase.auth.updateUser({
+          data: { demoTier: tier }
+        });
+        
+        if (error) {
+          console.error('Error updating user demoTier:', error);
+          toast.error('Failed to update subscription tier');
+          return;
+        }
+        
+        toast.success(`Account upgraded to ${tier} tier!`);
+      } catch (error) {
+        console.error('Error updating user demoTier:', error);
+        toast.error('Failed to update subscription tier');
+      }
     } else {
       toast.error('You need to be logged in to upgrade');
     }

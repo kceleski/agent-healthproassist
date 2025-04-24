@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import { getUserTier } from '@/utils/subscription';
 import { 
   Building, 
   Home, 
@@ -44,8 +44,9 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const demoTier = user?.demoTier || user?.subscription || 'basic';
-  const isPro = demoTier === 'premium';
+  
+  const userTier = getUserTier(user);
+  const isPro = userTier === 'premium';
 
   const handleLogout = () => {
     logout();
