@@ -95,6 +95,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (error) throw error;
         toast.success("Logged in as Demo Basic User");
+        
+        // Redirect to welcome page after successful demo login
+        window.location.href = "/welcome";
         return;
       }
       
@@ -106,6 +109,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (error) throw error;
         toast.success("Logged in as Demo Premium User");
+        
+        // Redirect to welcome page after successful demo login
+        window.location.href = "/welcome";
         return;
       }
       

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
@@ -32,8 +31,8 @@ const LoginPage = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get the redirect path from location state or use default
-  const from = (location.state as any)?.from?.pathname || "/dashboard";
+  // Get the redirect path from location state or use welcome as default
+  const from = (location.state as any)?.from?.pathname || "/welcome";
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -63,7 +62,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await login("demo.basic@healthproassist.com", "demoBasic123");
-      navigate(from);
+      // The redirection is now handled in the login function itself
     } catch (error) {
       setIsLoading(false);
     }
@@ -73,7 +72,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await login("demo.premium@healthproassist.com", "demoPremium123");
-      navigate(from);
+      // The redirection is now handled in the login function itself
     } catch (error) {
       setIsLoading(false);
     }
