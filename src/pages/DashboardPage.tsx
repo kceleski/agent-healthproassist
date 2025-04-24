@@ -6,8 +6,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Users, Building, DollarSign, Activity, Bell, FileText } from "lucide-react";
+import { Calendar, Users, Building, DollarSign, Activity, Bell, FileText, Search, Map } from "lucide-react";
 import NotificationsOverview from "@/components/NotificationsOverview";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const summaryStats = [
   {
@@ -81,89 +83,98 @@ const notifications = [
   },
 ];
 
+const quickLinks = [
+  { title: "Search", icon: Search, path: "/search", color: "bg-healthcare-100 text-healthcare-600" },
+  { title: "Map", icon: Map, path: "/map", color: "bg-green-100 text-green-600" },
+  { title: "Calendar", icon: Calendar, path: "/calendar", color: "bg-purple-100 text-purple-600" },
+  { title: "Clients", icon: Users, path: "/contacts", color: "bg-amber-100 text-amber-600" },
+];
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const initials = user?.name?.split(" ").map((n:string) => n[0]).join("") || "U";
   
-  console.log("Rendering DashboardPage with user:", user);
-
   return (
-    <div className="py-8 px-4 max-w-5xl mx-auto">
-      {/* HEADER - avatar, summary, info */}
-      <Card className="mb-8">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-2 border-healthcare-200">
-                <AvatarImage src={`https://avatar.vercel.sh/${user?.email || "unknown"}`} />
-                <AvatarFallback className="text-xl">{initials}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-2xl">{user?.name || "User Dashboard"}</CardTitle>
-                <CardDescription>
-                  Welcome back {user?.name ? user.name.split(" ")[0] : ""}! Here is your placement activity and progress overview.
-                </CardDescription>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge variant="outline" className="bg-healthcare-50">
-                    {user?.subscription ? user.subscription.toUpperCase() : "BASIC"} Plan
-                  </Badge>
-                  <Badge variant="outline" className="bg-healthcare-50">
-                    Role: {user?.role || "Consultant"}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </Button>
-              <Button>New Placement</Button>
-            </div>
+    <div className="px-4 py-6 max-w-5xl mx-auto">
+      {/* Mobile-friendly welcome header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-healthcare-200">
+            <AvatarImage src={`https://avatar.vercel.sh/${user?.email || "unknown"}`} />
+            <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold">Welcome, {user?.name ? user.name.split(" ")[0] : "User"}!</h2>
+            <p className="text-sm text-muted-foreground">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
           </div>
-        </CardHeader>
-        <Separator />
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 py-3">
-            {summaryStats.map(stat => (
-              <div key={stat.label} className="flex items-center gap-4">
-                <div className={`p-3 rounded-xl ${stat.badgeColor}`}>
-                  <stat.icon className="h-6 w-6" />
-                </div>
-                <div>
-                  <div className="text-lg font-bold">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                  <Badge variant="outline" className={`mt-1 ${stat.badgeColor}`}>{stat.badge}</Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <Badge variant="outline" className="bg-healthcare-50">
+            {user?.subscription ? user.subscription.toUpperCase() : "BASIC"} Plan
+          </Badge>
+          <Badge variant="outline" className="bg-healthcare-50">
+            Role: {user?.role || "Consultant"}
+          </Badge>
+        </div>
+      </div>
       
-      {/* BODY - Tabs style */}
-      <Card>
-        <CardContent>
-          <Tabs defaultValue="activity" className="py-8">
-            <TabsList className="gap-4 mb-6">
+      {/* Quick Actions for Mobile */}
+      <div className="mb-6">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Quick Actions</h3>
+        <div className="grid grid-cols-4 gap-2">
+          {quickLinks.map((link) => (
+            <Link key={link.title} to={link.path} className="flex flex-col items-center">
+              <div className={`p-3 rounded-full ${link.color} mb-1`}>
+                <link.icon className="h-5 w-5" />
+              </div>
+              <span className="text-xs">{link.title}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* SUMMARY STATS - more mobile friendly */}
+      <div className="container-soft-blue mb-6 p-4">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Overview</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {summaryStats.map(stat => (
+            <div key={stat.label} className="bg-white p-3 rounded-lg flex items-center gap-3 shadow-sm">
+              <div className={`p-2 rounded-full ${stat.badgeColor}`}>
+                <stat.icon className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-lg font-bold">{stat.value}</div>
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* BODY - Tabs style - mobile friendly */}
+      <Card className="container-soft-blue">
+        <CardContent className="p-0">
+          <Tabs defaultValue="activity" className="w-full">
+            <TabsList className="w-full grid grid-cols-3 h-12">
               <TabsTrigger value="activity">Activity</TabsTrigger>
               <TabsTrigger value="clients">Clients</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             
             {/* ACTIVITY TAB */}
-            <TabsContent value="activity" className="space-y-6">
+            <TabsContent value="activity" className="p-4 space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-3">Recent Activity</h3>
+                <h3 className="text-base font-semibold mb-3">Recent Activity</h3>
                 <div className="space-y-3">
                   {activityFeed.map((activity) => (
-                    <div key={activity.id} className="p-3 border rounded-lg flex items-center gap-3">
-                      <activity.icon className="h-5 w-5 text-healthcare-600" />
-                      <div className="flex-1">
-                        <span className="font-medium">{activity.title}</span>
+                    <div key={activity.id} className="p-3 border rounded-lg flex items-center gap-3 bg-white">
+                      <activity.icon className="h-5 w-5 text-healthcare-600 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm truncate">{activity.title}</div>
                         <div className="text-xs text-muted-foreground">{activity.date}</div>
                       </div>
-                      <Badge variant="outline" className="bg-healthcare-50 capitalize">{activity.type}</Badge>
                     </div>
                   ))}
                 </div>
@@ -171,25 +182,29 @@ export default function DashboardPage() {
             </TabsContent>
             
             {/* CLIENTS TAB */}
-            <TabsContent value="clients" className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Your Clients</h3>
-                <div className="text-muted-foreground">Client details coming soon...</div>
+            <TabsContent value="clients" className="p-4 space-y-4">
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 mx-auto text-healthcare-300 mb-2" />
+                <h3 className="text-base font-semibold">No Recent Clients</h3>
+                <p className="text-sm text-muted-foreground mt-1">Add your first client to see them here</p>
+                <Button className="mt-4" asChild>
+                  <Link to="/contacts">View Clients</Link>
+                </Button>
               </div>
             </TabsContent>
             
             {/* NOTIFICATIONS TAB */}
-            <TabsContent value="notifications" className="space-y-6">
+            <TabsContent value="notifications" className="p-4 space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-2">Recent Notifications</h3>
+                <h3 className="text-base font-semibold mb-3">Recent Notifications</h3>
                 <div className="space-y-3">
                   {notifications.map(notification => (
-                    <div key={notification.id} className="flex items-start gap-3 border p-3 rounded-lg">
-                      <Bell className="h-4 w-4 mt-1 text-healthcare-600" />
-                      <div>
-                        <div className="font-medium">{notification.title}</div>
+                    <div key={notification.id} className="flex items-start gap-3 border p-3 rounded-lg bg-white">
+                      <Bell className="h-4 w-4 mt-1 text-healthcare-600 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm">{notification.title}</div>
                         <div className="text-xs text-muted-foreground">{notification.message}</div>
-                        <div className="text-xs text-muted-foreground">{notification.time}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{notification.time}</div>
                       </div>
                     </div>
                   ))}

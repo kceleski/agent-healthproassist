@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
+
+import { useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { getUserTier } from '@/utils/subscription';
@@ -16,7 +17,8 @@ import {
   Heart,
   Bookmark,
   FileText,
-  Menu
+  Menu,
+  X
 } from 'lucide-react';
 
 import { 
@@ -38,14 +40,32 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SubscriptionToggle } from '@/components/ui/subscription-toggle';
 import { NotificationsInbox } from '@/components/notifications/NotificationsInbox';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
-  const userTier = getUserTier(user);
+  // Get user tier synchronously from the user object for demo users, or default to 'basic'
+  const initialTier = user?.isDemo ? user.subscription || 'basic' : 'basic';
+  const [userTier, setUserTier] = useState(initialTier);
+  
+  // Update userTier when needed for non-demo users
+  useEffect(() => {
+    const updateTier = async () => {
+      if (!user?.isDemo) {
+        const tier = await getUserTier(user);
+        setUserTier(tier);
+      }
+    };
+    
+    updateTier();
+  }, [user]);
+  
   const isPro = userTier === 'premium';
 
   const handleLogout = () => {
@@ -147,7 +167,7 @@ const DashboardLayout = () => {
     <div className="h-screen flex w-full overflow-hidden">
       {isMobile ? (
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-          <SheetContent side="left" className="w-[80%] p-0">
+          <SheetContent side="left" className="w-[80%] p-0 bg-white">
             <SidebarContents />
           </SheetContent>
         </Sheet>
@@ -159,31 +179,41 @@ const DashboardLayout = () => {
         </SidebarProvider>
       )}
       
-      <div className="flex-1 flex flex-col overflow-hidden h-screen">
-        <header className="flex-shrink-0 sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-1 flex flex-col overflow-hidden h-screen bg-white">
+        <header className="flex-shrink-0 sticky top-0 z-30 border-b bg-white shadow-sm">
           <div className="flex h-14 items-center px-4">
             {isMobile && (
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="mr-2"
+                className="mr-2 text-healthcare-600"
                 onClick={() => setIsSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
               </Button>
             )}
             {!isMobile && <SidebarTrigger />}
-            <div className="flex flex-1 items-center justify-end space-x-4">
-              <NotificationsInbox />
-              <SubscriptionToggle />
-              <div className="hidden md:block text-sm font-medium">
-                Plan: <span className="bg-healthcare-100 text-healthcare-700 px-2 py-0.5 rounded-full">{isPro ? 'Pro' : 'Basic'}</span>
+            <div className="flex-1 flex items-center justify-between">
+              <h1 className="text-lg font-medium text-healthcare-600">
+                {location.pathname === '/dashboard' ? 'Dashboard' : 
+                 location.pathname === '/search' ? 'Search' :
+                 location.pathname === '/contacts' ? 'Contacts' :
+                 location.pathname === '/map' ? 'Map View' : 'HealthProAssist'}
+              </h1>
+              <div className="flex items-center space-x-2">
+                <NotificationsInbox />
+                <SubscriptionToggle />
+                <div className="hidden md:block">
+                  <Badge variant="outline" className={`bg-healthcare-100 text-healthcare-700 px-2 py-0.5`}>
+                    {isPro ? 'Pro' : 'Basic'}
+                  </Badge>
+                </div>
               </div>
             </div>
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pb-6">
           <Outlet />
         </main>
       </div>
