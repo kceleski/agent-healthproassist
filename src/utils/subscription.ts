@@ -1,21 +1,19 @@
 
 import { AuthUser } from '@/types/auth';
+import { supabase } from '@/lib/supabase';
 
-/**
- * Determines if a user has premium subscription status
- * @param user The authenticated user object
- * @returns boolean indicating if user has premium status
- */
-export const isPremiumUser = (user: AuthUser | null): boolean => {
+export const isPremiumUser = async (user: AuthUser | null): Promise<boolean> => {
   if (!user) return false;
-  return user.subscription === 'premium';
+  
+  const { data } = await supabase
+    .from('users')
+    .select('subscription')
+    .eq('id', user.id)
+    .single();
+    
+  return data?.subscription === 'premium';
 };
 
-/**
- * Gets the current tier of the user
- * @param user The authenticated user object
- * @returns 'premium' if user has premium status, otherwise 'basic'
- */
-export const getUserTier = (user: AuthUser | null): 'premium' | 'basic' => {
-  return isPremiumUser(user) ? 'premium' : 'basic';
+export const getUserTier = async (user: AuthUser | null): Promise<'premium' | 'basic'> => {
+  return await isPremiumUser(user) ? 'premium' : 'basic';
 };

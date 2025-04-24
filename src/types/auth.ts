@@ -3,7 +3,7 @@ import { Session } from "@supabase/supabase-js";
 
 export type AuthUser = {
   id: string;
-  email?: string;
+  email?: string | null;
   name?: string;
 };
 
