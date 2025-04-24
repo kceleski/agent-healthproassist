@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -12,7 +13,6 @@ type AuthContextType = {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
-  updateDemoTier: (tier: 'basic' | 'premium') => void;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         setSession(session);
         if (session?.user) {
-          // Fetch user role
+          // Fetch both role and profile data
           const { data: roleData } = await supabase
             .from('user_roles')
             .select('role')
@@ -45,8 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email,
             name: profile?.name || session.user.email,
             subscription: profile?.subscription || 'basic',
-            role: roleData?.role || 'user',
-            demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
+            role: roleData?.role || 'user'
           };
           setUser(userData);
         } else {
@@ -77,8 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email,
             name: profile?.name || session.user.email,
             subscription: profile?.subscription || 'basic',
-            role: roleData?.role || 'user',
-            demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
+            role: roleData?.role || 'user'
           };
           setUser(userData);
         });
@@ -91,14 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const updateDemoTier = (tier: 'basic' | 'premium') => {
-    if (user?.id) {
-      localStorage.setItem(`demoTier_${user.id}`, tier);
-      setUser(prev => prev ? { ...prev, demoTier: tier } : null);
-      toast.success(`Demo tier updated to ${tier}`);
-    }
-  };
-
+  // Remove updateDemoTier method
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -164,8 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        isAuthenticated: !!user,
-        updateDemoTier
+        isAuthenticated: !!user
       }}
     >
       {children}

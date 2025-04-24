@@ -8,7 +8,7 @@ import { AuthUser } from '@/types/auth';
  */
 export const isPremiumUser = (user: AuthUser | null): boolean => {
   if (!user) return false;
-  return user.subscription === 'premium' || user.demoTier === 'premium';
+  return user.subscription === 'premium';
 };
 
 /**

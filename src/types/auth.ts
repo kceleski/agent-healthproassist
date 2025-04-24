@@ -5,5 +5,4 @@ export type AuthUser = {
   name?: string;
   subscription?: string;
   role?: 'user' | 'admin';
-  demoTier?: string;
 };
