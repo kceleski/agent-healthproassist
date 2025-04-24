@@ -2,19 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { AuthUser } from '@/types/auth';
-
-type AuthContextType = {
-  user: AuthUser | null;
-  session: Session | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  isAuthenticated: boolean;
-  showAvatar: boolean;
-  toggleAvatar: () => void;
-};
+import { AuthUser, AuthContextType } from '@/types/auth';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
