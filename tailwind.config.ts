@@ -70,6 +70,14 @@ export default {
 					cyan: '#22d3ee',
 					pink: '#e879f9',
 					glow: 'rgba(56, 189, 248, 0.5)'
+				},
+				softblue: {
+					50: '#F0F7FF',
+					100: '#E0F0FF',
+					200: '#C2E1FF',
+					300: '#A0C9FE',
+					400: '#78ACFD',
+					500: '#5689F9',
 				}
 			},
 			borderRadius: {
@@ -135,7 +143,9 @@ export default {
 				'soft': '0 4px 12px rgba(0, 0, 0, 0.05)',
 				'glass': '0 8px 32px rgba(0, 0, 0, 0.06)',
 				'holographic': '0 0 10px rgba(56, 189, 248, 0.3), 0 0 20px rgba(56, 189, 248, 0.1)',
-				'holographic-hover': '0 0 15px rgba(56, 189, 248, 0.5), 0 0 30px rgba(56, 189, 248, 0.2)'
+				'holographic-hover': '0 0 15px rgba(56, 189, 248, 0.5), 0 0 30px rgba(56, 189, 248, 0.2)',
+				'soft-glow': '0 10px 25px -5px rgba(86, 137, 249, 0.2), 0 5px 15px -5px rgba(86, 137, 249, 0.1)',
+				'soft-glow-hover': '0 15px 35px -8px rgba(86, 137, 249, 0.3), 0 8px 20px -8px rgba(86, 137, 249, 0.2)'
 			}
 		}
 	},
