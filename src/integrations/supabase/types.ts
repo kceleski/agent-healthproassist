@@ -753,6 +753,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
@@ -837,6 +861,10 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
       is_feature_enabled: {
         Args: {
           feature_key: string
@@ -858,6 +886,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "user" | "admin"
       subscription_tier: "free" | "basic" | "premium"
     }
     CompositeTypes: {
@@ -974,6 +1003,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["user", "admin"],
       subscription_tier: ["free", "basic", "premium"],
     },
   },

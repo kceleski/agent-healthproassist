@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { AuthUser } from '@/types/auth';
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -16,19 +15,23 @@ type AuthContextType = {
   updateDemoTier: (tier: 'basic' | 'premium') => void;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         if (session?.user) {
+          // Fetch user role
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .single();
+
           const { data: profile } = await supabase
             .from('user_profiles')
             .select('*')
@@ -40,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email,
             name: profile?.name || session.user.email,
             subscription: profile?.subscription || 'basic',
-            role: profile?.role || 'user',
+            role: roleData?.role || 'user',
             demoTier: localStorage.getItem(`demoTier_${session.user.id}`) || 'basic'
           };
           setUser(userData);

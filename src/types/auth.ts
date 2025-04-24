@@ -4,6 +4,6 @@ export type AuthUser = {
   email: string | null;
   name?: string;
   subscription?: string;
-  role?: string;
+  role?: 'user' | 'admin';
   demoTier?: string;
 };
