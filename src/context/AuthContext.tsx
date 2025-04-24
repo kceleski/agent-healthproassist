@@ -3,19 +3,35 @@ import React, { createContext, useContext, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
+// Update the user type to include all properties consistently
+type DemoUser = {
+  id: string;
+  email: string;
+  name: string;
+  demoTier: string;
+  subscription: string;
+  role: string;
+  user_metadata: {
+    name: string;
+    demo_tier: string;
+    subscription: string;
+    role: string;
+  }
+};
+
 // Mock user for demo purposes
-const DEMO_USER = {
+const DEMO_USER: DemoUser = {
   id: 'demo-user-id',
   email: 'demo@example.com',
   name: 'Demo User',
   demoTier: 'premium',
   subscription: 'premium',
-  role: 'Consultant', // Added role property
+  role: 'Consultant',
   user_metadata: {
     name: 'Demo User',
     demo_tier: 'premium',
     subscription: 'premium',
-    role: 'Consultant' // Added role to metadata as well
+    role: 'Consultant'
   }
 };
 
