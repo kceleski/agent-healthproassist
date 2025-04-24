@@ -44,19 +44,17 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           {isAuthenticated ? (
             <Button
-              as={Link}
-              to="/dashboard"
+              asChild
               className="text-sm font-medium text-white bg-healthcare-600 hover:bg-healthcare-700 transition-colors px-4 py-2 rounded-md"
             >
-              Dashboard
+              <Link to="/dashboard">Dashboard</Link>
             </Button>
           ) : (
             <Button
-              as={Link}
-              to="/login"
+              asChild
               className="text-sm font-medium text-white bg-healthcare-600 hover:bg-healthcare-700 transition-colors px-4 py-2 rounded-md"
             >
-              Sign In
+              <Link to="/login">Sign In</Link>
             </Button>
           )}
           
@@ -106,3 +104,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
