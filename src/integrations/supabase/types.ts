@@ -590,27 +590,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          created_at: string | null
-          id: string
-          name: string
-          role: string
-        }
-        Insert: {
-          created_at?: string | null
-          id: string
-          name: string
-          role?: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          name?: string
-          role?: string
-        }
-        Relationships: []
-      }
       search_results: {
         Row: {
           amenities: string[] | null
@@ -823,7 +802,15 @@ export type Database = {
           updated_at?: string | null
           veteran_status?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
