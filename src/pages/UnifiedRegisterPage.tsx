@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +31,7 @@ const UnifiedRegisterPage = () => {
     phone: "",
     
     // Professional info
-    workType: "independent", // 'agency' or 'independent'
+    workType: "independent" as 'agency' | 'independent', // Fix: explicitly type as union type
     agencyName: "",
     agencyAddress: "",
     agencyPhone: "",
@@ -206,9 +205,6 @@ const UnifiedRegisterPage = () => {
           profile_image: formData.profileImage ? 'pending_upload' : undefined
         }
       );
-      
-      // If there's a profile image, we would upload it to storage here
-      // That part would be handled in the AuthContext or a separate service
       
       toast.success("Account created successfully!");
       navigate("/dashboard");
