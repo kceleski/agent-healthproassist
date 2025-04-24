@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (email === 'demo.basic@healthproassist.com') {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.basic@healthproassist.com',
-          password: 'password123' // Updated demo password
+          password: 'password123' // Use consistent password
         });
         
         if (error) throw error;
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (email === 'demo.premium@healthproassist.com') {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: 'demo.premium@healthproassist.com',
-          password: 'password123' // Updated demo password
+          password: 'password123' // Use consistent password
         });
         
         if (error) throw error;
