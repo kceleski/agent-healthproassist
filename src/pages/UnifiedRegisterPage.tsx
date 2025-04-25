@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -178,33 +179,32 @@ const UnifiedRegisterPage = () => {
       setLoading(true);
       console.log("Starting registration process with data:", formData);
       
-      // Register the user with Supabase
-      await register(
-        formData.email, 
-        formData.password,
-        {
-          name: formData.name,
-          bio: formData.bio,
-          default_location: formData.serviceLocations,
-          notification_preferences: formData.notification_preferences,
-          communication_preferences: formData.communication_preferences,
-          company: formData.workType === 'agency' ? formData.agencyName : undefined,
-          job_title: "Placement Specialist",
-          headline: formData.headline,
-          years_experience: formData.yearsExperience,
-          phone: formData.phone,
-          specializations: formData.specializations,
-          work_type: formData.workType,
-          agency_details: formData.workType === 'agency' ? {
-            name: formData.agencyName,
-            address: formData.agencyAddress,
-            phone: formData.agencyPhone,
-            website: formData.agencyWebsite
-          } : undefined,
-          subscription_tier: selectedSubscription,
-          profile_image: formData.profileImage ? 'pending_upload' : undefined
-        }
-      );
+      // Create the metadata object for registration
+      const metadata = {
+        name: formData.name,
+        bio: formData.bio,
+        default_location: formData.serviceLocations,
+        notification_preferences: formData.notification_preferences,
+        communication_preferences: formData.communication_preferences,
+        company: formData.workType === 'agency' ? formData.agencyName : undefined,
+        job_title: "Placement Specialist",
+        headline: formData.headline,
+        years_experience: formData.yearsExperience,
+        phone: formData.phone,
+        specializations: formData.specializations,
+        work_type: formData.workType,
+        agency_details: formData.workType === 'agency' ? {
+          name: formData.agencyName,
+          address: formData.agencyAddress,
+          phone: formData.agencyPhone,
+          website: formData.agencyWebsite
+        } : undefined,
+        subscription_tier: selectedSubscription,
+        profile_image: formData.profileImage ? 'pending_upload' : undefined
+      };
+      
+      // Register the user with Supabase - pass email, password, and metadata as separate arguments
+      await register(formData.email, formData.password, metadata);
       
       toast.success("Account created successfully!");
       navigate("/dashboard");

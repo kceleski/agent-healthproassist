@@ -1,44 +1,41 @@
 
-import { AuthUser } from '@/types/auth';
-import { supabase } from '@/lib/supabase';
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
-export const isPremiumUser = async (user: AuthUser | null): Promise<boolean> => {
-  if (!user) return false;
+// Asynchronously get user tier from the database
+export const getUserTier = async (user: User | null): Promise<'basic' | 'premium'> => {
+  if (!user) return 'basic';
   
-  // For demo users, check the subscription property directly
-  if (user.isDemo) {
-    return user.subscription === 'premium';
-  }
-  
-  // For regular users, check the database
-  const { data } = await supabase
-    .from('users')
-    .select('subscription')
-    .eq('id', user.id)
-    .single();
+  try {
+    // First check the user's profile
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('subscription_tier')
+      .eq('id', user.id)
+      .single();
     
-  return data?.subscription === 'premium';
+    if (profile?.subscription_tier === 'premium') return 'premium';
+    
+    // If not found in profile, check the subscriptions table
+    const { data: subscription, error: subscriptionError } = await supabase
+      .from('subscriptions')
+      .select('plan, status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .single();
+    
+    if (subscription?.plan === 'premium') return 'premium';
+    
+    // If no premium subscription found, return basic
+    return 'basic';
+  } catch (error) {
+    console.error('Error checking user tier:', error);
+    return 'basic';
+  }
 };
 
-// This is now synchronously checking for demo users and returns a promise for regular users
-export const getUserTier = async (user: AuthUser | null): Promise<'premium' | 'basic'> => {
-  // For demo users, return subscription immediately
-  if (user?.isDemo) {
-    return user.subscription || 'basic';
-  }
-  
-  // For regular users, check premium status
-  const isPremium = await isPremiumUser(user);
-  return isPremium ? 'premium' : 'basic';
-};
-
-// Synchronous version for direct use in components
-export const getUserTierSync = (user: AuthUser | null): 'premium' | 'basic' => {
-  // For demo users, we can check directly
-  if (user?.isDemo) {
-    return user.subscription || 'basic';
-  }
-  
-  // For non-demo users, default to basic when we can't check asynchronously
-  return 'basic';
+// Synchronous function for checking if user has premium features
+// Use this for feature flags in components that don't need to be reactive to tier changes
+export const hasPremiumFeatures = (isPremium: boolean): boolean => {
+  return isPremium;
 };
