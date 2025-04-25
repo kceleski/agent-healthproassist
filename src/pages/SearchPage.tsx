@@ -53,14 +53,12 @@ const SearchPage = () => {
     if (filters.location) {
       setLocation(filters.location);
     }
-    if (filters.facilityType && filters.facilityType.length > 0) {
-      setSelectedCareType(filters.facilityType[0]);
+    if (filters.facilityType) {
+      setSelectedCareType(filters.facilityType);
     }
     if (filters.amenities) {
       setSelectedAmenities(filters.amenities);
     }
-    
-    handleSearch(filters);
   };
 
   // Handle search submission
@@ -145,7 +143,7 @@ const SearchPage = () => {
               Find the perfect facility by location, care type, and amenities
             </p>
           </div>
-          <AvaButton />
+          <AvaButton onFiltersUpdate={handleFiltersUpdate} handleSearch={handleSearch} />
         </div>
         
         <SearchTipsCard />

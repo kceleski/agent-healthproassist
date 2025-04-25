@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
+import { useAvaTools } from "@/hooks/useAvaTools";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +11,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export const AvaButton = () => {
+interface AvaButtonProps {
+  onFiltersUpdate: (filters: any) => void;
+  handleSearch: () => void;
+}
+
+export const AvaButton = ({ onFiltersUpdate, handleSearch }: AvaButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const clientTools = useAvaTools(onFiltersUpdate, handleSearch);
 
   return (
     <>
@@ -35,6 +42,7 @@ export const AvaButton = () => {
             <elevenlabs-convai 
               agent-id="56BNlFTfXmpCKJ5XxqtW"
               className="w-full h-full"
+              client-tools={JSON.stringify(clientTools)}
             />
           </div>
         </DialogContent>
