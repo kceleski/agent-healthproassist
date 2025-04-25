@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bot } from "lucide-react";
+import { Bot, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { useAISearch } from '@/hooks/useAISearch';
@@ -14,8 +14,7 @@ interface AISearchCardProps {
 export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
   const { toast } = useToast();
   const [aiQuery, setAIQuery] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { sendMessage, isConnected } = useAISearch(onFiltersUpdate);
+  const { sendMessage, isLoading } = useAISearch(onFiltersUpdate);
 
   const handleAISearch = () => {
     if (!aiQuery.trim()) {
@@ -27,15 +26,8 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
       return;
     }
 
-    setIsProcessing(true);
     sendMessage(aiQuery);
-    
-    // Reset processing state after a short delay
-    setTimeout(() => {
-      setIsProcessing(false);
-      // Clear the input after processing
-      setAIQuery("");
-    }, 2000);
+    setAIQuery("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -61,22 +53,22 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
             onChange={(e) => setAIQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             className="flex-1"
-            disabled={!isConnected || isProcessing}
+            disabled={isLoading}
           />
           <Button 
             onClick={handleAISearch}
-            disabled={!isConnected || isProcessing}
+            disabled={isLoading}
             className="bg-healthcare-600 hover:bg-healthcare-700"
           >
-            <Bot className="h-4 w-4 mr-2" />
-            {isProcessing ? "Processing..." : "Ask AI"}
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Bot className="h-4 w-4 mr-2" />
+            )}
+            {isLoading ? "Processing..." : "Ask AI"}
           </Button>
         </div>
-        {!isConnected && (
-          <p className="text-sm text-muted-foreground">
-            Connecting to AI assistant...
-          </p>
-        )}
+        
         <div className="text-sm text-muted-foreground">
           <p>Try queries like:</p>
           <ul className="list-disc pl-5 mt-1 space-y-1">
