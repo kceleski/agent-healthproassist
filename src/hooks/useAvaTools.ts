@@ -7,6 +7,8 @@ interface SearchFilters {
   amenities?: string[];
 }
 
+const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
+
 export const useAvaTools = (
   onFiltersUpdate: (filters: SearchFilters) => void,
   handleSearch: () => void
@@ -20,10 +22,40 @@ export const useAvaTools = (
       return "Search filters updated successfully";
     },
 
+    performWebSearch: async (query: string) => {
+      console.log('Performing web search for:', query);
+      try {
+        // Using searchapi.io for web search
+        const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+          throw new Error('Search API request failed');
+        }
+        
+        const data = await response.json();
+        console.log('Web search results:', data);
+        
+        // Return the organic search results
+        return {
+          success: true,
+          results: data.organic_results || [],
+          message: `Found ${data.organic_results?.length || 0} results`
+        };
+      } catch (error) {
+        console.error('Web search error:', error);
+        return {
+          success: false,
+          results: [],
+          message: 'Failed to perform web search'
+        };
+      }
+    },
+
     performSearch: () => {
-      console.log('Performing search with current filters');
+      console.log('Performing facility search with current filters');
       handleSearch();
-      return "Search initiated";
+      return "Facility search initiated";
     },
 
     navigateToMap: () => {
