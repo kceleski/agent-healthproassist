@@ -9,10 +9,23 @@ interface AISearchFilters {
   amenities?: string[];
 }
 
+interface ConversationData {
+  recommendations?: string[];
+  preferences?: Record<string, string>;
+  notes?: string[];
+}
+
+interface AISearchResponse {
+  facilityType?: string[];
+  location?: string;
+  amenities?: string[];
+  conversationData?: ConversationData;
+}
+
 export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = useCallback(async (message: string) => {
+  const sendMessage = useCallback(async (message: string): Promise<AISearchResponse | undefined> => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-search', {
@@ -30,6 +43,7 @@ export const useAISearch = (onFiltersUpdate: (filters: AISearchFilters) => void)
         });
 
         toast.success('Search criteria updated based on your request');
+        return data;
       }
     } catch (error) {
       console.error('AI search error:', error);

@@ -31,19 +31,13 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
       return;
     }
 
-    const query = aiQuery;
-    
     try {
-      const response = await sendMessage(query);
+      const response = await sendMessage(aiQuery);
       
-      if (response?.conversationData) {
-        setConversationData(prev => ({
-          ...prev,
-          ...response.conversationData
-        }));
+      if (response && response.conversationData) {
+        setConversationData(response.conversationData);
+        sessionStorage.setItem('searchConversationData', JSON.stringify(response.conversationData));
       }
-      
-      sessionStorage.setItem('searchConversationData', JSON.stringify(conversationData));
       
       setAIQuery("");
     } catch (error) {
