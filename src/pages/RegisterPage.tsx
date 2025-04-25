@@ -51,7 +51,10 @@ const RegisterPage = () => {
   const onSubmit = async (values: FormValues) => {
     try {
       setIsLoading(true);
-      await register(values.name, values.email, values.password);
+      const metadata = {
+        full_name: values.name
+      };
+      await register(values.email, values.password, metadata);
       toast({
         title: "Account created successfully!",
         description: "Welcome to HealthProAssist.",

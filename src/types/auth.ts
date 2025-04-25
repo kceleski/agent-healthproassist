@@ -18,7 +18,7 @@ export type AuthContextType = {
   showAvatar: boolean;
   toggleAvatar: () => void;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, metadata?: any) => Promise<void>;
   logout: () => Promise<void>;
   loginDemo: (type: 'basic' | 'premium') => void;
 };
