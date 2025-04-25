@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Volume2, Volume2Off } from "lucide-react";
+import { Volume2, VolumeOff } from "lucide-react";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ export const VoiceButton = ({ text, voiceId, className }: VoiceButtonProps) => {
       disabled={isLoading}
     >
       {isLoading ? (
-        <Volume2Off className="h-4 w-4" />
+        <VolumeOff className="h-4 w-4" />
       ) : (
         <Volume2 className="h-4 w-4" />
       )}
