@@ -10,7 +10,11 @@ interface VoiceButtonProps {
   className?: string;
 }
 
-export const VoiceButton = ({ text, voiceId, className }: VoiceButtonProps) => {
+export const VoiceButton = ({ 
+  text, 
+  voiceId = "tnSpp4vdxKPjI9w0GnoV", // Default to the provided voice ID
+  className 
+}: VoiceButtonProps) => {
   const { speak, isLoading } = useTextToSpeech();
 
   return (

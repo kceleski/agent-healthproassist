@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, voiceId = "21m00Tcm4TlvDq8ikWAM" } = await req.json()
+    const { text, voiceId = "tnSpp4vdxKPjI9w0GnoV" } = await req.json()
 
     if (!text) {
       throw new Error('Text is required')
