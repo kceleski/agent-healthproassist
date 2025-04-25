@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet";
@@ -6,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AISearchCard } from "@/components/search/AISearchCard";
 import { SearchCriteriaCard } from "@/components/search/SearchCriteriaCard";
 import { SearchTipsCard } from "@/components/search/SearchTipsCard";
+import { AvaButton } from "@/components/search/AvaButton";
 import { saveSearchResult } from "@/services/searchResultService";
 
 const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
@@ -138,11 +138,14 @@ const SearchPage = () => {
       </Helmet>
       
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Search Senior Care Facilities</h1>
-          <p className="text-muted-foreground mt-2">
-            Find the perfect facility by location, care type, and amenities
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Search Senior Care Facilities</h1>
+            <p className="text-muted-foreground mt-2">
+              Find the perfect facility by location, care type, and amenities
+            </p>
+          </div>
+          <AvaButton />
         </div>
         
         <SearchTipsCard />
