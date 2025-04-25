@@ -1,6 +1,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { AuthUser } from '@/types/auth';
 
 // Create or update a user in our users table after authentication
 export async function syncUserData(userId: string, userData: { email: string, full_name?: string, phone?: string }) {
@@ -121,6 +122,31 @@ export async function updateUserSubscription(userId: string, tier: 'free' | 'bas
 
 // Get user notifications (unread by default)
 export async function getUserNotifications(userId: string, onlyUnread = true) {
+  // Skip notifications for demo users to prevent database errors
+  if (userId.includes('demo-') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    console.log('Demo user detected, returning mock notifications');
+    return [
+      {
+        id: '1',
+        user_id: userId,
+        title: 'Demo Notification',
+        content: 'This is a demo notification',
+        type: 'info',
+        read: false,
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        user_id: userId,
+        title: 'Welcome to Demo Mode',
+        content: 'You are currently using the demo version',
+        type: 'success',
+        read: false,
+        created_at: new Date().toISOString(),
+      }
+    ];
+  }
+
   try {
     let query = supabase
       .from('notifications')
@@ -145,6 +171,11 @@ export async function getUserNotifications(userId: string, onlyUnread = true) {
 
 // Mark notification as read
 export async function markNotificationAsRead(notificationId: string) {
+  // Skip for demo notifications
+  if (notificationId === '1' || notificationId === '2') {
+    return true;
+  }
+
   try {
     const { error } = await supabase
       .from('notifications')
@@ -162,6 +193,26 @@ export async function markNotificationAsRead(notificationId: string) {
 
 // Fetch user profile data
 export async function fetchUserProfile(userId: string) {
+  // Skip database call for demo users
+  if (userId.includes('demo-') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    console.log('Demo user detected, returning mock profile');
+    return {
+      id: userId,
+      notification_preferences: {
+        sms: false,
+        email: true,
+        inApp: true
+      },
+      communication_preferences: {
+        receiveUpdates: true,
+        receiveReferrals: true,
+        allowContactSharing: false
+      },
+      bio: 'This is a demo account',
+      default_location: 'Phoenix, AZ'
+    };
+  }
+
   try {
     const { data, error } = await supabase
       .from('user_profiles')

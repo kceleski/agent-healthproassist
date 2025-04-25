@@ -21,13 +21,17 @@ export const useAuthOperations = () => {
   };
 
   const loginDemo = (type: 'basic' | 'premium'): AuthUser => {
+    // Create a valid UUID for demo users to prevent database issues
+    const demoUuid = '00000000-0000-0000-0000-000000000000'; 
+    
     const demoUser: AuthUser = {
-      id: `demo-${type}-${Date.now()}`,
+      id: demoUuid, // Use valid UUID format
       email: `demo-${type}@example.com`,
       name: `Demo ${type.charAt(0).toUpperCase() + type.slice(1)} User`,
       subscription: type,
       role: type === 'premium' ? 'premium' : 'basic',
-      isDemo: true
+      isDemo: true,
+      demoType: type // Add demo type for reference
     };
     
     toast.success(`Logged in as ${type} demo user`);
