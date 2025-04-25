@@ -24,30 +24,25 @@ const UnifiedRegisterPage = () => {
   const progress = Math.round((step / totalSteps) * 100);
   
   const [formData, setFormData] = useState({
-    // Basic info
     name: "",
     email: "",
     password: "",
     phone: "",
     
-    // Professional info
-    workType: "independent" as 'agency' | 'independent', // Fix: explicitly type as union type
+    workType: "independent" as 'agency' | 'independent',
     agencyName: "",
     agencyAddress: "",
     agencyPhone: "",
     agencyWebsite: "",
     
-    // Location & Experience
     serviceLocations: "",
     yearsExperience: "",
     specializations: "",
     
-    // Profile
     headline: "",
     bio: "",
     profileImage: null as File | null,
     
-    // Preferences
     notification_preferences: { email: true, sms: false, inApp: true },
     communication_preferences: {
       receiveUpdates: true,
@@ -60,7 +55,6 @@ const UnifiedRegisterPage = () => {
     try {
       switch (step) {
         case 1: {
-          // Basic info validation
           const schema = z.object({
             name: z.string().min(2, "Name must be at least 2 characters"),
             email: z.string().email("Please enter a valid email address"),
@@ -77,7 +71,6 @@ const UnifiedRegisterPage = () => {
           break;
         }
         case 2: {
-          // Professional info validation
           const schema = z.object({
             workType: z.enum(["agency", "independent"]),
             serviceLocations: z.string().min(2, "Please specify service locations")
@@ -97,7 +90,6 @@ const UnifiedRegisterPage = () => {
           break;
         }
         case 3: {
-          // Profile validation
           const schema = z.object({
             headline: z.string().min(5, "Headline must be at least 5 characters"),
             bio: z.string().min(20, "Bio should be at least 20 characters"),
@@ -110,7 +102,6 @@ const UnifiedRegisterPage = () => {
           break;
         }
         case 4: {
-          // Terms validation
           if (!agreeToTerms) {
             throw new Error("You must agree to the terms and conditions");
           }
@@ -151,13 +142,11 @@ const UnifiedRegisterPage = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (limit to 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Profile image must be less than 5MB");
         return;
       }
       
-      // Check file type
       if (!file.type.startsWith('image/')) {
         toast.error("File must be an image");
         return;
@@ -178,7 +167,6 @@ const UnifiedRegisterPage = () => {
       setLoading(true);
       console.log("Starting registration process with data:", formData);
       
-      // Create the metadata object for registration
       const metadata = {
         name: formData.name,
         bio: formData.bio,
@@ -202,7 +190,6 @@ const UnifiedRegisterPage = () => {
         profile_image: formData.profileImage ? 'pending_upload' : undefined
       };
       
-      // Register the user with Supabase - pass email, password, and metadata
       await register(formData.email, formData.password, metadata);
       
       toast.success("Account created successfully!");
