@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -203,7 +202,7 @@ const UnifiedRegisterPage = () => {
         profile_image: formData.profileImage ? 'pending_upload' : undefined
       };
       
-      // Register the user with Supabase - pass email, password, and metadata as separate arguments
+      // Register the user with Supabase - pass email, password, and metadata
       await register(formData.email, formData.password, metadata);
       
       toast.success("Account created successfully!");

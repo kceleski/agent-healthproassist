@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { AuthUser } from '@/types/auth';
@@ -34,18 +35,16 @@ export const useAuthOperations = () => {
   };
 
   const register = async (
-    name: string, 
     email: string, 
-    password: string
+    password: string,
+    metadata?: any
   ) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            full_name: name
-          }
+          data: metadata || {}
         }
       });
 
