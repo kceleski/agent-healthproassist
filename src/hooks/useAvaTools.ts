@@ -7,11 +7,10 @@ interface SearchFilters {
   amenities?: string[];
 }
 
-const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
-
 export const useAvaTools = (
   onFiltersUpdate: (filters: SearchFilters) => void,
-  handleSearch: () => void
+  handleSearch: () => void,
+  serpApiKey: string = "838Ua1jg4Hf8dWHFMy4GryT4" // Default fallback key
 ) => {
   const navigate = useNavigate();
 
@@ -26,7 +25,7 @@ export const useAvaTools = (
       console.log('Performing web search for:', query);
       try {
         // Using searchapi.io for web search
-        const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
+        const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURIComponent(query)}&api_key=${serpApiKey}`;
         const response = await fetch(apiUrl);
         
         if (!response.ok) {
