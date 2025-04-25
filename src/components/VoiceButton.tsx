@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeOff } from "lucide-react";
+import { VolumeOff, Volume2 } from "lucide-react";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { cn } from "@/lib/utils";
 
