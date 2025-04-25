@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,8 +14,14 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
   const { toast } = useToast();
   const [aiQuery, setAIQuery] = useState<string>("");
   const { sendMessage, isLoading } = useAISearch(onFiltersUpdate);
+  
+  const [conversationData, setConversationData] = useState<{
+    recommendations?: string[];
+    preferences?: Record<string, string>;
+    notes?: string[];
+  }>({});
 
-  const handleAISearch = () => {
+  const handleAISearch = async () => {
     if (!aiQuery.trim()) {
       toast({
         title: "Query Required",
@@ -26,8 +31,29 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
       return;
     }
 
-    sendMessage(aiQuery);
-    setAIQuery("");
+    const query = aiQuery;
+    
+    try {
+      const response = await sendMessage(query);
+      
+      if (response?.conversationData) {
+        setConversationData(prev => ({
+          ...prev,
+          ...response.conversationData
+        }));
+      }
+      
+      sessionStorage.setItem('searchConversationData', JSON.stringify(conversationData));
+      
+      setAIQuery("");
+    } catch (error) {
+      console.error('AI Search error:', error);
+      toast({
+        title: "Search Error",
+        description: "Failed to process your request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -42,7 +68,7 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
       <CardHeader>
         <CardTitle>AI-Assisted Search</CardTitle>
         <CardDescription>
-          Describe what you're looking for and our AI will help find the right facilities
+          Chat with our AI assistant to find the right facilities for your needs
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -77,6 +103,17 @@ export const AISearchCard = ({ onFiltersUpdate }: AISearchCardProps) => {
             <li>"Nursing facilities with 24/7 medical staff near Scottsdale"</li>
           </ul>
         </div>
+
+        {conversationData.recommendations && conversationData.recommendations.length > 0 && (
+          <div className="mt-4 p-4 bg-muted rounded-lg">
+            <h4 className="font-medium mb-2">Recommendations</h4>
+            <ul className="list-disc pl-4 space-y-1">
+              {conversationData.recommendations.map((rec, idx) => (
+                <li key={idx} className="text-sm text-muted-foreground">{rec}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

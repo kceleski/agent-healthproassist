@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
@@ -22,6 +21,7 @@ interface Facility {
 const GoogleMapsView = () => {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [mapCenter, setMapCenter] = useState({ lat: 33.4484, lng: -112.0740 }); // Phoenix center
+  const [conversationData, setConversationData] = useState<any>(null);
 
   const { data: facilities, isLoading } = useQuery({
     queryKey: ['facilities'],
@@ -39,6 +39,14 @@ const GoogleMapsView = () => {
       return data as Facility[];
     }
   });
+
+  useEffect(() => {
+    // Retrieve conversation data from sessionStorage
+    const storedData = sessionStorage.getItem('searchConversationData');
+    if (storedData) {
+      setConversationData(JSON.parse(storedData));
+    }
+  }, []);
 
   const containerStyle = {
     width: '100%',
@@ -124,6 +132,38 @@ const GoogleMapsView = () => {
             <p className="text-lg text-muted-foreground mb-2">No facility data available</p>
             <p className="text-sm text-muted-foreground">Try searching for facilities first</p>
           </div>
+        )}
+
+        {conversationData && (
+          <Card className="mb-4 bg-white shadow-lg">
+            <CardHeader>
+              <CardTitle>AI Assistant Insights</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {conversationData.recommendations && (
+                <div className="mb-4">
+                  <h4 className="font-medium mb-2">Recommendations</h4>
+                  <ul className="list-disc pl-4">
+                    {conversationData.recommendations.map((rec: string, idx: number) => (
+                      <li key={idx} className="text-sm text-muted-foreground">{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {conversationData.preferences && (
+                <div>
+                  <h4 className="font-medium mb-2">Search Preferences</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(conversationData.preferences).map(([key, value]: [string, any]) => (
+                      <div key={key} className="text-sm">
+                        <span className="font-medium">{key}:</span> {value}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </LoadScript>
     </div>

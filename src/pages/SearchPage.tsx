@@ -145,8 +145,8 @@ const SearchPage = () => {
           </p>
         </div>
         
-        <AISearchCard onFiltersUpdate={handleFiltersUpdate} />
-
+        <SearchTipsCard />
+        
         <SearchCriteriaCard 
           location={location}
           setLocation={setLocation}
@@ -154,13 +154,13 @@ const SearchPage = () => {
           setSelectedCareType={setSelectedCareType}
           selectedAmenities={selectedAmenities}
           toggleAmenity={toggleAmenity}
-          handleSearch={() => handleSearch()}
+          handleSearch={handleSearch}
           isLoading={isLoading}
           careTypes={careTypes}
           amenities={amenities}
         />
-        
-        <SearchTipsCard />
+
+        <AISearchCard onFiltersUpdate={handleFiltersUpdate} />
       </div>
     </div>
   );
