@@ -24,12 +24,12 @@ export const useAvaTools = (
     performWebSearch: async (query: string) => {
       console.log('Performing web search for:', query);
       try {
-        // Using searchapi.io for web search
-        const apiUrl = `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURIComponent(query)}&api_key=${serpApiKey}`;
+        // Using SerpAPI for web search
+        const apiUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(query)}&api_key=${serpApiKey}`;
         const response = await fetch(apiUrl);
         
         if (!response.ok) {
-          throw new Error('Search API request failed');
+          throw new Error('SerpAPI request failed');
         }
         
         const data = await response.json();
@@ -66,3 +66,4 @@ export const useAvaTools = (
 
   return clientTools;
 };
+
