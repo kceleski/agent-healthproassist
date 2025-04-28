@@ -12,14 +12,17 @@ const MainLayout = () => {
   const isMapPage = location.pathname.includes('/map');
   const isSearchPage = location.pathname.includes('/search') &&
                       (location.pathname.includes('facility') || location.pathname.includes('map'));
-
-  // Note: Avatar removed per user request - will be managed by external script only
-  // The avatar will not show on map or search pages as before
-
+  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
+                      
   // Add a log to verify the layout is rendering
   useEffect(() => {
-    console.log('MainLayout mounted', { path: location.pathname, showAvatar: false });
-  }, [location.pathname]);
+    console.log('MainLayout mounted', { 
+      path: location.pathname, 
+      isMapPage, 
+      isSearchPage,
+      isLandingPage
+    });
+  }, [location.pathname, isMapPage, isSearchPage, isLandingPage]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -27,7 +30,6 @@ const MainLayout = () => {
         <Navbar />
         <main className="flex-grow">
           <Outlet />
-          {/* Avatar removed */}
         </main>
         <Footer />
       </AvatarResponseProvider>
