@@ -172,8 +172,8 @@ const DashboardLayout = () => {
           </SheetContent>
         </Sheet>
       ) : (
-        <SidebarProvider defaultOpen={!isMobile}>
-          <Sidebar className="h-screen flex-shrink-0">
+        <SidebarProvider defaultOpen>
+          <Sidebar className="h-screen flex-shrink-0 w-64 md:block">
             <SidebarContents />
           </Sidebar>
         </SidebarProvider>
@@ -213,7 +213,7 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto pb-6">
+        <main className="flex-1 overflow-auto pb-6 px-4">
           <Outlet />
         </main>
       </div>

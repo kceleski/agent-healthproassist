@@ -5,12 +5,14 @@ import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,9 +39,24 @@ const Navbar = () => {
           <img 
             src="/lovable-uploads/707d0553-01f0-4e69-9d13-66a5665635f9.png" 
             alt="HealthProAssist Logo" 
-            className="h-10" 
+            className="h-8 md:h-10" 
           />
         </Link>
+
+        {/* Desktop Navigation */}
+        {!isMobile && (
+          <div className="hidden md:flex items-center gap-4">
+            <Link to="/" className="text-healthcare-600 hover:text-healthcare-700 font-medium">
+              Home
+            </Link>
+            <Link to="/search" className="text-healthcare-600 hover:text-healthcare-700 font-medium">
+              Search
+            </Link>
+            <Link to="/map" className="text-healthcare-600 hover:text-healthcare-700 font-medium">
+              Map
+            </Link>
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           {isAuthenticated ? (
@@ -61,7 +78,7 @@ const Navbar = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="lg:hidden text-healthcare-600"
+            className="md:hidden text-healthcare-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -70,9 +87,15 @@ const Navbar = () => {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white shadow-md py-4 px-6 flex flex-col space-y-3">
+          <div className="absolute top-full left-0 right-0 bg-white shadow-md py-4 px-6 flex flex-col space-y-3 z-50">
             <Link to="/" className="text-healthcare-600 py-2" onClick={() => setMobileMenuOpen(false)}>
               Home
+            </Link>
+            <Link to="/search" className="text-healthcare-600 py-2" onClick={() => setMobileMenuOpen(false)}>
+              Search
+            </Link>
+            <Link to="/map" className="text-healthcare-600 py-2" onClick={() => setMobileMenuOpen(false)}>
+              Map
             </Link>
             {isAuthenticated ? (
               <>
@@ -104,4 +127,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

@@ -25,10 +25,10 @@ const MainLayout = () => {
   }, [location.pathname, isMapPage, isSearchPage, isLandingPage]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <AvatarResponseProvider>
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow w-full max-w-full overflow-x-hidden">
           <Outlet />
         </main>
         <Footer />

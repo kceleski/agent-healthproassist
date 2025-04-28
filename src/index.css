@@ -5,7 +5,7 @@
 
 @layer base {
   body {
-    @apply bg-white text-foreground;
+    @apply bg-white text-foreground min-w-full overflow-x-hidden;
     background-image: 
       radial-gradient(circle at 50% 50%, rgba(86, 137, 249, 0.03) 0%, rgba(255, 255, 255, 0) 80%),
       radial-gradient(circle at 80% 20%, rgba(86, 137, 249, 0.02) 0%, rgba(255, 255, 255, 0) 70%);
@@ -16,9 +16,35 @@
   .container-soft-blue {
     @apply bg-softblue-50 border border-softblue-100 rounded-xl shadow-soft-glow transition-all duration-300 hover:shadow-soft-glow-hover;
   }
+  
+  /* Ensure all containers respect viewport width */
+  .container {
+    @apply w-full max-w-full px-4 sm:px-6 md:px-8 lg:mx-auto lg:max-w-7xl;
+  }
 }
 
 /* Soft Blue Card Effect */
 .glass-card {
   @apply container-soft-blue backdrop-blur-lg;
+}
+
+/* Responsive utility classes */
+.responsive-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+.responsive-flex {
+  @apply flex flex-col md:flex-row;
+}
+
+/* Fix Google Maps container */
+.google-maps-container {
+  width: 100% !important;
+  height: 400px !important;
+}
+
+@media (min-width: 768px) {
+  .google-maps-container {
+    height: 600px !important;
+  }
 }
