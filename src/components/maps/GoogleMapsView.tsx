@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
@@ -54,22 +53,14 @@ const GoogleMapsView = () => {
     height: '600px'
   };
 
-  const defaultOptions = {
-    streetViewControl: false,
-    mapTypeControl: true,
-    fullscreenControl: true,
-    styles: [
-      {
-        featureType: 'poi',
-        elementType: 'labels',
-        stylers: [{ visibility: 'off' }]
-      }
-    ]
+  const defaultCenter = {
+    lat: 33.4484,
+    lng: -112.0740 // Phoenix center
   };
 
   return (
     <div className="w-full">
-      <LoadScript googleMapsApiKey="AIzaSyCxAU5BCCcICK4HdmkLfEDSQB3EvBwQQbE">
+      <LoadScript googleMapsApiKey="AIzaSyADFSlLS5ofwKFSwjQKE1LSAzO3kECr4Ho">
         {isLoading ? (
           <div className="flex items-center justify-center h-[600px] bg-slate-50 rounded-lg">
             <Loader2 className="h-8 w-8 animate-spin text-healthcare-600" />
@@ -77,9 +68,20 @@ const GoogleMapsView = () => {
         ) : facilities && facilities.length > 0 ? (
           <GoogleMap
             mapContainerStyle={containerStyle}
-            center={mapCenter}
+            center={defaultCenter}
             zoom={12}
-            options={defaultOptions}
+            options={{
+              streetViewControl: false,
+              mapTypeControl: true,
+              fullscreenControl: true,
+              styles: [
+                {
+                  featureType: 'poi',
+                  elementType: 'labels',
+                  stylers: [{ visibility: 'off' }]
+                }
+              ]
+            }}
           >
             {facilities.map((facility) => (
               <MarkerF
