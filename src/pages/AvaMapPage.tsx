@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,14 @@ const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268
 // Map filter types
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
 type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'los-angeles' | 'all';
+
+// Declare SP exists on window for TypeScript (full interface in types/storepoint.d.ts)
+declare global {
+  interface Window {
+    SP: any;
+    selectedLocation: any;
+  }
+}
 
 const AvaMapPage = () => {
   const { user } = useAuth();
