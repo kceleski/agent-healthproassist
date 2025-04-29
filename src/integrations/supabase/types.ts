@@ -120,6 +120,153 @@ export type Database = {
           },
         ]
       }
+      Assisted_Living_Home: {
+        Row: {
+          altcs: string | null
+          azdhs: string | null
+          capacity: number | null
+          City: string | null
+          contact_us: string | null
+          Country: string | null
+          description: string | null
+          email: string | null
+          extra: string | null
+          extra2: string | null
+          extra3: string | null
+          facebook: string | null
+          features: string | null
+          features2: string | null
+          friday: string | null
+          image_url: string | null
+          instagram: string | null
+          lat: number | null
+          license: string
+          lng: number | null
+          monday: string | null
+          name: string | null
+          "Overall Star Rating": string | null
+          phone: string | null
+          "Quality Rating": string | null
+          reviews: string | null
+          saturday: string | null
+          schedule_tour: string | null
+          specials: string | null
+          "Staffing Rating": string | null
+          State: string | null
+          "Street Address": string | null
+          sunday: string | null
+          "Survey Rating": string | null
+          tags: string | null
+          thursday: string | null
+          tiktok: string | null
+          tuesday: string | null
+          twitter: string | null
+          type: string | null
+          virtual_tour: string | null
+          visit_website: string | null
+          website: string | null
+          wednesday: string | null
+          youtube: string | null
+          "ZIP Code": number | null
+        }
+        Insert: {
+          altcs?: string | null
+          azdhs?: string | null
+          capacity?: number | null
+          City?: string | null
+          contact_us?: string | null
+          Country?: string | null
+          description?: string | null
+          email?: string | null
+          extra?: string | null
+          extra2?: string | null
+          extra3?: string | null
+          facebook?: string | null
+          features?: string | null
+          features2?: string | null
+          friday?: string | null
+          image_url?: string | null
+          instagram?: string | null
+          lat?: number | null
+          license: string
+          lng?: number | null
+          monday?: string | null
+          name?: string | null
+          "Overall Star Rating"?: string | null
+          phone?: string | null
+          "Quality Rating"?: string | null
+          reviews?: string | null
+          saturday?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          "Staffing Rating"?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          sunday?: string | null
+          "Survey Rating"?: string | null
+          tags?: string | null
+          thursday?: string | null
+          tiktok?: string | null
+          tuesday?: string | null
+          twitter?: string | null
+          type?: string | null
+          virtual_tour?: string | null
+          visit_website?: string | null
+          website?: string | null
+          wednesday?: string | null
+          youtube?: string | null
+          "ZIP Code"?: number | null
+        }
+        Update: {
+          altcs?: string | null
+          azdhs?: string | null
+          capacity?: number | null
+          City?: string | null
+          contact_us?: string | null
+          Country?: string | null
+          description?: string | null
+          email?: string | null
+          extra?: string | null
+          extra2?: string | null
+          extra3?: string | null
+          facebook?: string | null
+          features?: string | null
+          features2?: string | null
+          friday?: string | null
+          image_url?: string | null
+          instagram?: string | null
+          lat?: number | null
+          license?: string
+          lng?: number | null
+          monday?: string | null
+          name?: string | null
+          "Overall Star Rating"?: string | null
+          phone?: string | null
+          "Quality Rating"?: string | null
+          reviews?: string | null
+          saturday?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          "Staffing Rating"?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          sunday?: string | null
+          "Survey Rating"?: string | null
+          tags?: string | null
+          thursday?: string | null
+          tiktok?: string | null
+          tuesday?: string | null
+          twitter?: string | null
+          type?: string | null
+          virtual_tour?: string | null
+          visit_website?: string | null
+          website?: string | null
+          wednesday?: string | null
+          youtube?: string | null
+          "ZIP Code"?: number | null
+        }
+        Relationships: []
+      }
       audio_cache: {
         Row: {
           audio_url: string
@@ -557,6 +704,580 @@ export type Database = {
           },
         ]
       }
+      locations: {
+        Row: {
+          address: string | null
+          azdhs: string | null
+          capacity: string | null
+          contact_us: string | null
+          description: string | null
+          email: string | null
+          extra: string | null
+          facebook: string | null
+          featured_: string | null
+          features: string | null
+          features_: string | null
+          friday: string | null
+          id: string
+          image_url: string | null
+          instagram: string | null
+          lat: number | null
+          license: string
+          lng: number | null
+          ltc: string | null
+          monday: string | null
+          name: string | null
+          overall_star_rating: string | null
+          phone: string | null
+          quality_rating: string | null
+          reviews: string | null
+          saturday: string | null
+          save_to_favorites: string | null
+          schedule_tour: string | null
+          specials: string | null
+          staffing_rating: string | null
+          sunday: string | null
+          survey_rating: string | null
+          tags: string | null
+          thursday: string | null
+          tiktok: string | null
+          tuesday: string | null
+          twitter: string | null
+          virtual_tour_available: string | null
+          visit_website: string | null
+          website: string | null
+          wednesday: string | null
+          youtube: string | null
+        }
+        Insert: {
+          address?: string | null
+          azdhs?: string | null
+          capacity?: string | null
+          contact_us?: string | null
+          description?: string | null
+          email?: string | null
+          extra?: string | null
+          facebook?: string | null
+          featured_?: string | null
+          features?: string | null
+          features_?: string | null
+          friday?: string | null
+          id: string
+          image_url?: string | null
+          instagram?: string | null
+          lat?: number | null
+          license: string
+          lng?: number | null
+          ltc?: string | null
+          monday?: string | null
+          name?: string | null
+          overall_star_rating?: string | null
+          phone?: string | null
+          quality_rating?: string | null
+          reviews?: string | null
+          saturday?: string | null
+          save_to_favorites?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          staffing_rating?: string | null
+          sunday?: string | null
+          survey_rating?: string | null
+          tags?: string | null
+          thursday?: string | null
+          tiktok?: string | null
+          tuesday?: string | null
+          twitter?: string | null
+          virtual_tour_available?: string | null
+          visit_website?: string | null
+          website?: string | null
+          wednesday?: string | null
+          youtube?: string | null
+        }
+        Update: {
+          address?: string | null
+          azdhs?: string | null
+          capacity?: string | null
+          contact_us?: string | null
+          description?: string | null
+          email?: string | null
+          extra?: string | null
+          facebook?: string | null
+          featured_?: string | null
+          features?: string | null
+          features_?: string | null
+          friday?: string | null
+          id?: string
+          image_url?: string | null
+          instagram?: string | null
+          lat?: number | null
+          license?: string
+          lng?: number | null
+          ltc?: string | null
+          monday?: string | null
+          name?: string | null
+          overall_star_rating?: string | null
+          phone?: string | null
+          quality_rating?: string | null
+          reviews?: string | null
+          saturday?: string | null
+          save_to_favorites?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          staffing_rating?: string | null
+          sunday?: string | null
+          survey_rating?: string | null
+          tags?: string | null
+          thursday?: string | null
+          tiktok?: string | null
+          tuesday?: string | null
+          twitter?: string | null
+          virtual_tour_available?: string | null
+          visit_website?: string | null
+          website?: string | null
+          wednesday?: string | null
+          youtube?: string | null
+        }
+        Relationships: []
+      }
+      Medicare_NH_Providers: {
+        Row: {
+          "Abuse Icon": string | null
+          "Adjusted LPN Staffing Hours per Resident per Day": string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day": string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da":
+            | string
+            | null
+          "Administrator turnover footnote": string | null
+          "Affiliated Entity ID": string | null
+          "Affiliated Entity Name": string | null
+          "Automatic Sprinkler Systems in All Required Areas": string | null
+          "Average Number of Residents per Day": number | null
+          "Average Number of Residents per Day Footnote": string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day": string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day": string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da":
+            | string
+            | null
+          "City/Town": string | null
+          "CMS Certification Number (CCN)": string | null
+          "Continuing Care Retirement Community": string | null
+          "County/Parish": string | null
+          "Date First Approved to Provide Medicare and Medicaid Services":
+            | string
+            | null
+          "Geocoding Footnote": string | null
+          "Health Inspection Rating": string | null
+          "Health Inspection Rating Footnote": string | null
+          id: string | null
+          Latitude: number | null
+          "Legal Business Name": string | null
+          Location: string | null
+          "Long-Stay QM Rating": string | null
+          "Long-Stay QM Rating Footnote": string | null
+          Longitude: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago": string | null
+          "Number of administrators who have left the nursing home":
+            | string
+            | null
+          "Number of Certified Beds": number | null
+          "Number of Citations from Infection Control Inspections":
+            | string
+            | null
+          "Number of Facility Reported Incidents": string | null
+          "Number of Fines": string | null
+          "Number of Payment Denials": string | null
+          "Number of Substantiated Complaints": string | null
+          "Nursing Case-Mix Index": string | null
+          "Nursing Case-Mix Index Ratio": string | null
+          "Overall Rating": string | null
+          "Overall Rating Footnote": string | null
+          "Ownership Type": string | null
+          "Physical Therapist Staffing Footnote": string | null
+          "Processing Date": string | null
+          "Provider Address": string | null
+          "Provider Changed Ownership in Last 12 Months": string | null
+          "Provider Name": string | null
+          "Provider Resides in Hospital": string | null
+          "Provider SSA County Code": string | null
+          "Provider Type": string | null
+          "QM Rating": string | null
+          "QM Rating Footnote": string | null
+          "Rating Cycle 1 Health Deficiency Score": string | null
+          "Rating Cycle 1 Health Revisit Score": string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits": string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 1 Standard Survey Health Date": string | null
+          "Rating Cycle 1 Total Health Score": string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies": string | null
+          "Rating Cycle 2 Health Deficiency Score": string | null
+          "Rating Cycle 2 Health Revisit Score": string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits": string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 2 Standard Health Survey Date": string | null
+          "Rating Cycle 2 Total Health Score": string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies": string | null
+          "Rating Cycle 3 Health Deficiency Score": string | null
+          "Rating Cycle 3 Health Revisit Score": string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits": string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 3 Standard Health Survey Date": string | null
+          "Rating Cycle 3 Total Health Score": string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies": string | null
+          "Registered Nurse hours per resident per day on the weekend":
+            | string
+            | null
+          "Registered Nurse turnover": string | null
+          "Registered Nurse turnover footnote": string | null
+          "Reported Licensed Staffing Hours per Resident per Day": string | null
+          "Reported LPN Staffing Hours per Resident per Day": string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day":
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day": string | null
+          "Reported Staffing Footnote": string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Short-Stay QM Rating": string | null
+          "Short-Stay QM Rating Footnote": string | null
+          "Special Focus Status": string | null
+          "Staffing Rating": string | null
+          "Staffing Rating Footnote": string | null
+          State: string | null
+          "Telephone Number": number | null
+          "Total Amount of Fines in Dollars": string | null
+          "Total number of nurse staff hours per resident per day on the w":
+            | string
+            | null
+          "Total Number of Penalties": string | null
+          "Total nursing staff turnover": string | null
+          "Total nursing staff turnover footnote": string | null
+          "Total Weighted Health Survey Score": number | null
+          "With a Resident and Family Council": string | null
+          "ZIP Code": number | null
+        }
+        Insert: {
+          "Abuse Icon"?: string | null
+          "Adjusted LPN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "Administrator turnover footnote"?: string | null
+          "Affiliated Entity ID"?: string | null
+          "Affiliated Entity Name"?: string | null
+          "Automatic Sprinkler Systems in All Required Areas"?: string | null
+          "Average Number of Residents per Day"?: number | null
+          "Average Number of Residents per Day Footnote"?: string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "City/Town"?: string | null
+          "CMS Certification Number (CCN)"?: string | null
+          "Continuing Care Retirement Community"?: string | null
+          "County/Parish"?: string | null
+          "Date First Approved to Provide Medicare and Medicaid Services"?:
+            | string
+            | null
+          "Geocoding Footnote"?: string | null
+          "Health Inspection Rating"?: string | null
+          "Health Inspection Rating Footnote"?: string | null
+          id?: string | null
+          Latitude?: number | null
+          "Legal Business Name"?: string | null
+          Location?: string | null
+          "Long-Stay QM Rating"?: string | null
+          "Long-Stay QM Rating Footnote"?: string | null
+          Longitude?: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago"?: string | null
+          "Number of administrators who have left the nursing home"?:
+            | string
+            | null
+          "Number of Certified Beds"?: number | null
+          "Number of Citations from Infection Control Inspections"?:
+            | string
+            | null
+          "Number of Facility Reported Incidents"?: string | null
+          "Number of Fines"?: string | null
+          "Number of Payment Denials"?: string | null
+          "Number of Substantiated Complaints"?: string | null
+          "Nursing Case-Mix Index"?: string | null
+          "Nursing Case-Mix Index Ratio"?: string | null
+          "Overall Rating"?: string | null
+          "Overall Rating Footnote"?: string | null
+          "Ownership Type"?: string | null
+          "Physical Therapist Staffing Footnote"?: string | null
+          "Processing Date"?: string | null
+          "Provider Address"?: string | null
+          "Provider Changed Ownership in Last 12 Months"?: string | null
+          "Provider Name"?: string | null
+          "Provider Resides in Hospital"?: string | null
+          "Provider SSA County Code"?: string | null
+          "Provider Type"?: string | null
+          "QM Rating"?: string | null
+          "QM Rating Footnote"?: string | null
+          "Rating Cycle 1 Health Deficiency Score"?: string | null
+          "Rating Cycle 1 Health Revisit Score"?: string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits"?: string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Standard Survey Health Date"?: string | null
+          "Rating Cycle 1 Total Health Score"?: string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 2 Health Deficiency Score"?: string | null
+          "Rating Cycle 2 Health Revisit Score"?: string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits"?: string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Standard Health Survey Date"?: string | null
+          "Rating Cycle 2 Total Health Score"?: string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 3 Health Deficiency Score"?: string | null
+          "Rating Cycle 3 Health Revisit Score"?: string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits"?: string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Standard Health Survey Date"?: string | null
+          "Rating Cycle 3 Total Health Score"?: string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies"?: string | null
+          "Registered Nurse hours per resident per day on the weekend"?:
+            | string
+            | null
+          "Registered Nurse turnover"?: string | null
+          "Registered Nurse turnover footnote"?: string | null
+          "Reported Licensed Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported LPN Staffing Hours per Resident per Day"?: string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day"?:
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day"?: string | null
+          "Reported Staffing Footnote"?: string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Short-Stay QM Rating"?: string | null
+          "Short-Stay QM Rating Footnote"?: string | null
+          "Special Focus Status"?: string | null
+          "Staffing Rating"?: string | null
+          "Staffing Rating Footnote"?: string | null
+          State?: string | null
+          "Telephone Number"?: number | null
+          "Total Amount of Fines in Dollars"?: string | null
+          "Total number of nurse staff hours per resident per day on the w"?:
+            | string
+            | null
+          "Total Number of Penalties"?: string | null
+          "Total nursing staff turnover"?: string | null
+          "Total nursing staff turnover footnote"?: string | null
+          "Total Weighted Health Survey Score"?: number | null
+          "With a Resident and Family Council"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Update: {
+          "Abuse Icon"?: string | null
+          "Adjusted LPN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "Administrator turnover footnote"?: string | null
+          "Affiliated Entity ID"?: string | null
+          "Affiliated Entity Name"?: string | null
+          "Automatic Sprinkler Systems in All Required Areas"?: string | null
+          "Average Number of Residents per Day"?: number | null
+          "Average Number of Residents per Day Footnote"?: string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "City/Town"?: string | null
+          "CMS Certification Number (CCN)"?: string | null
+          "Continuing Care Retirement Community"?: string | null
+          "County/Parish"?: string | null
+          "Date First Approved to Provide Medicare and Medicaid Services"?:
+            | string
+            | null
+          "Geocoding Footnote"?: string | null
+          "Health Inspection Rating"?: string | null
+          "Health Inspection Rating Footnote"?: string | null
+          id?: string | null
+          Latitude?: number | null
+          "Legal Business Name"?: string | null
+          Location?: string | null
+          "Long-Stay QM Rating"?: string | null
+          "Long-Stay QM Rating Footnote"?: string | null
+          Longitude?: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago"?: string | null
+          "Number of administrators who have left the nursing home"?:
+            | string
+            | null
+          "Number of Certified Beds"?: number | null
+          "Number of Citations from Infection Control Inspections"?:
+            | string
+            | null
+          "Number of Facility Reported Incidents"?: string | null
+          "Number of Fines"?: string | null
+          "Number of Payment Denials"?: string | null
+          "Number of Substantiated Complaints"?: string | null
+          "Nursing Case-Mix Index"?: string | null
+          "Nursing Case-Mix Index Ratio"?: string | null
+          "Overall Rating"?: string | null
+          "Overall Rating Footnote"?: string | null
+          "Ownership Type"?: string | null
+          "Physical Therapist Staffing Footnote"?: string | null
+          "Processing Date"?: string | null
+          "Provider Address"?: string | null
+          "Provider Changed Ownership in Last 12 Months"?: string | null
+          "Provider Name"?: string | null
+          "Provider Resides in Hospital"?: string | null
+          "Provider SSA County Code"?: string | null
+          "Provider Type"?: string | null
+          "QM Rating"?: string | null
+          "QM Rating Footnote"?: string | null
+          "Rating Cycle 1 Health Deficiency Score"?: string | null
+          "Rating Cycle 1 Health Revisit Score"?: string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits"?: string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Standard Survey Health Date"?: string | null
+          "Rating Cycle 1 Total Health Score"?: string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 2 Health Deficiency Score"?: string | null
+          "Rating Cycle 2 Health Revisit Score"?: string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits"?: string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Standard Health Survey Date"?: string | null
+          "Rating Cycle 2 Total Health Score"?: string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 3 Health Deficiency Score"?: string | null
+          "Rating Cycle 3 Health Revisit Score"?: string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits"?: string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Standard Health Survey Date"?: string | null
+          "Rating Cycle 3 Total Health Score"?: string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies"?: string | null
+          "Registered Nurse hours per resident per day on the weekend"?:
+            | string
+            | null
+          "Registered Nurse turnover"?: string | null
+          "Registered Nurse turnover footnote"?: string | null
+          "Reported Licensed Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported LPN Staffing Hours per Resident per Day"?: string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day"?:
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day"?: string | null
+          "Reported Staffing Footnote"?: string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Short-Stay QM Rating"?: string | null
+          "Short-Stay QM Rating Footnote"?: string | null
+          "Special Focus Status"?: string | null
+          "Staffing Rating"?: string | null
+          "Staffing Rating Footnote"?: string | null
+          State?: string | null
+          "Telephone Number"?: number | null
+          "Total Amount of Fines in Dollars"?: string | null
+          "Total number of nurse staff hours per resident per day on the w"?:
+            | string
+            | null
+          "Total Number of Penalties"?: string | null
+          "Total nursing staff turnover"?: string | null
+          "Total nursing staff turnover footnote"?: string | null
+          "Total Weighted Health Survey Score"?: number | null
+          "With a Resident and Family Council"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           content: string
@@ -587,6 +1308,156 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          "Amount Refunded": string | null
+          "Billing Address1": string | null
+          "Billing Address2": string | null
+          "Billing City": string | null
+          "Billing Country": string | null
+          "Billing Name": string | null
+          "Billing Phone": string | null
+          "Billing Province": string | null
+          "Billing Zip": number | null
+          "Cancelled at": string | null
+          "Channel Name": string | null
+          "Channel Order Number": number | null
+          "Channel Type": string | null
+          "Created at": string | null
+          Currency: string | null
+          "Discount Amount": string | null
+          "Discount Code": string | null
+          Email: string | null
+          "Financial Status": string | null
+          "Fulfilled at": string | null
+          "Fulfillment Status": string | null
+          "Lineitem fulfillment status": string | null
+          "Lineitem name": string | null
+          "Lineitem price": number | null
+          "Lineitem quantity": number | null
+          "Lineitem requires shipping": boolean | null
+          "Lineitem sku": string | null
+          "Lineitem taxable": boolean | null
+          "Lineitem variant": string | null
+          "Order ID": number
+          "Paid at": string | null
+          "Payment Method": string | null
+          "Payment Reference": string | null
+          "Private Notes": string | null
+          Shipping: string | null
+          "Shipping Address1": string | null
+          "Shipping Address2": string | null
+          "Shipping City": string | null
+          "Shipping Country": string | null
+          "Shipping Method": string | null
+          "Shipping Name": string | null
+          "Shipping Phone": string | null
+          "Shipping Province": string | null
+          "Shipping Zip": string | null
+          Subtotal: number | null
+          Taxes: string | null
+          Total: number | null
+        }
+        Insert: {
+          "Amount Refunded"?: string | null
+          "Billing Address1"?: string | null
+          "Billing Address2"?: string | null
+          "Billing City"?: string | null
+          "Billing Country"?: string | null
+          "Billing Name"?: string | null
+          "Billing Phone"?: string | null
+          "Billing Province"?: string | null
+          "Billing Zip"?: number | null
+          "Cancelled at"?: string | null
+          "Channel Name"?: string | null
+          "Channel Order Number"?: number | null
+          "Channel Type"?: string | null
+          "Created at"?: string | null
+          Currency?: string | null
+          "Discount Amount"?: string | null
+          "Discount Code"?: string | null
+          Email?: string | null
+          "Financial Status"?: string | null
+          "Fulfilled at"?: string | null
+          "Fulfillment Status"?: string | null
+          "Lineitem fulfillment status"?: string | null
+          "Lineitem name"?: string | null
+          "Lineitem price"?: number | null
+          "Lineitem quantity"?: number | null
+          "Lineitem requires shipping"?: boolean | null
+          "Lineitem sku"?: string | null
+          "Lineitem taxable"?: boolean | null
+          "Lineitem variant"?: string | null
+          "Order ID": number
+          "Paid at"?: string | null
+          "Payment Method"?: string | null
+          "Payment Reference"?: string | null
+          "Private Notes"?: string | null
+          Shipping?: string | null
+          "Shipping Address1"?: string | null
+          "Shipping Address2"?: string | null
+          "Shipping City"?: string | null
+          "Shipping Country"?: string | null
+          "Shipping Method"?: string | null
+          "Shipping Name"?: string | null
+          "Shipping Phone"?: string | null
+          "Shipping Province"?: string | null
+          "Shipping Zip"?: string | null
+          Subtotal?: number | null
+          Taxes?: string | null
+          Total?: number | null
+        }
+        Update: {
+          "Amount Refunded"?: string | null
+          "Billing Address1"?: string | null
+          "Billing Address2"?: string | null
+          "Billing City"?: string | null
+          "Billing Country"?: string | null
+          "Billing Name"?: string | null
+          "Billing Phone"?: string | null
+          "Billing Province"?: string | null
+          "Billing Zip"?: number | null
+          "Cancelled at"?: string | null
+          "Channel Name"?: string | null
+          "Channel Order Number"?: number | null
+          "Channel Type"?: string | null
+          "Created at"?: string | null
+          Currency?: string | null
+          "Discount Amount"?: string | null
+          "Discount Code"?: string | null
+          Email?: string | null
+          "Financial Status"?: string | null
+          "Fulfilled at"?: string | null
+          "Fulfillment Status"?: string | null
+          "Lineitem fulfillment status"?: string | null
+          "Lineitem name"?: string | null
+          "Lineitem price"?: number | null
+          "Lineitem quantity"?: number | null
+          "Lineitem requires shipping"?: boolean | null
+          "Lineitem sku"?: string | null
+          "Lineitem taxable"?: boolean | null
+          "Lineitem variant"?: string | null
+          "Order ID"?: number
+          "Paid at"?: string | null
+          "Payment Method"?: string | null
+          "Payment Reference"?: string | null
+          "Private Notes"?: string | null
+          Shipping?: string | null
+          "Shipping Address1"?: string | null
+          "Shipping Address2"?: string | null
+          "Shipping City"?: string | null
+          "Shipping Country"?: string | null
+          "Shipping Method"?: string | null
+          "Shipping Name"?: string | null
+          "Shipping Phone"?: string | null
+          "Shipping Province"?: string | null
+          "Shipping Zip"?: string | null
+          Subtotal?: number | null
+          Taxes?: string | null
+          Total?: number | null
         }
         Relationships: []
       }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
@@ -5,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, MapPin, Navigation, Phone, Globe } from 'lucide-react';
+import { Loader2, MapPin, Navigation, Phone, Globe, Search } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 
@@ -20,7 +21,11 @@ interface Facility {
   website?: string;
 }
 
-const GoogleMapsView = () => {
+interface GoogleMapsViewProps {
+  hasSearched?: boolean;
+}
+
+const GoogleMapsView = ({ hasSearched = false }: GoogleMapsViewProps) => {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [mapCenter, setMapCenter] = useState({ lat: 33.4484, lng: -112.0740 }); // Phoenix center
   const [conversationData, setConversationData] = useState<any>(null);
@@ -30,6 +35,11 @@ const GoogleMapsView = () => {
   const { data: facilities, isLoading } = useQuery({
     queryKey: ['facilities'],
     queryFn: async () => {
+      // Only fetch if a search has been performed
+      if (!hasSearched) {
+        return [];
+      }
+      
       const { data, error } = await supabase
         .from('facilities')
         .select('*')
@@ -41,7 +51,8 @@ const GoogleMapsView = () => {
       // Log data for debugging
       console.log('Fetched facilities:', data?.length || 0);
       return data as Facility[];
-    }
+    },
+    enabled: hasSearched // Only run this query if a search has been performed
   });
 
   useEffect(() => {
@@ -51,8 +62,8 @@ const GoogleMapsView = () => {
       setConversationData(JSON.parse(storedData));
     }
 
-    // Try to get user location for better map positioning
-    if (navigator.geolocation) {
+    // Only try to get user location if a search has been performed
+    if (hasSearched && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
@@ -71,7 +82,7 @@ const GoogleMapsView = () => {
         }
       );
     }
-  }, []);
+  }, [hasSearched]);
 
   // Effect to update map center when a facility is selected
   useEffect(() => {
@@ -107,6 +118,19 @@ const GoogleMapsView = () => {
     window.open(website, '_blank');
     toast.success('Opening website...');
   };
+
+  // If we haven't performed a search yet, show a placeholder
+  if (!hasSearched) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] md:h-[600px] bg-slate-50 rounded-lg">
+        <Search className="h-16 w-16 text-muted-foreground mb-4 opacity-30" />
+        <h3 className="text-xl font-medium text-center mb-2">No Search Performed</h3>
+        <p className="text-center text-muted-foreground max-w-md px-4">
+          Please use the search function to find facilities. The map will display results after a search.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col">

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
@@ -56,11 +55,13 @@ const MapPage = () => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [searchSaved, setSearchSaved] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState('map');
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     const params = sessionStorage.getItem('facilitySearchParams');
     if (params) {
       setSearchParams(JSON.parse(params));
+      setHasSearched(true); // Set to true if search params exist in session storage
     }
     
     const saved = localStorage.getItem('savedFacilities');
@@ -123,6 +124,7 @@ const MapPage = () => {
           amenities: searchParams.amenities,
           results: []
         });
+        setHasSearched(true); // Set to true when search is refreshed
         setIsLoading(false);
       } catch (error) {
         console.error('Error refreshing search:', error);
@@ -160,6 +162,7 @@ const MapPage = () => {
     sessionStorage.setItem('facilitySearchParams', JSON.stringify(savedSearch));
     
     setSearchResults(savedSearch.results || []);
+    setHasSearched(true); // Set to true when a saved search is loaded
     
     toast.success('Saved search loaded successfully');
   };
@@ -270,7 +273,7 @@ const MapPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <GoogleMapsView />
+                <GoogleMapsView hasSearched={hasSearched} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -595,7 +598,7 @@ const MapPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <GoogleMapsView />
+                <GoogleMapsView hasSearched={hasSearched} />
               </CardContent>
             </Card>
           </div>
