@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,13 +25,7 @@ const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
 type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'los-angeles' | 'all';
 
-// Declare SP exists on window for TypeScript (full interface in types/storepoint.d.ts)
-declare global {
-  interface Window {
-    SP: any;
-    selectedLocation: any;
-  }
-}
+// We'll use the Window interface extension from storepoint.d.ts, so no need to declare it here
 
 const AvaMapPage = () => {
   const { user } = useAuth();
@@ -105,7 +98,7 @@ const AvaMapPage = () => {
           window.SP.options.defaultView = 'map'; // Start with map view
           
           // Set up event listeners
-          window.SP.on('markerClick', function(location: any) {
+          window.SP.on('markerClick', function(location: SPLocation) {
             console.log('Location selected:', location.name);
             window.selectedLocation = location;
           });

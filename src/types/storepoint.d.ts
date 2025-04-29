@@ -26,7 +26,9 @@ interface SPInstance {
 }
 
 // Extend Window interface
-interface Window {
-  SP: SPInstance;
-  selectedLocation?: SPLocation;
+declare global {
+  interface Window {
+    SP: SPInstance;
+    selectedLocation?: SPLocation;
+  }
 }
