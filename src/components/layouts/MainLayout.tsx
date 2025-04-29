@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 const MainLayout = () => {
   const location = useLocation();
 
-  // Don't show on map or search pages
+  // Don't show footer on map or search pages
   const isMapPage = location.pathname.includes('/map');
   const isSearchPage = location.pathname.includes('/search') &&
                       (location.pathname.includes('facility') || location.pathname.includes('map'));
@@ -31,7 +31,7 @@ const MainLayout = () => {
         <main className="flex-grow w-full max-w-full overflow-x-hidden">
           <Outlet />
         </main>
-        <Footer />
+        {!isMapPage && <Footer />}
       </AvatarResponseProvider>
     </div>
   );

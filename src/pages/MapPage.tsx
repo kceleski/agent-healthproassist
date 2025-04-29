@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/context/AuthContext";
@@ -8,9 +9,11 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Search, Heart, ArrowLeft } from "lucide-react";
+import { MapPin, Search, Heart, ArrowLeft, Filter } from "lucide-react";
 import GoogleMapsView from "@/components/maps/GoogleMapsView";
 import { saveSearchResult } from '@/services/searchResultService';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const careTypes = [
   { id: "any", label: "Any Care Type" },
@@ -29,13 +32,6 @@ const amenities = [
   { id: "rehab", label: "Rehabilitation Services" },
 ];
 
-declare global {
-  interface Window {
-    SP: any;
-    selectedLocation: any;
-  }
-}
-
 interface Facility {
   id: string;
   name: string;
@@ -50,14 +46,16 @@ interface Facility {
 const MapPage = () => {
   const { user } = useAuth();
   const [isPro, setIsPro] = useState(false);
+  const isMobile = useIsMobile();
   
   const [searchParams, setSearchParams] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Facility[]>([]);
   const [savedFacilities, setSavedFacilities] = useState<string[]>([]);
   const [savedSearches, setSavedSearches] = useState<any[]>([]);
-  const [showSavedSearches, setShowSavedSearches] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [searchSaved, setSearchSaved] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState('map');
 
   useEffect(() => {
     const params = sessionStorage.getItem('facilitySearchParams');
@@ -152,10 +150,6 @@ const MapPage = () => {
       
       setSearchSaved(true);
       toast.success('Search saved successfully');
-      
-      setTimeout(() => {
-        setShowSavedSearches(true);
-      }, 500);
     } else {
       toast.error('No search results to save');
     }
@@ -167,13 +161,11 @@ const MapPage = () => {
     
     setSearchResults(savedSearch.results || []);
     
-    setShowSavedSearches(false);
-    
     toast.success('Saved search loaded successfully');
   };
 
   return (
-    <div className="container py-6">
+    <div className="container py-6 pt-20">
       <Helmet>
         <title>Facility Map Results - HealthProAssist</title>
         <meta name="description" content="View search results of senior care facilities on our interactive map." />
@@ -183,20 +175,20 @@ const MapPage = () => {
         <div>
           <div className="flex items-center gap-2">
             <MapPin className="h-6 w-6 text-healthcare-600" />
-            <h1 className="text-3xl font-bold tracking-tight">Facility Map</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Facility Map</h1>
           </div>
           <p className="text-muted-foreground mt-2">
             View and explore senior care facilities
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1">
+          <Badge variant="outline" className="bg-healthcare-100 text-healthcare-700 px-3 py-1 hidden sm:flex">
             {isPro ? 'Pro' : 'Basic'} Feature
           </Badge>
           <Button asChild variant="outline" size="sm" className="gap-1">
             <Link to="/search">
               <ArrowLeft className="h-4 w-4" />
-              Back to Search
+              <span className="hidden sm:inline">Back to Search</span>
             </Link>
           </Button>
         </div>
@@ -204,8 +196,8 @@ const MapPage = () => {
 
       {searchParams && (
         <Alert className="mb-6 bg-healthcare-50">
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="font-medium">Search Query:</span> 
+          <div className="flex flex-wrap gap-2 items-center text-sm md:text-base">
+            <span className="font-medium">Search:</span> 
             <span className="text-healthcare-700">{searchParams.location}</span>
             
             {searchParams.careType !== "any" && (
@@ -214,11 +206,11 @@ const MapPage = () => {
               </Badge>
             )}
             
-            {searchParams.amenities && searchParams.amenities.map((amenityId: string) => (
-              <Badge key={amenityId} variant="outline" className="bg-healthcare-100">
-                {amenities.find(a => a.id === amenityId)?.label}
+            {searchParams.amenities && searchParams.amenities.length > 0 && (
+              <Badge variant="outline" className="bg-healthcare-100">
+                {searchParams.amenities.length} amenities
               </Badge>
-            ))}
+            )}
           </div>
           <AlertDescription>
             <div className="flex mt-2 gap-2">
@@ -227,7 +219,7 @@ const MapPage = () => {
                 variant="outline" 
                 size="sm"
               >
-                <Link to="/search">Modify Search</Link>
+                <Link to="/search">Modify</Link>
               </Button>
               
               <Button
@@ -236,134 +228,222 @@ const MapPage = () => {
                 onClick={handleRefreshSearch}
                 disabled={isLoading}
               >
-                Refresh Results
+                Refresh
               </Button>
+
+              {!searchSaved && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveSearch}
+                  disabled={isLoading || !searchResults.length}
+                >
+                  <Heart className="h-4 w-4 mr-1" />
+                  Save
+                </Button>
+              )}
             </div>
           </AlertDescription>
         </Alert>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Search Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center p-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthcare-600"></div>
-                </div>
-              ) : searchResults.length > 0 ? (
-                <div className="divide-y">
-                  {searchResults.map((facility) => (
-                    <div key={facility.id} className="py-4">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-medium">{facility.name}</h3>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={savedFacilities.includes(facility.id) ? 'text-red-500' : ''}
-                          onClick={() => toggleSaveFacility(facility)}
-                        >
-                          <Heart className="h-4 w-4" fill={savedFacilities.includes(facility.id) ? 'currentColor' : 'none'} />
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{facility.address}</p>
-                      {facility.rating > 0 && (
-                        <div className="flex items-center mt-1">
-                          <span className="text-yellow-500 mr-1">★</span>
-                          <span className="text-sm">{facility.rating.toFixed(1)}</span>
-                        </div>
-                      )}
-                      <div className="mt-3 flex gap-2">
-                        <Button
-                          asChild 
-                          variant="outline"
-                          size="sm"
-                          onClick={() => saveFacilityDetails(facility)}
-                        >
-                          <Link to={`/facilities/${facility.id}`}>View Details</Link>
-                        </Button>
-                        {facility.url && (
+      {/* Mobile Tabs View */}
+      {isMobile && (
+        <Tabs 
+          defaultValue="map" 
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full mb-6"
+        >
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="map">Map</TabsTrigger>
+            <TabsTrigger value="list">Results</TabsTrigger>
+            <TabsTrigger value="filters">Filters</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="map" className="mt-0">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="flex items-center text-lg">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Interactive Map
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <GoogleMapsView />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="list" className="mt-0">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-lg">Search Results</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthcare-600"></div>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="divide-y">
+                    {searchResults.map((facility) => (
+                      <div key={facility.id} className="py-4">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-medium">{facility.name}</h3>
                           <Button
+                            variant="ghost"
+                            size="icon"
+                            className={savedFacilities.includes(facility.id) ? 'text-red-500' : ''}
+                            onClick={() => toggleSaveFacility(facility)}
+                          >
+                            <Heart className="h-4 w-4" fill={savedFacilities.includes(facility.id) ? 'currentColor' : 'none'} />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{facility.address}</p>
+                        {facility.rating > 0 && (
+                          <div className="flex items-center mt-1">
+                            <span className="text-yellow-500 mr-1">★</span>
+                            <span className="text-sm">{facility.rating.toFixed(1)}</span>
+                          </div>
+                        )}
+                        <div className="mt-3 flex gap-2">
+                          <Button
+                            asChild 
                             variant="outline"
                             size="sm"
-                            asChild
+                            onClick={() => saveFacilityDetails(facility)}
                           >
-                            <a 
-                              href={facility.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                            >
-                              Visit Website
-                            </a>
+                            <Link to={`/facilities/${facility.id}`}>View Details</Link>
                           </Button>
-                        )}
+                          {facility.url && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                            >
+                              <a 
+                                href={facility.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                              >
+                                Website
+                              </a>
+                            </Button>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-muted-foreground">
+                    No results found. Try modifying your search criteria.
+                  </p>
+                )}
+                
+                <div className="mt-4 pt-4 border-t">
+                  <Button
+                    asChild
+                    variant="default"
+                    className="w-full"
+                  >
+                    <Link to="/favorites">
+                      <Heart className="h-4 w-4 mr-2" />
+                      View Saved Facilities
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="filters" className="mt-0">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="flex items-center text-lg">
+                  <Filter className="h-5 w-5 mr-2" />
+                  Search Filters
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2">
+                  {careTypes.map((type) => (
+                    <div key={type.id} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`care-type-mobile-${type.id}`}
+                        name="careType"
+                        className="mr-2"
+                        checked={searchParams?.careType === type.id}
+                        onChange={() => {
+                          if (searchParams) {
+                            const updatedParams = { ...searchParams, careType: type.id };
+                            setSearchParams(updatedParams);
+                          }
+                        }}
+                      />
+                      <label htmlFor={`care-type-mobile-${type.id}`} className="text-sm">
+                        {type.label}
+                      </label>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-center py-8 text-muted-foreground">
-                  No results found. Try modifying your search criteria.
-                </p>
-              )}
-              
-              <div className="mt-4 pt-4 border-t">
-                <Button
-                  asChild
-                  variant="default"
-                  className="w-full"
+                
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">Amenities</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {amenities.map((amenity) => (
+                      <div key={amenity.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`amenity-mobile-${amenity.id}`}
+                          className="mr-2"
+                          checked={searchParams?.amenities?.includes(amenity.id) || false}
+                          onChange={() => {
+                            if (searchParams) {
+                              const updatedAmenities = searchParams.amenities?.includes(amenity.id)
+                                ? searchParams.amenities.filter((id: string) => id !== amenity.id)
+                                : [...(searchParams.amenities || []), amenity.id];
+                              
+                              const updatedParams = { 
+                                ...searchParams, 
+                                amenities: updatedAmenities 
+                              };
+                              setSearchParams(updatedParams);
+                            }
+                          }}
+                        />
+                        <label htmlFor={`amenity-mobile-${amenity.id}`} className="text-sm">
+                          {amenity.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="default" 
+                  className="w-full mt-4"
+                  onClick={() => {
+                    handleRefreshSearch();
+                    setActiveTab('map');
+                  }}
                 >
-                  <Link to="/favorites">
-                    <Heart className="h-4 w-4 mr-2" />
-                    View Saved Facilities
-                  </Link>
+                  Apply Filters
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="lg:col-span-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MapPin className="h-5 w-5 mr-2" />
-                Interactive Facility Map
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <GoogleMapsView />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-3">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Save Your Search</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {searchSaved ? (
-                <div>
-                  <Button 
-                    variant="outline"
-                    className="w-full mb-4"
-                    onClick={() => setShowSavedSearches(!showSavedSearches)}
-                  >
-                    {showSavedSearches ? "Hide Saved Searches" : "View Saved Searches"}
-                  </Button>
-                  
-                  {showSavedSearches && savedSearches.length > 0 && (
-                    <div className="mt-4 space-y-2 border rounded-lg p-3">
-                      <h3 className="font-medium mb-2">Your Saved Searches</h3>
-                      {savedSearches.map((search) => (
+                {savedSearches.length > 0 && (
+                  <div className="mt-6 pt-4 border-t">
+                    <h3 className="font-medium mb-2">Saved Searches</h3>
+                    <div className="space-y-2">
+                      {savedSearches.slice(0, 3).map((search) => (
                         <div 
                           key={search.id} 
                           className="p-2 border rounded hover:bg-muted cursor-pointer"
-                          onClick={() => loadSavedSearch(search)}
+                          onClick={() => {
+                            loadSavedSearch(search);
+                            setActiveTab('map');
+                          }}
                         >
                           <div className="font-medium">{search.location}</div>
                           <div className="text-xs text-muted-foreground">
@@ -372,92 +452,230 @@ const MapPage = () => {
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
-              ) : (
-                <Button
-                  variant="default"
-                  className="w-full"
-                  onClick={handleSaveSearch}
-                  disabled={!searchResults.length}
-                >
-                  Save This Search
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Search Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2">
-                {careTypes.map((type) => (
-                  <div key={type.id} className="flex items-center">
-                    <input
-                      type="radio"
-                      id={`care-type-${type.id}`}
-                      name="careType"
-                      className="mr-2"
-                      checked={searchParams?.careType === type.id}
-                      onChange={() => {
-                        if (searchParams) {
-                          const updatedParams = { ...searchParams, careType: type.id };
-                          setSearchParams(updatedParams);
-                        }
-                      }}
-                    />
-                    <label htmlFor={`care-type-${type.id}`} className="text-sm">
-                      {type.label}
-                    </label>
                   </div>
-                ))}
-              </div>
-              
-              <div className="mt-4">
-                <h3 className="font-medium mb-2">Amenities</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {amenities.map((amenity) => (
-                    <div key={amenity.id} className="flex items-center">
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
+
+      {/* Desktop View */}
+      {!isMobile && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-3">
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Search Results</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthcare-600"></div>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="divide-y">
+                    {searchResults.map((facility) => (
+                      <div key={facility.id} className="py-4">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-medium">{facility.name}</h3>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={savedFacilities.includes(facility.id) ? 'text-red-500' : ''}
+                            onClick={() => toggleSaveFacility(facility)}
+                          >
+                            <Heart className="h-4 w-4" fill={savedFacilities.includes(facility.id) ? 'currentColor' : 'none'} />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{facility.address}</p>
+                        {facility.rating > 0 && (
+                          <div className="flex items-center mt-1">
+                            <span className="text-yellow-500 mr-1">★</span>
+                            <span className="text-sm">{facility.rating.toFixed(1)}</span>
+                          </div>
+                        )}
+                        <div className="mt-3 flex gap-2">
+                          <Button
+                            asChild 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => saveFacilityDetails(facility)}
+                          >
+                            <Link to={`/facilities/${facility.id}`}>View Details</Link>
+                          </Button>
+                          {facility.url && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                            >
+                              <a 
+                                href={facility.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                              >
+                                Visit Website
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-muted-foreground">
+                    No results found. Try modifying your search criteria.
+                  </p>
+                )}
+                
+                <div className="mt-4 pt-4 border-t">
+                  <Button
+                    asChild
+                    variant="default"
+                    className="w-full"
+                  >
+                    <Link to="/favorites">
+                      <Heart className="h-4 w-4 mr-2" />
+                      View Saved Facilities
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {savedSearches.length > 0 && (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Saved Searches</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {savedSearches.map((search) => (
+                      <div 
+                        key={search.id} 
+                        className="p-2 border rounded hover:bg-muted cursor-pointer"
+                        onClick={() => loadSavedSearch(search)}
+                      >
+                        <div className="font-medium">{search.location}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(search.date).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {!searchSaved && searchResults.length > 0 && (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Save Search</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={handleSaveSearch}
+                  >
+                    Save This Search
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          <div className="lg:col-span-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Interactive Facility Map
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <GoogleMapsView />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-3">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Filter className="h-5 w-5 mr-2" />
+                  Search Filters
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-2">
+                  {careTypes.map((type) => (
+                    <div key={type.id} className="flex items-center">
                       <input
-                        type="checkbox"
-                        id={`amenity-${amenity.id}`}
+                        type="radio"
+                        id={`care-type-${type.id}`}
+                        name="careType"
                         className="mr-2"
-                        checked={searchParams?.amenities?.includes(amenity.id) || false}
+                        checked={searchParams?.careType === type.id}
                         onChange={() => {
                           if (searchParams) {
-                            const updatedAmenities = searchParams.amenities?.includes(amenity.id)
-                              ? searchParams.amenities.filter((id: string) => id !== amenity.id)
-                              : [...(searchParams.amenities || []), amenity.id];
-                            
-                            const updatedParams = { 
-                              ...searchParams, 
-                              amenities: updatedAmenities 
-                            };
+                            const updatedParams = { ...searchParams, careType: type.id };
                             setSearchParams(updatedParams);
                           }
                         }}
                       />
-                      <label htmlFor={`amenity-${amenity.id}`} className="text-sm">
-                        {amenity.label}
+                      <label htmlFor={`care-type-${type.id}`} className="text-sm">
+                        {type.label}
                       </label>
                     </div>
                   ))}
                 </div>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                className="w-full mt-4"
-                onClick={handleRefreshSearch}
-              >
-                Apply Filters
-              </Button>
-            </CardContent>
-          </Card>
+                
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">Amenities</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {amenities.map((amenity) => (
+                      <div key={amenity.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`amenity-${amenity.id}`}
+                          className="mr-2"
+                          checked={searchParams?.amenities?.includes(amenity.id) || false}
+                          onChange={() => {
+                            if (searchParams) {
+                              const updatedAmenities = searchParams.amenities?.includes(amenity.id)
+                                ? searchParams.amenities.filter((id: string) => id !== amenity.id)
+                                : [...(searchParams.amenities || []), amenity.id];
+                              
+                              const updatedParams = { 
+                                ...searchParams, 
+                                amenities: updatedAmenities 
+                              };
+                              setSearchParams(updatedParams);
+                            }
+                          }}
+                        />
+                        <label htmlFor={`amenity-${amenity.id}`} className="text-sm">
+                          {amenity.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={handleRefreshSearch}
+                >
+                  Apply Filters
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

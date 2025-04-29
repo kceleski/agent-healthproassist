@@ -3,9 +3,9 @@ import { GoogleMap, LoadScript, MarkerF, InfoWindowF } from '@react-google-maps/
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, MapPin, Navigation } from 'lucide-react';
+import { Loader2, MapPin, Navigation, Phone, Globe } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 
@@ -39,7 +39,7 @@ const GoogleMapsView = () => {
       if (error) throw error;
       
       // Log data for debugging
-      console.log('Fetched facilities:', data);
+      console.log('Fetched facilities:', data?.length || 0);
       return data as Facility[];
     }
   });
@@ -63,6 +63,7 @@ const GoogleMapsView = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           });
+          console.log('User location set', position.coords);
         },
         (error) => {
           console.log('Error getting location:', error);
@@ -95,6 +96,16 @@ const GoogleMapsView = () => {
 
   const handleMarkerClick = (facility: Facility) => {
     setSelectedFacility(facility);
+  };
+
+  const handleCallFacility = (phoneNumber: string) => {
+    window.open(`tel:${phoneNumber}`);
+    toast.success('Initiating call...');
+  };
+
+  const handleVisitWebsite = (website: string) => {
+    window.open(website, '_blank');
+    toast.success('Opening website...');
   };
 
   return (
@@ -130,6 +141,7 @@ const GoogleMapsView = () => {
                     url: '/placeholder.svg',
                     scaledSize: new window.google.maps.Size(30, 30)
                   }}
+                  title="Your Location"
                 />
               )}
               
@@ -161,8 +173,10 @@ const GoogleMapsView = () => {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => window.open(`tel:${selectedFacility.phone}`)}
+                          onClick={() => handleCallFacility(selectedFacility.phone as string)}
+                          className="flex items-center gap-1"
                         >
+                          <Phone className="h-3 w-3" />
                           Call
                         </Button>
                       )}
@@ -170,8 +184,10 @@ const GoogleMapsView = () => {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => window.open(selectedFacility.website, '_blank')}
+                          onClick={() => handleVisitWebsite(selectedFacility.website as string)}
+                          className="flex items-center gap-1"
                         >
+                          <Globe className="h-3 w-3" />
                           Website
                         </Button>
                       )}
@@ -179,8 +195,10 @@ const GoogleMapsView = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => handleGetDirections(selectedFacility)}
+                        className="flex items-center gap-1"
                       >
-                        <Navigation className="h-4 w-4 mr-1" /> Directions
+                        <Navigation className="h-3 w-3" />
+                        Directions
                       </Button>
                     </div>
                   </div>
@@ -206,13 +224,10 @@ const GoogleMapsView = () => {
 
       {conversationData && (
         <Card className="mt-4 bg-white shadow-lg">
-          <CardHeader>
-            <CardTitle>AI Assistant Insights</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             {conversationData.recommendations && (
               <div className="mb-4">
-                <h4 className="font-medium mb-2">Recommendations</h4>
+                <h4 className="font-medium mb-2">AI Recommendations</h4>
                 <ul className="list-disc pl-4">
                   {conversationData.recommendations.map((rec: string, idx: number) => (
                     <li key={idx} className="text-sm text-muted-foreground">{rec}</li>
