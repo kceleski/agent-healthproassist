@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,9 @@ import { useAuth } from "@/context/AuthContext";
 import { getUserTier } from '@/utils/subscription';
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
+
+// Import Storepoint types
+import type { SPLocation } from '@/types/storepoint';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -90,7 +94,7 @@ const AvaMapPage = () => {
     if (isPro) {
       // This will run after the StorePoint script has loaded for premium users
       const checkSP = setInterval(function() {
-        if (typeof window.SP !== 'undefined') {
+        if (window.SP !== undefined) {
           clearInterval(checkSP);
           
           // Configure map display

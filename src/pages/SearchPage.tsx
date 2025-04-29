@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet";
@@ -6,9 +7,10 @@ import { AISearchCard } from "@/components/search/AISearchCard";
 import { SearchCriteriaCard } from "@/components/search/SearchCriteriaCard";
 import { SearchTipsCard } from "@/components/search/SearchTipsCard";
 import { AvaButton } from "@/components/search/AvaButton";
-import { saveSearchResult } from "@/services/searchResultService";
-
-const SERP_API_KEY = "838Ua1jg4Hf8dWHFMy4GryT4";
+import { saveSearchResult } from '@/services/searchResultService';
+import { Button } from "@/components/ui/button";
+import { MapPin, MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Define care types and amenities
 const careTypes = [
@@ -143,7 +145,15 @@ const SearchPage = () => {
               Find the perfect facility by location, care type, and amenities
             </p>
           </div>
-          <AvaButton onFiltersUpdate={handleFiltersUpdate} handleSearch={handleSearch} />
+          <div className="flex gap-3">
+            <Link to="/map/ava">
+              <Button className="bg-healthcare-500 hover:bg-healthcare-600">
+                <MapPin className="h-4 w-4 mr-2" />
+                Ava Map Assistant
+              </Button>
+            </Link>
+            <AvaButton onFiltersUpdate={handleFiltersUpdate} handleSearch={handleSearch} />
+          </div>
         </div>
         
         <SearchTipsCard />
