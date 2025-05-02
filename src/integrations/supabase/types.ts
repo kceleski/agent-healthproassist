@@ -543,6 +543,39 @@ export type Database = {
           },
         ]
       }
+      facility_info: {
+        Row: {
+          amenities: string[]
+          created_at: string | null
+          id: string
+          location: string
+          phone_number: string
+          type_of_facility: string
+          url_googlemaps: string
+          website: string
+        }
+        Insert: {
+          amenities: string[]
+          created_at?: string | null
+          id?: string
+          location: string
+          phone_number: string
+          type_of_facility: string
+          url_googlemaps: string
+          website: string
+        }
+        Update: {
+          amenities?: string[]
+          created_at?: string | null
+          id?: string
+          location?: string
+          phone_number?: string
+          type_of_facility?: string
+          url_googlemaps?: string
+          website?: string
+        }
+        Relationships: []
+      }
       facility_tags: {
         Row: {
           address: string | null
@@ -1311,6 +1344,442 @@ export type Database = {
         }
         Relationships: []
       }
+      nursing_homes_medicare: {
+        Row: {
+          "Abuse Icon": string | null
+          "Adjusted LPN Staffing Hours per Resident per Day": string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day": string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da":
+            | string
+            | null
+          "Administrator turnover footnote": string | null
+          "Affiliated Entity ID": string | null
+          "Affiliated Entity Name": string | null
+          "Automatic Sprinkler Systems in All Required Areas": string | null
+          "Average Number of Residents per Day": number | null
+          "Average Number of Residents per Day Footnote": string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day": string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day": string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da":
+            | string
+            | null
+          "City/Town": string | null
+          "CMS Certification Number (CCN)": string
+          "Continuing Care Retirement Community": string | null
+          "County/Parish": string | null
+          "Date First Approved to Provide Medicare and Medicaid Services":
+            | string
+            | null
+          "Geocoding Footnote": string | null
+          "Health Inspection Rating": number | null
+          "Health Inspection Rating Footnote": string | null
+          Latitude: number | null
+          "Legal Business Name": string | null
+          Location: string | null
+          "Long-Stay QM Rating": string | null
+          "Long-Stay QM Rating Footnote": string | null
+          Longitude: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago": string | null
+          "Number of administrators who have left the nursing home":
+            | string
+            | null
+          "Number of Certified Beds": number | null
+          "Number of Citations from Infection Control Inspections":
+            | string
+            | null
+          "Number of Facility Reported Incidents": string | null
+          "Number of Fines": string | null
+          "Number of Payment Denials": string | null
+          "Number of Substantiated Complaints": string | null
+          "Nursing Case-Mix Index": string | null
+          "Nursing Case-Mix Index Ratio": string | null
+          "Overall Rating": number | null
+          "Overall Rating Footnote": string | null
+          "Ownership Type": string | null
+          "Physical Therapist Staffing Footnote": string | null
+          "Processing Date": string | null
+          "Provider Address": string | null
+          "Provider Changed Ownership in Last 12 Months": string | null
+          "Provider Name": string | null
+          "Provider Resides in Hospital": string | null
+          "Provider SSA County Code": number | null
+          "Provider Type": string | null
+          "QM Rating": string | null
+          "QM Rating Footnote": string | null
+          "Rating Cycle 1 Health Deficiency Score": string | null
+          "Rating Cycle 1 Health Revisit Score": string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits": string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 1 Standard Survey Health Date": string | null
+          "Rating Cycle 1 Total Health Score": string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies": string | null
+          "Rating Cycle 2 Health Deficiency Score": string | null
+          "Rating Cycle 2 Health Revisit Score": string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits": string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 2 Standard Health Survey Date": string | null
+          "Rating Cycle 2 Total Health Score": string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies": string | null
+          "Rating Cycle 3 Health Deficiency Score": string | null
+          "Rating Cycle 3 Health Revisit Score": string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies":
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits": string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies": string | null
+          "Rating Cycle 3 Standard Health Survey Date": string | null
+          "Rating Cycle 3 Total Health Score": string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies": string | null
+          "Registered Nurse hours per resident per day on the weekend":
+            | string
+            | null
+          "Registered Nurse turnover": string | null
+          "Registered Nurse turnover footnote": string | null
+          "Reported Licensed Staffing Hours per Resident per Day": string | null
+          "Reported LPN Staffing Hours per Resident per Day": string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day":
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day": string | null
+          "Reported Staffing Footnote": string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day":
+            | string
+            | null
+          "Short-Stay QM Rating": string | null
+          "Short-Stay QM Rating Footnote": string | null
+          "Special Focus Status": string | null
+          "Staffing Rating": string | null
+          "Staffing Rating Footnote": string | null
+          State: string | null
+          "Telephone Number": number | null
+          "Total Amount of Fines in Dollars": string | null
+          "Total number of nurse staff hours per resident per day on the w":
+            | string
+            | null
+          "Total Number of Penalties": string | null
+          "Total nursing staff turnover": string | null
+          "Total nursing staff turnover footnote": string | null
+          "Total Weighted Health Survey Score": number | null
+          "With a Resident and Family Council": string | null
+          "ZIP Code": number | null
+        }
+        Insert: {
+          "Abuse Icon"?: string | null
+          "Adjusted LPN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "Administrator turnover footnote"?: string | null
+          "Affiliated Entity ID"?: string | null
+          "Affiliated Entity Name"?: string | null
+          "Automatic Sprinkler Systems in All Required Areas"?: string | null
+          "Average Number of Residents per Day"?: number | null
+          "Average Number of Residents per Day Footnote"?: string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "City/Town"?: string | null
+          "CMS Certification Number (CCN)": string
+          "Continuing Care Retirement Community"?: string | null
+          "County/Parish"?: string | null
+          "Date First Approved to Provide Medicare and Medicaid Services"?:
+            | string
+            | null
+          "Geocoding Footnote"?: string | null
+          "Health Inspection Rating"?: number | null
+          "Health Inspection Rating Footnote"?: string | null
+          Latitude?: number | null
+          "Legal Business Name"?: string | null
+          Location?: string | null
+          "Long-Stay QM Rating"?: string | null
+          "Long-Stay QM Rating Footnote"?: string | null
+          Longitude?: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago"?: string | null
+          "Number of administrators who have left the nursing home"?:
+            | string
+            | null
+          "Number of Certified Beds"?: number | null
+          "Number of Citations from Infection Control Inspections"?:
+            | string
+            | null
+          "Number of Facility Reported Incidents"?: string | null
+          "Number of Fines"?: string | null
+          "Number of Payment Denials"?: string | null
+          "Number of Substantiated Complaints"?: string | null
+          "Nursing Case-Mix Index"?: string | null
+          "Nursing Case-Mix Index Ratio"?: string | null
+          "Overall Rating"?: number | null
+          "Overall Rating Footnote"?: string | null
+          "Ownership Type"?: string | null
+          "Physical Therapist Staffing Footnote"?: string | null
+          "Processing Date"?: string | null
+          "Provider Address"?: string | null
+          "Provider Changed Ownership in Last 12 Months"?: string | null
+          "Provider Name"?: string | null
+          "Provider Resides in Hospital"?: string | null
+          "Provider SSA County Code"?: number | null
+          "Provider Type"?: string | null
+          "QM Rating"?: string | null
+          "QM Rating Footnote"?: string | null
+          "Rating Cycle 1 Health Deficiency Score"?: string | null
+          "Rating Cycle 1 Health Revisit Score"?: string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits"?: string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Standard Survey Health Date"?: string | null
+          "Rating Cycle 1 Total Health Score"?: string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 2 Health Deficiency Score"?: string | null
+          "Rating Cycle 2 Health Revisit Score"?: string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits"?: string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Standard Health Survey Date"?: string | null
+          "Rating Cycle 2 Total Health Score"?: string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 3 Health Deficiency Score"?: string | null
+          "Rating Cycle 3 Health Revisit Score"?: string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits"?: string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Standard Health Survey Date"?: string | null
+          "Rating Cycle 3 Total Health Score"?: string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies"?: string | null
+          "Registered Nurse hours per resident per day on the weekend"?:
+            | string
+            | null
+          "Registered Nurse turnover"?: string | null
+          "Registered Nurse turnover footnote"?: string | null
+          "Reported Licensed Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported LPN Staffing Hours per Resident per Day"?: string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day"?:
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day"?: string | null
+          "Reported Staffing Footnote"?: string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Short-Stay QM Rating"?: string | null
+          "Short-Stay QM Rating Footnote"?: string | null
+          "Special Focus Status"?: string | null
+          "Staffing Rating"?: string | null
+          "Staffing Rating Footnote"?: string | null
+          State?: string | null
+          "Telephone Number"?: number | null
+          "Total Amount of Fines in Dollars"?: string | null
+          "Total number of nurse staff hours per resident per day on the w"?:
+            | string
+            | null
+          "Total Number of Penalties"?: string | null
+          "Total nursing staff turnover"?: string | null
+          "Total nursing staff turnover footnote"?: string | null
+          "Total Weighted Health Survey Score"?: number | null
+          "With a Resident and Family Council"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Update: {
+          "Abuse Icon"?: string | null
+          "Adjusted LPN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted RN Staffing Hours per Resident per Day"?: string | null
+          "Adjusted Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Adjusted Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "Administrator turnover footnote"?: string | null
+          "Affiliated Entity ID"?: string | null
+          "Affiliated Entity Name"?: string | null
+          "Automatic Sprinkler Systems in All Required Areas"?: string | null
+          "Average Number of Residents per Day"?: number | null
+          "Average Number of Residents per Day Footnote"?: string | null
+          "Case-Mix LPN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix RN Staffing Hours per Resident per Day"?: string | null
+          "Case-Mix Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Case-Mix Weekend Total Nurse Staffing Hours per Resident per Da"?:
+            | string
+            | null
+          "City/Town"?: string | null
+          "CMS Certification Number (CCN)"?: string
+          "Continuing Care Retirement Community"?: string | null
+          "County/Parish"?: string | null
+          "Date First Approved to Provide Medicare and Medicaid Services"?:
+            | string
+            | null
+          "Geocoding Footnote"?: string | null
+          "Health Inspection Rating"?: number | null
+          "Health Inspection Rating Footnote"?: string | null
+          Latitude?: number | null
+          "Legal Business Name"?: string | null
+          Location?: string | null
+          "Long-Stay QM Rating"?: string | null
+          "Long-Stay QM Rating Footnote"?: string | null
+          Longitude?: number | null
+          "Most Recent Health Inspection More Than 2 Years Ago"?: string | null
+          "Number of administrators who have left the nursing home"?:
+            | string
+            | null
+          "Number of Certified Beds"?: number | null
+          "Number of Citations from Infection Control Inspections"?:
+            | string
+            | null
+          "Number of Facility Reported Incidents"?: string | null
+          "Number of Fines"?: string | null
+          "Number of Payment Denials"?: string | null
+          "Number of Substantiated Complaints"?: string | null
+          "Nursing Case-Mix Index"?: string | null
+          "Nursing Case-Mix Index Ratio"?: string | null
+          "Overall Rating"?: number | null
+          "Overall Rating Footnote"?: string | null
+          "Ownership Type"?: string | null
+          "Physical Therapist Staffing Footnote"?: string | null
+          "Processing Date"?: string | null
+          "Provider Address"?: string | null
+          "Provider Changed Ownership in Last 12 Months"?: string | null
+          "Provider Name"?: string | null
+          "Provider Resides in Hospital"?: string | null
+          "Provider SSA County Code"?: number | null
+          "Provider Type"?: string | null
+          "QM Rating"?: string | null
+          "QM Rating Footnote"?: string | null
+          "Rating Cycle 1 Health Deficiency Score"?: string | null
+          "Rating Cycle 1 Health Revisit Score"?: string | null
+          "Rating Cycle 1 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Number of Health Revisits"?: string | null
+          "Rating Cycle 1 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 1 Standard Survey Health Date"?: string | null
+          "Rating Cycle 1 Total Health Score"?: string | null
+          "Rating Cycle 1 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 2 Health Deficiency Score"?: string | null
+          "Rating Cycle 2 Health Revisit Score"?: string | null
+          "Rating Cycle 2 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Number of Health Revisits"?: string | null
+          "Rating Cycle 2 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 2 Standard Health Survey Date"?: string | null
+          "Rating Cycle 2 Total Health Score"?: string | null
+          "Rating Cycle 2 Total Number of Health Deficiencies"?: string | null
+          "Rating Cycle 3 Health Deficiency Score"?: string | null
+          "Rating Cycle 3 Health Revisit Score"?: string | null
+          "Rating Cycle 3 Number of Complaint Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Number of Health Revisits"?: string | null
+          "Rating Cycle 3 Number of Standard Health Deficiencies"?:
+            | string
+            | null
+          "Rating Cycle 3 Standard Health Survey Date"?: string | null
+          "Rating Cycle 3 Total Health Score"?: string | null
+          "Rating Cycle 3 Total Number of Health Deficiencies"?: string | null
+          "Registered Nurse hours per resident per day on the weekend"?:
+            | string
+            | null
+          "Registered Nurse turnover"?: string | null
+          "Registered Nurse turnover footnote"?: string | null
+          "Reported Licensed Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported LPN Staffing Hours per Resident per Day"?: string | null
+          "Reported Nurse Aide Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Reported Physical Therapist Staffing Hours per Resident Per Day"?:
+            | string
+            | null
+          "Reported RN Staffing Hours per Resident per Day"?: string | null
+          "Reported Staffing Footnote"?: string | null
+          "Reported Total Nurse Staffing Hours per Resident per Day"?:
+            | string
+            | null
+          "Short-Stay QM Rating"?: string | null
+          "Short-Stay QM Rating Footnote"?: string | null
+          "Special Focus Status"?: string | null
+          "Staffing Rating"?: string | null
+          "Staffing Rating Footnote"?: string | null
+          State?: string | null
+          "Telephone Number"?: number | null
+          "Total Amount of Fines in Dollars"?: string | null
+          "Total number of nurse staff hours per resident per day on the w"?:
+            | string
+            | null
+          "Total Number of Penalties"?: string | null
+          "Total nursing staff turnover"?: string | null
+          "Total nursing staff turnover footnote"?: string | null
+          "Total Weighted Health Survey Score"?: number | null
+          "With a Resident and Family Council"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           "Amount Refunded": string | null
@@ -1458,6 +1927,24 @@ export type Database = {
           Subtotal?: number | null
           Taxes?: string | null
           Total?: number | null
+        }
+        Relationships: []
+      }
+      project_map: {
+        Row: {
+          id: number
+          map: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: number
+          map?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: number
+          map?: Json | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1712,6 +2199,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_locations_by_tags: {
+        Args: { input_tags: string[] }
+        Returns: {
+          id: number
+          name: string
+          address: string
+          tags: string[]
+        }[]
+      }
       gtrgm_compress: {
         Args: { "": unknown }
         Returns: unknown

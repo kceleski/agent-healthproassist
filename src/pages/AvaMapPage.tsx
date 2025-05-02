@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +9,8 @@ import { getUserTier } from '@/utils/subscription';
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet";
 
-// Import Storepoint types
-import type { SPLocation } from '@/types/storepoint';
+// Import Storepoint types - use type-only import
+import type { SPLocation, SPInstance } from '@/types/storepoint';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -29,7 +28,10 @@ const STOREPOINT_TOKEN = "sk_0ef86d99b602413667aeedcf714d3e88059dbc54646f99d0268
 type FilterType = 'assisted-living' | 'memory-care' | 'skilled-nursing' | 'independent-living' | 'all';
 type LocationArea = 'san-francisco' | 'oakland' | 'san-jose' | 'palo-alto' | 'los-angeles' | 'all';
 
-// We'll use the Window interface extension from storepoint.d.ts, so no need to declare it here
+// Type guard to check if SP is available
+const isSPAvailable = (): boolean => {
+  return typeof window !== 'undefined' && 'SP' in window && window.SP !== undefined;
+};
 
 const AvaMapPage = () => {
   const { user } = useAuth();
@@ -94,18 +96,20 @@ const AvaMapPage = () => {
     if (isPro) {
       // This will run after the StorePoint script has loaded for premium users
       const checkSP = setInterval(function() {
-        if (window.SP !== undefined) {
+        if (isSPAvailable()) {
           clearInterval(checkSP);
           
           // Configure map display
-          window.SP.options.maxLocations = 25; // Show 25 locations at a time
-          window.SP.options.defaultView = 'map'; // Start with map view
-          
-          // Set up event listeners
-          window.SP.on('markerClick', function(location: SPLocation) {
-            console.log('Location selected:', location.name);
-            window.selectedLocation = location;
-          });
+          if (window.SP) {
+            window.SP.options.maxLocations = 25; // Show 25 locations at a time
+            window.SP.options.defaultView = 'map'; // Start with map view
+            
+            // Set up event listeners
+            window.SP.on('markerClick', function(location: SPLocation) {
+              console.log('Location selected:', location.name);
+              window.selectedLocation = location;
+            });
+          }
         }
       }, 100);
 
@@ -130,7 +134,7 @@ const AvaMapPage = () => {
 
   // Apply map filters
   const applyMapFilters = (filterType: FilterType, location: LocationArea) => {
-    if (typeof window.SP !== 'undefined') {
+    if (isSPAvailable()) {
       let tagFilter = '';
       
       // Set facility type filter
@@ -153,10 +157,12 @@ const AvaMapPage = () => {
       }
       
       // Apply the tag filter
-      if (tagFilter) {
-        window.SP.filter('tags', tagFilter);
-      } else {
-        window.SP.filter('tags', null);
+      if (window.SP) {
+        if (tagFilter) {
+          window.SP.filter('tags', tagFilter);
+        } else {
+          window.SP.filter('tags', null);
+        }
       }
       
       // Set location filter
@@ -184,10 +190,12 @@ const AvaMapPage = () => {
       }
       
       // Apply the location filter
-      if (locationFilter) {
-        window.SP.filter('city', locationFilter);
-      } else {
-        window.SP.filter('city', null);
+      if (window.SP) {
+        if (locationFilter) {
+          window.SP.filter('city', locationFilter);
+        } else {
+          window.SP.filter('city', null);
+        }
       }
       
       setActiveFilter(filterType);

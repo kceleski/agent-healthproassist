@@ -1,12 +1,12 @@
 
 // StorePoint map interface declaration
-interface SPOptions {
+export interface SPOptions {
   maxLocations?: number;
   defaultView?: 'map' | 'list';
   // Add other options as needed
 }
 
-interface SPLocation {
+export interface SPLocation {
   name: string;
   address: string;
   city: string;
@@ -18,7 +18,7 @@ interface SPLocation {
   // Add other location properties as needed
 }
 
-interface SPInstance {
+export interface SPInstance {
   options: SPOptions;
   filter(field: string, value: string | null): void;
   on(event: string, callback: (location: SPLocation) => void): void;
