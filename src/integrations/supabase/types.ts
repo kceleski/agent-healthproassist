@@ -25,15 +25,7 @@ export type Database = {
           id?: string
           vector?: number[] | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "ai_embeddings_facility_id_fkey"
-            columns: ["facility_id"]
-            isOneToOne: false
-            referencedRelation: "facilities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       conversation_history: {
         Row: {
@@ -56,78 +48,6 @@ export type Database = {
         }
         Relationships: []
       }
-      facilities: {
-        Row: {
-          address: string | null
-          city: string | null
-          created_at: string | null
-          data_source: string | null
-          description: string | null
-          facility_type: string | null
-          geo: Json | null
-          id: string
-          is_promoted: boolean | null
-          latitude: number | null
-          longitude: number | null
-          name: string
-          phone: string | null
-          place_id: string | null
-          rating: number | null
-          reviews_count: number | null
-          state: string | null
-          tags: string[] | null
-          updated_at: string | null
-          website: string | null
-          zip: string | null
-        }
-        Insert: {
-          address?: string | null
-          city?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          description?: string | null
-          facility_type?: string | null
-          geo?: Json | null
-          id?: string
-          is_promoted?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          name: string
-          phone?: string | null
-          place_id?: string | null
-          rating?: number | null
-          reviews_count?: number | null
-          state?: string | null
-          tags?: string[] | null
-          updated_at?: string | null
-          website?: string | null
-          zip?: string | null
-        }
-        Update: {
-          address?: string | null
-          city?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          description?: string | null
-          facility_type?: string | null
-          geo?: Json | null
-          id?: string
-          is_promoted?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          name?: string
-          phone?: string | null
-          place_id?: string | null
-          rating?: number | null
-          reviews_count?: number | null
-          state?: string | null
-          tags?: string[] | null
-          updated_at?: string | null
-          website?: string | null
-          zip?: string | null
-        }
-        Relationships: []
-      }
       features: {
         Row: {
           facility_id: string | null
@@ -147,15 +67,7 @@ export type Database = {
           id?: string
           value?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "features_facility_id_fkey"
-            columns: ["facility_id"]
-            isOneToOne: false
-            referencedRelation: "facilities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       google_places_results: {
         Row: {
@@ -365,15 +277,7 @@ export type Database = {
           id?: string
           image_url?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "photos_facility_id_fkey"
-            columns: ["facility_id"]
-            isOneToOne: false
-            referencedRelation: "facilities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       reviews: {
         Row: {
@@ -400,15 +304,7 @@ export type Database = {
           rating?: number | null
           title?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "reviews_facility_id_fkey"
-            columns: ["facility_id"]
-            isOneToOne: false
-            referencedRelation: "facilities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       search_logs: {
         Row: {
