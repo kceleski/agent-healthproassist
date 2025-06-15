@@ -8,9 +8,11 @@ interface WelcomeTabProps {
 const WelcomeTab = ({ onContinue }: WelcomeTabProps) => {
   return (
     <div className="space-y-10">
+      <h1 className="text-2xl font-semibold"></h1>
+      <h3 className="text-2xl font-semibold"></h3>
       <h3 className="text-2xl font-semibold">Welcome to HealthProAssist!</h3>
       <p>
-        HealthProAssist is your AI-powered health assistant that helps you find, compare, 
+        HealthProAssist is powered by Ava, our AI agent that helps you find, compare, 
         and manage healthcare facilities for your clients. Our platform streamlines the process 
         of researching and recommending care options.
       </p>
