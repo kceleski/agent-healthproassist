@@ -9,372 +9,2014 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ai_embeddings: {
+      amenities: {
         Row: {
-          facility_id: string | null
+          category: string | null
+          created_at: string | null
+          icon: string | null
           id: string
-          vector: number[] | null
+          name: string
+          updated_at: string | null
         }
         Insert: {
-          facility_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          icon?: string | null
           id?: string
-          vector?: number[] | null
+          name: string
+          updated_at?: string | null
         }
         Update: {
-          facility_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          icon?: string | null
           id?: string
-          vector?: number[] | null
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
-      conversation_history: {
+      analytics: {
         Row: {
-          conversation: string | null
-          created_at: string | null
-          id: number
+          event_type: string | null
+          id: string
+          meta: Json | null
+          timestamp: string | null
           user_id: string | null
         }
         Insert: {
-          conversation?: string | null
-          created_at?: string | null
-          id?: never
+          event_type?: string | null
+          id?: string
+          meta?: Json | null
+          timestamp?: string | null
           user_id?: string | null
         }
         Update: {
-          conversation?: string | null
-          created_at?: string | null
-          id?: never
+          event_type?: string | null
+          id?: string
+          meta?: Json | null
+          timestamp?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      features: {
+      appointment_participants: {
         Row: {
-          facility_id: string | null
-          feature_type: string | null
+          appointment_id: string | null
+          created_at: string | null
           id: string
-          value: string | null
+          is_organizer: boolean | null
+          participant_email: string
+          participant_name: string | null
         }
         Insert: {
-          facility_id?: string | null
-          feature_type?: string | null
+          appointment_id?: string | null
+          created_at?: string | null
           id?: string
-          value?: string | null
+          is_organizer?: boolean | null
+          participant_email: string
+          participant_name?: string | null
         }
         Update: {
-          facility_id?: string | null
-          feature_type?: string | null
+          appointment_id?: string | null
+          created_at?: string | null
           id?: string
-          value?: string | null
+          is_organizer?: boolean | null
+          participant_email?: string
+          participant_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_participants_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      appointments: {
+        Row: {
+          appointment_type: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_time: string | null
+          id: string
+          location_type: string | null
+          start_time: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          video_link: string | null
+        }
+        Insert: {
+          appointment_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location_type?: string | null
+          start_time?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          video_link?: string | null
+        }
+        Update: {
+          appointment_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location_type?: string | null
+          start_time?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          video_link?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ava_conversations: {
+        Row: {
+          assistant_type: string | null
+          created_at: string | null
+          id: string
+          openai_thread_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          assistant_type?: string | null
+          created_at?: string | null
+          id?: string
+          openai_thread_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          assistant_type?: string | null
+          created_at?: string | null
+          id?: string
+          openai_thread_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ava_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ava_messages: {
+        Row: {
+          content: string
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          role: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ava_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ava_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_types: {
+        Row: {
+          care_type_id: string | null
+          created_at: string | null
+          description: string | null
+          facility_id: string | null
+          id: string
+          price_max: number | null
+          price_min: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          care_type_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          price_max?: number | null
+          price_min?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          care_type_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          price_max?: number | null
+          price_min?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
-      google_places_results: {
+      clients: {
         Row: {
-          business_status: string | null
+          care_needs: string[] | null
           created_at: string | null
-          formatted_address: string | null
-          icon: string | null
+          diagnosis: string | null
+          dob: string | null
+          first_name: string
           id: string
+          last_name: string
+          notes: string | null
+          referral_source: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          care_needs?: string[] | null
+          created_at?: string | null
+          diagnosis?: string | null
+          dob?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          notes?: string | null
+          referral_source?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          care_needs?: string[] | null
+          created_at?: string | null
+          diagnosis?: string | null
+          dob?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          notes?: string | null
+          referral_source?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      "Combined Data": {
+        Row: {
+          accepted_payers: string | null
+          address: string | null
+          capacity: string | null
+          care_services: string | null
+          city: string | null
+          diagnoses_supported: string | null
+          email: string | null
+          "Funding Type": string | null
+          image_url: string | null
+          lat: string | null
+          license: string | null
+          lng: string | null
+          ltc: string | null
+          max_range: string | null
+          min_range: string | null
+          name: string | null
+          "Overall Star Rating": string | null
+          phone: string | null
+          "Quality Rating": string | null
+          specials: string | null
+          "Staffing Rating": string | null
+          state: string | null
+          street: string | null
+          "Survey Rating": string | null
+          tags: string | null
+          type: string | null
+          uuid: string
+          website: string | null
+          zip: number | null
+        }
+        Insert: {
+          accepted_payers?: string | null
+          address?: string | null
+          capacity?: string | null
+          care_services?: string | null
+          city?: string | null
+          diagnoses_supported?: string | null
+          email?: string | null
+          "Funding Type"?: string | null
+          image_url?: string | null
+          lat?: string | null
+          license?: string | null
+          lng?: string | null
+          ltc?: string | null
+          max_range?: string | null
+          min_range?: string | null
+          name?: string | null
+          "Overall Star Rating"?: string | null
+          phone?: string | null
+          "Quality Rating"?: string | null
+          specials?: string | null
+          "Staffing Rating"?: string | null
+          state?: string | null
+          street?: string | null
+          "Survey Rating"?: string | null
+          tags?: string | null
+          type?: string | null
+          uuid: string
+          website?: string | null
+          zip?: number | null
+        }
+        Update: {
+          accepted_payers?: string | null
+          address?: string | null
+          capacity?: string | null
+          care_services?: string | null
+          city?: string | null
+          diagnoses_supported?: string | null
+          email?: string | null
+          "Funding Type"?: string | null
+          image_url?: string | null
+          lat?: string | null
+          license?: string | null
+          lng?: string | null
+          ltc?: string | null
+          max_range?: string | null
+          min_range?: string | null
+          name?: string | null
+          "Overall Star Rating"?: string | null
+          phone?: string | null
+          "Quality Rating"?: string | null
+          specials?: string | null
+          "Staffing Rating"?: string | null
+          state?: string | null
+          street?: string | null
+          "Survey Rating"?: string | null
+          tags?: string | null
+          type?: string | null
+          uuid?: string
+          website?: string | null
+          zip?: number | null
+        }
+        Relationships: []
+      }
+      commissions: {
+        Row: {
+          commission_amount: number | null
+          commission_status: string | null
+          created_at: string | null
+          id: string
+          move_in_date: string | null
+          payment_date: string | null
+          referral_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          commission_amount?: number | null
+          commission_status?: string | null
+          created_at?: string | null
+          id?: string
+          move_in_date?: string | null
+          payment_date?: string | null
+          referral_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          commission_amount?: number | null
+          commission_status?: string | null
+          created_at?: string | null
+          id?: string
+          move_in_date?: string | null
+          payment_date?: string | null
+          referral_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      contracts: {
+        Row: {
+          agent_id: string | null
+          contract_url: string | null
+          facility_id: string | null
+          id: string
+          signed_at: string | null
+          status: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          contract_url?: string | null
+          facility_id?: string | null
+          id?: string
+          signed_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          contract_url?: string | null
+          facility_id?: string | null
+          id?: string
+          signed_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_logs: {
+        Row: {
+          conversation_data: Json
+          created_at: string
+          id: string
+          search_query: string | null
+          search_triggered: boolean | null
+          senior_id: string | null
+        }
+        Insert: {
+          conversation_data: Json
+          created_at?: string
+          id?: string
+          search_query?: string | null
+          search_triggered?: boolean | null
+          senior_id?: string | null
+        }
+        Update: {
+          conversation_data?: Json
+          created_at?: string
+          id?: string
+          search_query?: string | null
+          search_triggered?: boolean | null
+          senior_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_logs_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "seniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_archived: boolean | null
+          last_message_at: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          last_message_at?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          last_message_at?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      document_shares: {
+        Row: {
+          created_at: string | null
+          document_id: string | null
+          id: string
+          shared_with_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_id?: string | null
+          id?: string
+          shared_with_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string | null
+          id?: string
+          shared_with_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_shares_shared_with_id_fkey"
+            columns: ["shared_with_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          is_public: boolean | null
+          owner_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          is_public?: boolean | null
+          owner_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          is_public?: boolean | null
+          owner_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_templates: {
+        Row: {
+          agent_id: string | null
+          body: string
+          created_at: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          body: string
+          created_at?: string | null
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          body?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      facility: {
+        Row: {
+          accepts_medicaid: boolean | null
+          accepts_medicare: boolean | null
+          accepts_va_benefits: boolean | null
+          address_line1: string | null
+          address_line2: string | null
+          available_units: Json | null
+          capacity: number | null
+          city: string | null
+          created_at: string | null
+          current_availability: number | null
+          data_source: string | null
+          description: string | null
+          email: string | null
+          facility_type: string | null
+          id: string
+          is_featured: boolean | null
+          is_verified: boolean | null
           latitude: number | null
+          license_number: string | null
+          license_type: string | null
           longitude: number | null
           name: string
-          opening_hours: Json | null
-          phone_number: string | null
-          photos: Json | null
-          place_id: string
-          plus_code: Json | null
-          price_level: number | null
+          phone: string | null
+          place_id: string | null
+          price_range_max: number | null
+          price_range_min: number | null
           rating: number | null
-          thumbnails: string[] | null
-          types: string[] | null
-          user_ratings_total: number | null
+          reviews_count: number | null
+          state: string | null
+          subscription_end_date: string | null
+          subscription_start_date: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          updated_at: string | null
           website: string | null
+          zip_code: string | null
         }
         Insert: {
-          business_status?: string | null
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          available_units?: Json | null
+          capacity?: number | null
+          city?: string | null
           created_at?: string | null
-          formatted_address?: string | null
-          icon?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
           id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
           latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
           longitude?: number | null
           name: string
-          opening_hours?: Json | null
-          phone_number?: string | null
-          photos?: Json | null
-          place_id: string
-          plus_code?: Json | null
-          price_level?: number | null
+          phone?: string | null
+          place_id?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
           rating?: number | null
-          thumbnails?: string[] | null
-          types?: string[] | null
-          user_ratings_total?: number | null
+          reviews_count?: number | null
+          state?: string | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
           website?: string | null
+          zip_code?: string | null
         }
         Update: {
-          business_status?: string | null
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          available_units?: Json | null
+          capacity?: number | null
+          city?: string | null
           created_at?: string | null
-          formatted_address?: string | null
-          icon?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
           id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
           latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
           longitude?: number | null
           name?: string
-          opening_hours?: Json | null
-          phone_number?: string | null
-          photos?: Json | null
-          place_id?: string
-          plus_code?: Json | null
-          price_level?: number | null
+          phone?: string | null
+          place_id?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
           rating?: number | null
-          thumbnails?: string[] | null
-          types?: string[] | null
-          user_ratings_total?: number | null
+          reviews_count?: number | null
+          state?: string | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
           website?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
-      nationwide_facilities: {
+      facility_amenities: {
         Row: {
-          "Abuse Icon": string | null
-          "Affiliated Entity ID": string | null
-          "Affiliated Entity Name": string | null
-          "Average Number of Residents per Day": number | null
+          amenity_id: string | null
+          created_at: string | null
+          description: string | null
+          facility_id: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amenity_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amenity_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      facility_images: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          is_primary: boolean | null
+          sort_order: number | null
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_primary?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_primary?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_images_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          logged_by: string | null
+          payment_date: string | null
+          placement_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          logged_by?: string | null
+          payment_date?: string | null
+          placement_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          logged_by?: string | null
+          payment_date?: string | null
+          placement_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_payments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_payments_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "placements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_flags: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      HH_Hospice: {
+        Row: {
+          "Account Name": string | null
+          CCN: number | null
+          "External Facility Id": string
+          Phone: string | null
+          "Physical City": string | null
+          "Physical Latitude": number | null
+          "Physical Longitude": number | null
+          "Physical State/Province": string | null
+          "Physical Street": string | null
+          "Physical Zip Code": string | null
+          SubType: string | null
+          Type: string | null
+        }
+        Insert: {
+          "Account Name"?: string | null
+          CCN?: number | null
+          "External Facility Id": string
+          Phone?: string | null
+          "Physical City"?: string | null
+          "Physical Latitude"?: number | null
+          "Physical Longitude"?: number | null
+          "Physical State/Province"?: string | null
+          "Physical Street"?: string | null
+          "Physical Zip Code"?: string | null
+          SubType?: string | null
+          Type?: string | null
+        }
+        Update: {
+          "Account Name"?: string | null
+          CCN?: number | null
+          "External Facility Id"?: string
+          Phone?: string | null
+          "Physical City"?: string | null
+          "Physical Latitude"?: number | null
+          "Physical Longitude"?: number | null
+          "Physical State/Province"?: string | null
+          "Physical Street"?: string | null
+          "Physical Zip Code"?: string | null
+          SubType?: string | null
+          Type?: string | null
+        }
+        Relationships: []
+      }
+      Home_Health_Providers: {
+        Row: {
+          Address: string | null
+          "Certification Date": string | null
+          "Changes in skin integrity post-acute care: pressure ulcer/injur":
+            | string
+            | null
           "City/Town": string | null
-          "CMS Certification Number (CCN)": string | null
-          "Continuing Care Retirement Community": string | null
-          "County/Parish": string | null
-          "Date First Approved to Provide Medicare and Medicaid Services":
+          "Discharge Function Score": string | null
+          "How often patients got better at bathing": string | null
+          "How often patients got better at getting in and out of bed":
             | string
             | null
-          "Health Inspection Rating": number | null
-          Latitude: number | null
-          "Legal Business Name": string | null
-          Location: string | null
-          Longitude: number | null
-          "Number of Certified Beds": number | null
-          "Number of Citations from Infection Control Inspections":
+          "How often patients got better at taking their drugs correctly b":
             | string
             | null
-          "Number of Facility Reported Incidents": string | null
-          "Number of Fines": string | null
-          "Number of Substantiated Complaints": string | null
-          "Overall Rating": number | null
-          "Provider Address": string | null
+          "How often patients got better at walking or moving around":
+            | string
+            | null
+          "How often patients' breathing improved": string | null
+          "How often physician-recommended actions to address medication i":
+            | string
+            | null
+          "How often the home health team began their patients' care in a ":
+            | string
+            | null
+          "How often the home health team determined whether patients rece":
+            | string
+            | null
+          Medicare: boolean
+          "Offers Home Health Aide Services": string | null
+          "Offers Medical Social Services": string | null
+          "Offers Nursing Care Services": string | null
+          "Offers Occupational Therapy Services": string | null
+          "Offers Physical Therapy Services": string | null
+          "Offers Speech Pathology Services": string | null
+          "Percent of Residents Experiencing One or More Falls with Major ":
+            | string
+            | null
           "Provider Name": string | null
-          "Provider SSA County Code": number | null
-          "Provider Type": string | null
-          "QM Rating": number | null
-          "QM Rating Footnote": string | null
-          "Special Focus Status": string | null
-          "Staffing Rating": number | null
+          "Quality of patient care star rating": string | null
           State: string | null
-          "Telephone Number": number | null
-          "Total Amount of Fines in Dollars": string | null
-          "Total Number of Penalties": string | null
-          UUID: string
+          "Telephone Number": string | null
+          uuid: string
           "ZIP Code": number | null
         }
         Insert: {
-          "Abuse Icon"?: string | null
-          "Affiliated Entity ID"?: string | null
-          "Affiliated Entity Name"?: string | null
-          "Average Number of Residents per Day"?: number | null
+          Address?: string | null
+          "Certification Date"?: string | null
+          "Changes in skin integrity post-acute care: pressure ulcer/injur"?:
+            | string
+            | null
           "City/Town"?: string | null
-          "CMS Certification Number (CCN)"?: string | null
-          "Continuing Care Retirement Community"?: string | null
-          "County/Parish"?: string | null
-          "Date First Approved to Provide Medicare and Medicaid Services"?:
+          "Discharge Function Score"?: string | null
+          "How often patients got better at bathing"?: string | null
+          "How often patients got better at getting in and out of bed"?:
             | string
             | null
-          "Health Inspection Rating"?: number | null
-          Latitude?: number | null
-          "Legal Business Name"?: string | null
-          Location?: string | null
-          Longitude?: number | null
-          "Number of Certified Beds"?: number | null
-          "Number of Citations from Infection Control Inspections"?:
+          "How often patients got better at taking their drugs correctly b"?:
             | string
             | null
-          "Number of Facility Reported Incidents"?: string | null
-          "Number of Fines"?: string | null
-          "Number of Substantiated Complaints"?: string | null
-          "Overall Rating"?: number | null
-          "Provider Address"?: string | null
+          "How often patients got better at walking or moving around"?:
+            | string
+            | null
+          "How often patients' breathing improved"?: string | null
+          "How often physician-recommended actions to address medication i"?:
+            | string
+            | null
+          "How often the home health team began their patients' care in a "?:
+            | string
+            | null
+          "How often the home health team determined whether patients rece"?:
+            | string
+            | null
+          Medicare?: boolean
+          "Offers Home Health Aide Services"?: string | null
+          "Offers Medical Social Services"?: string | null
+          "Offers Nursing Care Services"?: string | null
+          "Offers Occupational Therapy Services"?: string | null
+          "Offers Physical Therapy Services"?: string | null
+          "Offers Speech Pathology Services"?: string | null
+          "Percent of Residents Experiencing One or More Falls with Major "?:
+            | string
+            | null
           "Provider Name"?: string | null
-          "Provider SSA County Code"?: number | null
-          "Provider Type"?: string | null
-          "QM Rating"?: number | null
-          "QM Rating Footnote"?: string | null
-          "Special Focus Status"?: string | null
-          "Staffing Rating"?: number | null
+          "Quality of patient care star rating"?: string | null
           State?: string | null
-          "Telephone Number"?: number | null
-          "Total Amount of Fines in Dollars"?: string | null
-          "Total Number of Penalties"?: string | null
-          UUID?: string
+          "Telephone Number"?: string | null
+          uuid?: string
           "ZIP Code"?: number | null
         }
         Update: {
-          "Abuse Icon"?: string | null
-          "Affiliated Entity ID"?: string | null
-          "Affiliated Entity Name"?: string | null
-          "Average Number of Residents per Day"?: number | null
+          Address?: string | null
+          "Certification Date"?: string | null
+          "Changes in skin integrity post-acute care: pressure ulcer/injur"?:
+            | string
+            | null
           "City/Town"?: string | null
-          "CMS Certification Number (CCN)"?: string | null
-          "Continuing Care Retirement Community"?: string | null
-          "County/Parish"?: string | null
-          "Date First Approved to Provide Medicare and Medicaid Services"?:
+          "Discharge Function Score"?: string | null
+          "How often patients got better at bathing"?: string | null
+          "How often patients got better at getting in and out of bed"?:
             | string
             | null
-          "Health Inspection Rating"?: number | null
-          Latitude?: number | null
-          "Legal Business Name"?: string | null
-          Location?: string | null
-          Longitude?: number | null
-          "Number of Certified Beds"?: number | null
-          "Number of Citations from Infection Control Inspections"?:
+          "How often patients got better at taking their drugs correctly b"?:
             | string
             | null
-          "Number of Facility Reported Incidents"?: string | null
-          "Number of Fines"?: string | null
-          "Number of Substantiated Complaints"?: string | null
-          "Overall Rating"?: number | null
-          "Provider Address"?: string | null
+          "How often patients got better at walking or moving around"?:
+            | string
+            | null
+          "How often patients' breathing improved"?: string | null
+          "How often physician-recommended actions to address medication i"?:
+            | string
+            | null
+          "How often the home health team began their patients' care in a "?:
+            | string
+            | null
+          "How often the home health team determined whether patients rece"?:
+            | string
+            | null
+          Medicare?: boolean
+          "Offers Home Health Aide Services"?: string | null
+          "Offers Medical Social Services"?: string | null
+          "Offers Nursing Care Services"?: string | null
+          "Offers Occupational Therapy Services"?: string | null
+          "Offers Physical Therapy Services"?: string | null
+          "Offers Speech Pathology Services"?: string | null
+          "Percent of Residents Experiencing One or More Falls with Major "?:
+            | string
+            | null
           "Provider Name"?: string | null
-          "Provider SSA County Code"?: number | null
-          "Provider Type"?: string | null
-          "QM Rating"?: number | null
-          "QM Rating Footnote"?: string | null
-          "Special Focus Status"?: string | null
-          "Staffing Rating"?: number | null
+          "Quality of patient care star rating"?: string | null
           State?: string | null
-          "Telephone Number"?: number | null
-          "Total Amount of Fines in Dollars"?: string | null
-          "Total Number of Penalties"?: string | null
-          UUID?: string
+          "Telephone Number"?: string | null
+          uuid?: string
           "ZIP Code"?: number | null
         }
         Relationships: []
       }
-      photos: {
+      "images of providers": {
         Row: {
-          alt_text: string | null
-          facility_id: string | null
-          id: string
-          image_url: string | null
+          "Call to Action Text": string | null
+          City: string | null
+          "Core Services (comma-separated)": string | null
+          "CTA Button 1 Link": string | null
+          "CTA Button 1 Text": string | null
+          "CTA Button 2 Link": string | null
+          "CTA Button 2 Text": string | null
+          Description: string | null
+          Email: string | null
+          "Facility Name": string
+          "Image URL 1": string | null
+          "Image URL 2": string | null
+          "Image URL 3": string | null
+          "Lifestyle Amenities (comma-separated)": string | null
+          Phone: string | null
+          State: string | null
+          "Street Address": string | null
+          Website: string | null
+          "ZIP Code": number | null
         }
         Insert: {
-          alt_text?: string | null
-          facility_id?: string | null
-          id?: string
-          image_url?: string | null
+          "Call to Action Text"?: string | null
+          City?: string | null
+          "Core Services (comma-separated)"?: string | null
+          "CTA Button 1 Link"?: string | null
+          "CTA Button 1 Text"?: string | null
+          "CTA Button 2 Link"?: string | null
+          "CTA Button 2 Text"?: string | null
+          Description?: string | null
+          Email?: string | null
+          "Facility Name": string
+          "Image URL 1"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Lifestyle Amenities (comma-separated)"?: string | null
+          Phone?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          Website?: string | null
+          "ZIP Code"?: number | null
         }
         Update: {
-          alt_text?: string | null
-          facility_id?: string | null
-          id?: string
-          image_url?: string | null
+          "Call to Action Text"?: string | null
+          City?: string | null
+          "Core Services (comma-separated)"?: string | null
+          "CTA Button 1 Link"?: string | null
+          "CTA Button 1 Text"?: string | null
+          "CTA Button 2 Link"?: string | null
+          "CTA Button 2 Text"?: string | null
+          Description?: string | null
+          Email?: string | null
+          "Facility Name"?: string
+          "Image URL 1"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Lifestyle Amenities (comma-separated)"?: string | null
+          Phone?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          Website?: string | null
+          "ZIP Code"?: number | null
         }
         Relationships: []
       }
-      reviews: {
+      intake_forms: {
         Row: {
-          author: string | null
+          allergies: string | null
+          allow_covid_vaccine: boolean | null
+          allow_flu_vaccine: boolean | null
+          allow_tuberculin_test: boolean | null
+          can_be_met_by_facility: boolean | null
+          client_id: string | null
+          code_status: string | null
+          cognitive_status: Json | null
+          created_at: string | null
+          created_by_user_id: string | null
+          dietary_restrictions: string | null
+          dnr_directive_active: boolean | null
+          facility_name: string | null
+          functional_ability: Json | null
+          id: string
+          level_of_care: string | null
+          medication_assistance_level: string | null
+          medications: Json | null
+          patient_name: string | null
+          patient_signature_date: string | null
+          patient_signature_url: string | null
+          physician_signature_date: string | null
+          physician_signature_url: string | null
+          primary_diagnosis: string | null
+          reason_for_visit: string | null
+          secondary_diagnosis: string | null
+          status: string | null
+          updated_at: string | null
+          vitals: Json | null
+        }
+        Insert: {
+          allergies?: string | null
+          allow_covid_vaccine?: boolean | null
+          allow_flu_vaccine?: boolean | null
+          allow_tuberculin_test?: boolean | null
+          can_be_met_by_facility?: boolean | null
+          client_id?: string | null
+          code_status?: string | null
+          cognitive_status?: Json | null
+          created_at?: string | null
+          created_by_user_id?: string | null
+          dietary_restrictions?: string | null
+          dnr_directive_active?: boolean | null
+          facility_name?: string | null
+          functional_ability?: Json | null
+          id?: string
+          level_of_care?: string | null
+          medication_assistance_level?: string | null
+          medications?: Json | null
+          patient_name?: string | null
+          patient_signature_date?: string | null
+          patient_signature_url?: string | null
+          physician_signature_date?: string | null
+          physician_signature_url?: string | null
+          primary_diagnosis?: string | null
+          reason_for_visit?: string | null
+          secondary_diagnosis?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vitals?: Json | null
+        }
+        Update: {
+          allergies?: string | null
+          allow_covid_vaccine?: boolean | null
+          allow_flu_vaccine?: boolean | null
+          allow_tuberculin_test?: boolean | null
+          can_be_met_by_facility?: boolean | null
+          client_id?: string | null
+          code_status?: string | null
+          cognitive_status?: Json | null
+          created_at?: string | null
+          created_by_user_id?: string | null
+          dietary_restrictions?: string | null
+          dnr_directive_active?: boolean | null
+          facility_name?: string | null
+          functional_ability?: Json | null
+          id?: string
+          level_of_care?: string | null
+          medication_assistance_level?: string | null
+          medications?: Json | null
+          patient_name?: string | null
+          patient_signature_date?: string | null
+          patient_signature_url?: string | null
+          physician_signature_date?: string | null
+          physician_signature_url?: string | null
+          primary_diagnosis?: string | null
+          reason_for_visit?: string | null
+          secondary_diagnosis?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vitals?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_forms_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interactions: {
+        Row: {
+          contact_id: string | null
           content: string | null
+          created_at: string
           facility_id: string | null
+          follow_up_date: string | null
           id: string
-          rating: number | null
-          title: string | null
+          interaction_date: string | null
+          status: string | null
+          subject: string | null
+          type: string
+          user_id: string | null
         }
         Insert: {
-          author?: string | null
+          contact_id?: string | null
           content?: string | null
+          created_at?: string
           facility_id?: string | null
+          follow_up_date?: string | null
           id?: string
-          rating?: number | null
-          title?: string | null
+          interaction_date?: string | null
+          status?: string | null
+          subject?: string | null
+          type: string
+          user_id?: string | null
         }
         Update: {
-          author?: string | null
+          contact_id?: string | null
           content?: string | null
+          created_at?: string
           facility_id?: string | null
+          follow_up_date?: string | null
           id?: string
-          rating?: number | null
-          title?: string | null
+          interaction_date?: string | null
+          status?: string | null
+          subject?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string
+          id: string
+          invoice_id: string | null
+          quantity: number
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description: string
+          id?: string
+          invoice_id?: string | null
+          quantity: number
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string
+          id?: string
+          invoice_id?: string | null
+          quantity?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          due_date: string | null
+          from_user_id: string | null
+          id: string
+          invoice_id: string | null
+          paid_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          due_date?: string | null
+          from_user_id?: string | null
+          id?: string
+          invoice_id?: string | null
+          paid_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          due_date?: string | null
+          from_user_id?: string | null
+          id?: string
+          invoice_id?: string | null
+          paid_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_payments_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          from_user_id: string | null
+          id: string
+          invoice_number: string | null
+          paid_date: string | null
+          status: string | null
+          to_user_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          from_user_id?: string | null
+          id?: string
+          invoice_number?: string | null
+          paid_date?: string | null
+          status?: string | null
+          to_user_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          from_user_id?: string | null
+          id?: string
+          invoice_number?: string | null
+          paid_date?: string | null
+          status?: string | null
+          to_user_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_supply_companies: {
+        Row: {
+          acceptsassignement: boolean | null
+          businessname: string | null
+          is_contracted_for_cba: boolean | null
+          latitude: number | null
+          longitude: number | null
+          practiceaddress1: string | null
+          practiceaddress2: string | null
+          practicecity: string | null
+          practicename: string | null
+          practicestate: string | null
+          practicezip9code: number | null
+          provider_id: number
+          providertypelist: string | null
+          specialitieslist: string | null
+          supplieslist: string | null
+          telephonenumber: number | null
+          uuid: string
+        }
+        Insert: {
+          acceptsassignement?: boolean | null
+          businessname?: string | null
+          is_contracted_for_cba?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          practiceaddress1?: string | null
+          practiceaddress2?: string | null
+          practicecity?: string | null
+          practicename?: string | null
+          practicestate?: string | null
+          practicezip9code?: number | null
+          provider_id: number
+          providertypelist?: string | null
+          specialitieslist?: string | null
+          supplieslist?: string | null
+          telephonenumber?: number | null
+          uuid?: string
+        }
+        Update: {
+          acceptsassignement?: boolean | null
+          businessname?: string | null
+          is_contracted_for_cba?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          practiceaddress1?: string | null
+          practiceaddress2?: string | null
+          practicecity?: string | null
+          practicename?: string | null
+          practicestate?: string | null
+          practicezip9code?: number | null
+          provider_id?: number
+          providertypelist?: string | null
+          specialitieslist?: string | null
+          supplieslist?: string | null
+          telephonenumber?: number | null
+          uuid?: string
         }
         Relationships: []
       }
-      search_logs: {
+      merged_facilities: {
         Row: {
-          agent_mode: string | null
+          accepts_medicaid: boolean | null
+          accepts_medicare: boolean | null
+          accepts_va_benefits: boolean | null
+          address_line1: string | null
+          address_line2: string | null
+          amenities: Json | null
+          business_hours: Json | null
+          capacity: number | null
+          city: string | null
+          created_at: string | null
+          current_availability: number | null
+          data_source: string | null
+          description: string | null
+          email: string | null
+          facility_type: string | null
           id: string
-          query: string | null
-          session_id: string | null
+          image_urls: Json | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          license_number: string | null
+          license_type: string | null
+          longitude: number | null
+          name: string
+          original_id: string | null
+          phone: string | null
+          price_range_max: number | null
+          price_range_min: number | null
+          rating: number | null
+          reviews_count: number | null
+          services: Json | null
+          state: string | null
+          updated_at: string | null
+          virtual_tour_url: string | null
+          website: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          amenities?: Json | null
+          business_hours?: Json | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
+          id?: string
+          image_urls?: Json | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
+          longitude?: number | null
+          name: string
+          original_id?: string | null
+          phone?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          virtual_tour_url?: string | null
+          website?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          amenities?: Json | null
+          business_hours?: Json | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
+          id?: string
+          image_urls?: Json | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
+          longitude?: number | null
+          name?: string
+          original_id?: string | null
+          phone?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          virtual_tour_url?: string | null
+          website?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string | null
+          id: string
+          receiver_id: string | null
+          sender_id: string | null
           timestamp: string | null
         }
         Insert: {
-          agent_mode?: string | null
+          body?: string | null
           id?: string
-          query?: string | null
-          session_id?: string | null
+          receiver_id?: string | null
+          sender_id?: string | null
           timestamp?: string | null
         }
         Update: {
-          agent_mode?: string | null
+          body?: string | null
           id?: string
-          query?: string | null
-          session_id?: string | null
+          receiver_id?: string | null
+          sender_id?: string | null
           timestamp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          id: string
+          metadata: Json | null
+          payment_type: string | null
+          status: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_intent_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placements: {
+        Row: {
+          agent_commission_percentage: number | null
+          agent_id: string | null
+          commission_amount: number | null
+          commission_status:
+            | Database["public"]["Enums"]["commission_status"]
+            | null
+          created_at: string | null
+          facility_id: string | null
+          first_month_rent_fee: number | null
+          hpa_revenue: number | null
+          hpa_revenue_percentage: number | null
+          id: string
+          monthly_rent: number | null
+          placement_date: string | null
+          senior_id: string | null
+          status: Database["public"]["Enums"]["placement_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          agent_commission_percentage?: number | null
+          agent_id?: string | null
+          commission_amount?: number | null
+          commission_status?:
+            | Database["public"]["Enums"]["commission_status"]
+            | null
+          created_at?: string | null
+          facility_id?: string | null
+          first_month_rent_fee?: number | null
+          hpa_revenue?: number | null
+          hpa_revenue_percentage?: number | null
+          id?: string
+          monthly_rent?: number | null
+          placement_date?: string | null
+          senior_id?: string | null
+          status?: Database["public"]["Enums"]["placement_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          agent_commission_percentage?: number | null
+          agent_id?: string | null
+          commission_amount?: number | null
+          commission_status?:
+            | Database["public"]["Enums"]["commission_status"]
+            | null
+          created_at?: string | null
+          facility_id?: string | null
+          first_month_rent_fee?: number | null
+          hpa_revenue?: number | null
+          hpa_revenue_percentage?: number | null
+          id?: string
+          monthly_rent?: number | null
+          placement_date?: string | null
+          senior_id?: string | null
+          status?: Database["public"]["Enums"]["placement_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placements_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placements_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placements_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "seniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          client_id: string | null
+          id: string
+          intake_form_url: string | null
+          received_at: string | null
+          status: string
+          submitted_by: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          id?: string
+          intake_form_url?: string | null
+          received_at?: string | null
+          status: string
+          submitted_by?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          id?: string
+          intake_form_url?: string | null
+          received_at?: string | null
+          status?: string
+          submitted_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_results: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
-          results: Json | null
-          session_id: string | null
+          query: string
+          results: Json
+          senior_id: string | null
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          results?: Json | null
-          session_id?: string | null
+          query: string
+          results: Json
+          senior_id?: string | null
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          results?: Json | null
-          session_id?: string | null
+          query?: string
+          results?: Json
+          senior_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_results_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "seniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      senior_care_providers: {
+        Row: {
+          "City/Town": string | null
+          Latitude: number | null
+          Longitude: number | null
+          Medicare: boolean
+          "Provider Address": string | null
+          "Provider Name": string | null
+          "Telephone Number": number | null
+          UUID: string
+        }
+        Insert: {
+          "City/Town"?: string | null
+          Latitude?: number | null
+          Longitude?: number | null
+          Medicare?: boolean
+          "Provider Address"?: string | null
+          "Provider Name"?: string | null
+          "Telephone Number"?: number | null
+          UUID?: string
+        }
+        Update: {
+          "City/Town"?: string | null
+          Latitude?: number | null
+          Longitude?: number | null
+          Medicare?: boolean
+          "Provider Address"?: string | null
+          "Provider Name"?: string | null
+          "Telephone Number"?: number | null
+          UUID?: string
+        }
+        Relationships: []
+      }
+      seniors: {
+        Row: {
+          additional_preferences: Json | null
+          age: number
+          budget_max: number | null
+          budget_min: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          medical_needs: string[] | null
+          name: string
+          preferred_location: string | null
+          updated_at: string
+        }
+        Insert: {
+          additional_preferences?: Json | null
+          age: number
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          medical_needs?: string[] | null
+          name: string
+          preferred_location?: string | null
+          updated_at?: string
+        }
+        Update: {
+          additional_preferences?: Json | null
+          age?: number
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          medical_needs?: string[] | null
+          name?: string
+          preferred_location?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
       serperapi_raw_results: {
         Row: {
-          created_at: string
+          created_at: string | null
           error_message: string | null
           id: string
-          parsing_status: string
+          parsing_status: string | null
           raw_json_data: Json
-          user_search_request_id: string
+          user_search_request_id: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           error_message?: string | null
           id?: string
-          parsing_status?: string
+          parsing_status?: string | null
           raw_json_data: Json
-          user_search_request_id: string
+          user_search_request_id?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           error_message?: string | null
           id?: string
-          parsing_status?: string
+          parsing_status?: string | null
           raw_json_data?: Json
-          user_search_request_id?: string
+          user_search_request_id?: string | null
         }
         Relationships: [
           {
@@ -386,99 +2028,1022 @@ export type Database = {
           },
         ]
       }
+      specialist_notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          senior_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          senior_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          senior_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specialist_notes_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "seniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      Storepoint: {
+        Row: {
+          address: string | null
+          capacity: string | null
+          city: string | null
+          email: string | null
+          image_url: string | null
+          lat: string | null
+          lng: string | null
+          name: string | null
+          phone: string | null
+          reviews: string | null
+          state: string | null
+          street: string | null
+          type: string | null
+          website: string | null
+          zip: number | null
+        }
+        Insert: {
+          address?: string | null
+          capacity?: string | null
+          city?: string | null
+          email?: string | null
+          image_url?: string | null
+          lat?: string | null
+          lng?: string | null
+          name?: string | null
+          phone?: string | null
+          reviews?: string | null
+          state?: string | null
+          street?: string | null
+          type?: string | null
+          website?: string | null
+          zip?: number | null
+        }
+        Update: {
+          address?: string | null
+          capacity?: string | null
+          city?: string | null
+          email?: string | null
+          image_url?: string | null
+          lat?: string | null
+          lng?: string | null
+          name?: string | null
+          phone?: string | null
+          reviews?: string | null
+          state?: string | null
+          street?: string | null
+          type?: string | null
+          website?: string | null
+          zip?: number | null
+        }
+        Relationships: []
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string | null
+          id: string
+          stripe_customer_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          stripe_customer_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          stripe_customer_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_customers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_subscriptions: {
+        Row: {
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          status: string
+          stripe_subscription_id: string
+          trial_end: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          status: string
+          stripe_subscription_id: string
+          trial_end?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          status?: string
+          stripe_subscription_id?: string
+          trial_end?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscribed: {
+        Row: {
+          "Call to Action Text": string | null
+          City: string | null
+          "Core Services (comma-separated)": string | null
+          "CTA Button 1 Link": string | null
+          "CTA Button 1 Text": string | null
+          "CTA Button 2 Link": string | null
+          "CTA Button 2 Text": string | null
+          Description: string | null
+          Email: string | null
+          "Facility Name": string | null
+          "Image URL 1": string | null
+          "Image URL 2": string | null
+          "Image URL 3": string | null
+          "Lifestyle Amenities (comma-separated)": string | null
+          Map: string | null
+          Phone: string | null
+          State: string | null
+          "Street Address": string | null
+          uuid: string
+          Website: string | null
+          "ZIP Code": number | null
+        }
+        Insert: {
+          "Call to Action Text"?: string | null
+          City?: string | null
+          "Core Services (comma-separated)"?: string | null
+          "CTA Button 1 Link"?: string | null
+          "CTA Button 1 Text"?: string | null
+          "CTA Button 2 Link"?: string | null
+          "CTA Button 2 Text"?: string | null
+          Description?: string | null
+          Email?: string | null
+          "Facility Name"?: string | null
+          "Image URL 1"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Lifestyle Amenities (comma-separated)"?: string | null
+          Map?: string | null
+          Phone?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          uuid?: string
+          Website?: string | null
+          "ZIP Code"?: number | null
+        }
+        Update: {
+          "Call to Action Text"?: string | null
+          City?: string | null
+          "Core Services (comma-separated)"?: string | null
+          "CTA Button 1 Link"?: string | null
+          "CTA Button 1 Text"?: string | null
+          "CTA Button 2 Link"?: string | null
+          "CTA Button 2 Text"?: string | null
+          Description?: string | null
+          Email?: string | null
+          "Facility Name"?: string | null
+          "Image URL 1"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Lifestyle Amenities (comma-separated)"?: string | null
+          Map?: string | null
+          Phone?: string | null
+          State?: string | null
+          "Street Address"?: string | null
+          uuid?: string
+          Website?: string | null
+          "ZIP Code"?: number | null
+        }
+        Relationships: []
+      }
+      subscription_features: {
+        Row: {
+          created_at: string | null
+          feature_id: string | null
+          id: string
+          tier: string
+        }
+        Insert: {
+          created_at?: string | null
+          feature_id?: string | null
+          id?: string
+          tier: string
+        }
+        Update: {
+          created_at?: string | null
+          feature_id?: string | null
+          id?: string
+          tier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_features_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          tier: string | null
+          updated_at: string | null
+          user_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          tier?: string | null
+          updated_at?: string | null
+          user_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          tier?: string | null
+          updated_at?: string | null
+          user_type?: string | null
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          facility_id: string | null
+          id: string
+          priority: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          facility_id?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          facility_id?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tours: {
+        Row: {
+          created_at: string
+          facility_id: string | null
+          id: string
+          is_virtual: boolean | null
+          notes: string | null
+          scheduled_date: string
+          scheduled_time: string
+          senior_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          notes?: string | null
+          scheduled_date: string
+          scheduled_time: string
+          senior_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          notes?: string | null
+          scheduled_date?: string
+          scheduled_time?: string
+          senior_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tours_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tours_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "seniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unified_facilities: {
+        Row: {
+          accepts_medicaid: boolean | null
+          accepts_medicare: boolean | null
+          accepts_va_benefits: boolean | null
+          address_line1: string | null
+          address_line2: string | null
+          amenities: Json | null
+          business_hours: Json | null
+          capacity: number | null
+          city: string | null
+          created_at: string | null
+          current_availability: number | null
+          data_source: string | null
+          description: string | null
+          email: string | null
+          facility_type: string | null
+          id: string
+          image_urls: Json | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          license_number: string | null
+          license_type: string | null
+          longitude: number | null
+          name: string
+          original_id: string | null
+          phone: string | null
+          price_range_max: number | null
+          price_range_min: number | null
+          rating: number | null
+          reviews_count: number | null
+          services: Json | null
+          state: string | null
+          updated_at: string | null
+          virtual_tour_url: string | null
+          website: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          amenities?: Json | null
+          business_hours?: Json | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
+          id?: string
+          image_urls?: Json | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
+          longitude?: number | null
+          name: string
+          original_id?: string | null
+          phone?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          virtual_tour_url?: string | null
+          website?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          accepts_medicaid?: boolean | null
+          accepts_medicare?: boolean | null
+          accepts_va_benefits?: boolean | null
+          address_line1?: string | null
+          address_line2?: string | null
+          amenities?: Json | null
+          business_hours?: Json | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string | null
+          current_availability?: number | null
+          data_source?: string | null
+          description?: string | null
+          email?: string | null
+          facility_type?: string | null
+          id?: string
+          image_urls?: Json | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_number?: string | null
+          license_type?: string | null
+          longitude?: number | null
+          name?: string
+          original_id?: string | null
+          phone?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          virtual_tour_url?: string | null
+          website?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      "updated providers may 2025": {
+        Row: {
+          Address: string | null
+          City: string | null
+          "Facility Name": string | null
+          "Internal ID": string
+          "License ID": string | null
+          Source: string | null
+          State: string | null
+          Zip: number | null
+        }
+        Insert: {
+          Address?: string | null
+          City?: string | null
+          "Facility Name"?: string | null
+          "Internal ID": string
+          "License ID"?: string | null
+          Source?: string | null
+          State?: string | null
+          Zip?: number | null
+        }
+        Update: {
+          Address?: string | null
+          City?: string | null
+          "Facility Name"?: string | null
+          "Internal ID"?: string
+          "License ID"?: string | null
+          Source?: string | null
+          State?: string | null
+          Zip?: number | null
+        }
+        Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_interactions: {
+        Row: {
+          created_at: string | null
+          generate_document_summary: Json | null
+          send_results_summary: Json | null
+          send_user_intent_summary: Json | null
+          uuid: string
+        }
+        Insert: {
+          created_at?: string | null
+          generate_document_summary?: Json | null
+          send_results_summary?: Json | null
+          send_user_intent_summary?: Json | null
+          uuid?: string
+        }
+        Update: {
+          created_at?: string | null
+          generate_document_summary?: Json | null
+          send_results_summary?: Json | null
+          send_user_intent_summary?: Json | null
+          uuid?: string
+        }
+        Relationships: []
+      }
+      user_profile_end_user: {
+        Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          budget_range: Database["public"]["Enums"]["budget_range"] | null
+          care_needs: Json | null
+          care_recepient_relationship:
+            | Database["public"]["Enums"]["care_recepient_relationship"]
+            | null
+          care_urgency: Database["public"]["Enums"]["care_urgency"] | null
+          city: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          id: string
+          medical_conditions: Json | null
+          preferred_amenities: Json | null
+          state: string | null
+          updated_at: string | null
+          user_id: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          budget_range?: Database["public"]["Enums"]["budget_range"] | null
+          care_needs?: Json | null
+          care_recepient_relationship?:
+            | Database["public"]["Enums"]["care_recepient_relationship"]
+            | null
+          care_urgency?: Database["public"]["Enums"]["care_urgency"] | null
+          city?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          id?: string
+          medical_conditions?: Json | null
+          preferred_amenities?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          budget_range?: Database["public"]["Enums"]["budget_range"] | null
+          care_needs?: Json | null
+          care_recepient_relationship?:
+            | Database["public"]["Enums"]["care_recepient_relationship"]
+            | null
+          care_urgency?: Database["public"]["Enums"]["care_urgency"] | null
+          city?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          id?: string
+          medical_conditions?: Json | null
+          preferred_amenities?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_end_user_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profile_facility_admin: {
+        Row: {
+          admin_level: string | null
+          created_at: string
+          department: string | null
+          id: string
+          job_title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_level?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          job_title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_level?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          job_title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_facility_admin_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profile_professional: {
+        Row: {
+          bio: string | null
+          created_at: string
+          geographical_service_area: Json | null
+          id: string
+          license_number: string | null
+          license_state: string | null
+          professional_title: string | null
+          specialities: Json | null
+          subscription_end_date: string | null
+          subscription_start_date: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          geographical_service_area?: Json | null
+          id?: string
+          license_number?: string | null
+          license_state?: string | null
+          professional_title?: string | null
+          specialities?: Json | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          geographical_service_area?: Json | null
+          id?: string
+          license_number?: string | null
+          license_state?: string | null
+          professional_title?: string | null
+          specialities?: Json | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_professional_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_search_requests: {
         Row: {
           agent_id: string | null
-          created_at: string
+          created_at: string | null
           error_message: string | null
           id: string
           search_criteria: Json
           serpapi_query_sent: string | null
-          status: string
+          status: string | null
         }
         Insert: {
           agent_id?: string | null
-          created_at?: string
+          created_at?: string | null
           error_message?: string | null
           id?: string
           search_criteria: Json
           serpapi_query_sent?: string | null
-          status?: string
+          status?: string | null
         }
         Update: {
           agent_id?: string | null
-          created_at?: string
+          created_at?: string | null
           error_message?: string | null
           id?: string
           search_criteria?: Json
           serpapi_query_sent?: string | null
-          status?: string
+          status?: string | null
         }
         Relationships: []
       }
-      va_form_21p_534ez: {
+      users: {
         Row: {
-          address: string
-          assets: number
-          claimant_full_name: string
           created_at: string | null
-          date_of_death: string
-          direct_deposit_account: string
-          direct_deposit_routing: string
           email: string
+          first_name: string | null
           id: string
-          income: number
-          marriage_date: string
-          number_of_children: number
-          phone: string
-          place_of_death: string
-          relationship: string
-          ssn: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          last_login: string | null
+          last_name: string | null
+          mfa_enabled: boolean | null
+          organization: string | null
+          password_hash: string | null
+          phone: string | null
+          profile_image_url: string | null
+          role: string
+          tier: string
           updated_at: string | null
-          veteran_full_name: string
-          veteran_ssn: string
+          veteran_status: boolean | null
         }
         Insert: {
-          address: string
-          assets: number
-          claimant_full_name: string
           created_at?: string | null
-          date_of_death: string
-          direct_deposit_account: string
-          direct_deposit_routing: string
           email: string
+          first_name?: string | null
           id?: string
-          income: number
-          marriage_date: string
-          number_of_children: number
-          phone: string
-          place_of_death: string
-          relationship: string
-          ssn: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          last_login?: string | null
+          last_name?: string | null
+          mfa_enabled?: boolean | null
+          organization?: string | null
+          password_hash?: string | null
+          phone?: string | null
+          profile_image_url?: string | null
+          role: string
+          tier: string
           updated_at?: string | null
-          veteran_full_name: string
-          veteran_ssn: string
+          veteran_status?: boolean | null
         }
         Update: {
-          address?: string
-          assets?: number
-          claimant_full_name?: string
           created_at?: string | null
-          date_of_death?: string
-          direct_deposit_account?: string
-          direct_deposit_routing?: string
           email?: string
+          first_name?: string | null
           id?: string
-          income?: number
-          marriage_date?: string
-          number_of_children?: number
-          phone?: string
-          place_of_death?: string
-          relationship?: string
-          ssn?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          last_login?: string | null
+          last_name?: string | null
+          mfa_enabled?: boolean | null
+          organization?: string | null
+          password_hash?: string | null
+          phone?: string | null
+          profile_image_url?: string | null
+          role?: string
+          tier?: string
           updated_at?: string | null
-          veteran_full_name?: string
-          veteran_ssn?: string
+          veteran_status?: boolean | null
+        }
+        Relationships: []
+      }
+      VA_Providers: {
+        Row: {
+          Address: string | null
+          "City/Town": string | null
+          "County/Parish": string | null
+          "Emergency Services": string | null
+          "Facility ID": string | null
+          "Facility Name": string | null
+          "Hospital overall rating": string | null
+          "Hospital overall rating footnote": string | null
+          "Hospital Ownership": string | null
+          "Hospital Type": string | null
+          State: string | null
+          "Telephone Number": string | null
+          "ZIP Code": number | null
+        }
+        Insert: {
+          Address?: string | null
+          "City/Town"?: string | null
+          "County/Parish"?: string | null
+          "Emergency Services"?: string | null
+          "Facility ID"?: string | null
+          "Facility Name"?: string | null
+          "Hospital overall rating"?: string | null
+          "Hospital overall rating footnote"?: string | null
+          "Hospital Ownership"?: string | null
+          "Hospital Type"?: string | null
+          State?: string | null
+          "Telephone Number"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Update: {
+          Address?: string | null
+          "City/Town"?: string | null
+          "County/Parish"?: string | null
+          "Emergency Services"?: string | null
+          "Facility ID"?: string | null
+          "Facility Name"?: string | null
+          "Hospital overall rating"?: string | null
+          "Hospital overall rating footnote"?: string | null
+          "Hospital Ownership"?: string | null
+          "Hospital Type"?: string | null
+          State?: string | null
+          "Telephone Number"?: string | null
+          "ZIP Code"?: number | null
+        }
+        Relationships: []
+      }
+      working_data: {
+        Row: {
+          address: string | null
+          altcs: string | null
+          capacity: string | null
+          city: string | null
+          contact_us: string | null
+          email: string | null
+          "Funding Type": string | null
+          ID: number
+          image_url: string | null
+          lat: string | null
+          license: string | null
+          lng: string | null
+          name: string | null
+          phone: string | null
+          reviews: string | null
+          schedule_tour: string | null
+          specials: string | null
+          state: string | null
+          street: string | null
+          tags: string | null
+          type: string | null
+          virtual_tour: string | null
+          visit_website: string | null
+          website: string | null
+          zip: number | null
+        }
+        Insert: {
+          address?: string | null
+          altcs?: string | null
+          capacity?: string | null
+          city?: string | null
+          contact_us?: string | null
+          email?: string | null
+          "Funding Type"?: string | null
+          ID: number
+          image_url?: string | null
+          lat?: string | null
+          license?: string | null
+          lng?: string | null
+          name?: string | null
+          phone?: string | null
+          reviews?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          state?: string | null
+          street?: string | null
+          tags?: string | null
+          type?: string | null
+          virtual_tour?: string | null
+          visit_website?: string | null
+          website?: string | null
+          zip?: number | null
+        }
+        Update: {
+          address?: string | null
+          altcs?: string | null
+          capacity?: string | null
+          city?: string | null
+          contact_us?: string | null
+          email?: string | null
+          "Funding Type"?: string | null
+          ID?: number
+          image_url?: string | null
+          lat?: string | null
+          license?: string | null
+          lng?: string | null
+          name?: string | null
+          phone?: string | null
+          reviews?: string | null
+          schedule_tour?: string | null
+          specials?: string | null
+          state?: string | null
+          street?: string | null
+          tags?: string | null
+          type?: string | null
+          virtual_tour?: string | null
+          visit_website?: string | null
+          website?: string | null
+          zip?: number | null
         }
         Relationships: []
       }
@@ -487,62 +3052,92 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_locations_by_tags: {
-        Args: { input_tags: string[] }
-        Returns: {
-          id: number
-          name: string
-          address: string
-          tags: string[]
-        }[]
-      }
-      gtrgm_compress: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_decompress: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_in: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_options: {
-        Args: { "": unknown }
+      create_user_profile: {
+        Args: {
+          user_id: string
+          date_of_birth: string
+          address_line_1: string
+          address_line_2: string
+          city: string
+          state: string
+          zip_code: string
+          care_recepient_relationship: Database["public"]["Enums"]["care_recepient_relationship"]
+          care_urgency: Database["public"]["Enums"]["care_urgency"]
+          budget_range: Database["public"]["Enums"]["budget_range"]
+          care_needs: Json
+          medical_conditions: Json
+          preferred_amenities: Json
+        }
         Returns: undefined
       }
-      gtrgm_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      is_admin: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
-      is_feature_enabled: {
+      insert_serperapi_raw_result: {
         Args: {
-          feature_key: string
-          tier: Database["public"]["Enums"]["subscription_tier"]
+          user_search_request_id: string
+          raw_json_data: Json
+          parsing_status?: string
+          error_message?: string
         }
-        Returns: boolean
+        Returns: string
       }
-      set_limit: {
-        Args: { "": number }
-        Returns: number
+      insert_user_interaction: {
+        Args: {
+          user_intent_summary: Json
+          results_summary: Json
+          document_summary: Json
+        }
+        Returns: {
+          uuid: string
+          confirmation_message: string
+        }[]
       }
-      show_limit: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      show_trgm: {
-        Args: { "": string }
-        Returns: string[]
+      parse_google_maps_results: {
+        Args: { raw_results: Json }
+        Returns: undefined
       }
     }
     Enums: {
-      app_role: "user" | "admin"
-      subscription_tier: "free" | "basic" | "premium"
+      appointment_type: "consultation" | "tour" | "follow_up"
+      budget_range:
+        | "$2,000 - $4,000"
+        | "$4,000 - $6,000"
+        | "$6,000 - $8,000"
+        | "$8,000 - $10,000+"
+        | "sliding_scale"
+        | "other"
+      care_recepient_relationship:
+        | "family"
+        | "friend"
+        | "medical_professional"
+        | "spouse"
+        | "child"
+      care_urgency: "immediate" | "2_weeks" | "30_days" | "6_months" | "1_year"
+      commission_status: "pending" | "paid" | "cancelled"
+      contract_status_enum:
+        | "PENDING_SIGNATURE"
+        | "ACTIVE"
+        | "EXPIRED"
+        | "INACTIVE"
+      invoice_status_enum:
+        | "DRAFT"
+        | "SUBMITTED"
+        | "PROCESSING_HPA"
+        | "PAID_HPA"
+        | "SENT_TO_FACILITY"
+        | "PAID_BY_FACILITY"
+        | "OVERDUE"
+        | "CANCELLED"
+      invoice_type_enum: "HPA" | "FACILITY"
+      location_type: "in_person" | "video" | "phone"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
+      placement_status: "pending" | "confirmed" | "completed" | "canceled"
+      role: "end_user" | "professional" | "facility_admin"
+      subscription_status: "active" | "past_due" | "canceled" | "trialing"
+      subscription_tier: "essentials" | "elevate" | "pinnacle" | "enterprise"
+      user_role:
+        | "end_user"
+        | "professional"
+        | "facility_admin"
+        | "placement_agent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -658,8 +3253,53 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["user", "admin"],
-      subscription_tier: ["free", "basic", "premium"],
+      appointment_type: ["consultation", "tour", "follow_up"],
+      budget_range: [
+        "$2,000 - $4,000",
+        "$4,000 - $6,000",
+        "$6,000 - $8,000",
+        "$8,000 - $10,000+",
+        "sliding_scale",
+        "other",
+      ],
+      care_recepient_relationship: [
+        "family",
+        "friend",
+        "medical_professional",
+        "spouse",
+        "child",
+      ],
+      care_urgency: ["immediate", "2_weeks", "30_days", "6_months", "1_year"],
+      commission_status: ["pending", "paid", "cancelled"],
+      contract_status_enum: [
+        "PENDING_SIGNATURE",
+        "ACTIVE",
+        "EXPIRED",
+        "INACTIVE",
+      ],
+      invoice_status_enum: [
+        "DRAFT",
+        "SUBMITTED",
+        "PROCESSING_HPA",
+        "PAID_HPA",
+        "SENT_TO_FACILITY",
+        "PAID_BY_FACILITY",
+        "OVERDUE",
+        "CANCELLED",
+      ],
+      invoice_type_enum: ["HPA", "FACILITY"],
+      location_type: ["in_person", "video", "phone"],
+      payment_status: ["pending", "completed", "failed", "refunded"],
+      placement_status: ["pending", "confirmed", "completed", "canceled"],
+      role: ["end_user", "professional", "facility_admin"],
+      subscription_status: ["active", "past_due", "canceled", "trialing"],
+      subscription_tier: ["essentials", "elevate", "pinnacle", "enterprise"],
+      user_role: [
+        "end_user",
+        "professional",
+        "facility_admin",
+        "placement_agent",
+      ],
     },
   },
 } as const
