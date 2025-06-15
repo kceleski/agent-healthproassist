@@ -146,5 +146,5 @@ Distributed under the MIT License.
 ## Support
 
 - For issues, open a GitHub issue
-- For direct contact: support@healthproassist.com
+- For direct contact: contact@healthproassist.com
 
