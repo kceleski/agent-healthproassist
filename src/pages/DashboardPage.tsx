@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,7 +94,10 @@ export default function DashboardPage() {
   const initials = user?.name?.split(" ").map((n:string) => n[0]).join("") || "U";
   
   return (
-    <div className="px-4 py-6 max-w-5xl mx-auto">
+    <div className="px-4 py-6 max-w-5xl mx-auto border-4 border-red-500 min-h-[200px]">
+      {/* DEBUG: If you see this, the DashboardPage root is rendering */}
+      <div className="text-lg font-bold text-red-700 mb-2">[DEBUG] DashboardPage Container is rendering!</div>
+
       {/* Mobile-friendly welcome header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
