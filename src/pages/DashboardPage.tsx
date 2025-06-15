@@ -94,7 +94,21 @@ export default function DashboardPage() {
   const initials = user?.name?.split(" ").map((n:string) => n[0]).join("") || "U";
   
   return (
-    <div className="px-4 py-6 max-w-5xl mx-auto border-4 border-red-500 min-h-[200px]">
+    <div className="px-4 py-6 max-w-5xl mx-auto border-8 border-blue-500 min-h-[400px] relative bg-yellow-100 z-50">
+      {/* EXTRA DEBUG */}
+      <div style={{
+        background: "#f00",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 24,
+        padding: "12px 0",
+        textAlign: "center",
+        border: "6px dashed #000",
+        zIndex: 10001,
+        position: "relative"
+      }}>
+        [DEBUG] DashboardPage is rendering (DESKTOP + MOBILE)
+      </div>
       {/* DEBUG: If you see this, the DashboardPage root is rendering */}
       <div className="text-lg font-bold text-red-700 mb-2">[DEBUG] DashboardPage Container is rendering!</div>
 

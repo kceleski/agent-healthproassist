@@ -16,7 +16,7 @@ const MainLayout = () => {
                       
   // Add a log to verify the layout is rendering
   useEffect(() => {
-    console.log('MainLayout mounted', { 
+    console.log('[LAYOUT DEBUG] MainLayout mounted', { 
       path: location.pathname, 
       isMapPage, 
       isSearchPage,
@@ -25,11 +25,36 @@ const MainLayout = () => {
   }, [location.pathname, isMapPage, isSearchPage, isLandingPage]);
 
   return (
-    <div className="min-h-screen flex flex-col w-full">
+    <div className="min-h-screen flex flex-col w-full border-8 border-green-500 bg-pink-100 z-[9998]">
+      <div style={{
+        background: "#222",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 18,
+        padding: "4px",
+        textAlign: "center",
+        zIndex: 9999,
+        marginBottom: 10
+      }}>
+        [DEBUG] MainLayout wrapper is rendering
+      </div>
       <AvatarResponseProvider>
         <Navbar />
-        <main className="flex-grow w-full max-w-full overflow-x-hidden">
-          <Outlet />
+        <main
+          className="flex-grow w-full max-w-full overflow-x-hidden border-4 border-purple-500 bg-blue-100"
+          style={{ minHeight: '250px', position: 'relative', zIndex: 10 }}
+        >
+          <div
+            className="border-4 border-red-800 bg-orange-100"
+            style={{
+              zIndex: 11,
+              position: 'relative',
+              padding: 8
+            }}
+          >
+            [DEBUG] MainLayout Outlet container
+            <Outlet />
+          </div>
         </main>
         {!isMapPage && <Footer />}
       </AvatarResponseProvider>
@@ -38,3 +63,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+
