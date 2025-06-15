@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,9 @@ interface Message {
   content: string;
 }
 
-// API keys
+// Mock API keys for demo purposes - replace with environment variables
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || 'demo-key';
+const ASSISTANT_ID = import.meta.env.VITE_ASSISTANT_ID || 'demo-assistant';
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -27,7 +30,7 @@ const Index = () => {
   // Create a new thread if we don't have one
   useEffect(() => {
     const createThread = async () => {
-      if (!threadId) {
+      if (!threadId && OPENAI_API_KEY !== 'demo-key') {
         try {
           const response = await fetch('https://api.openai.com/v1/threads', {
             method: 'POST',
@@ -68,6 +71,18 @@ const Index = () => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+
+    // Demo mode - just add a mock response
+    if (OPENAI_API_KEY === 'demo-key') {
+      setTimeout(() => {
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: 'This is a demo response. Please configure your OpenAI API key to use the real assistant.' 
+        }]);
+        setIsLoading(false);
+      }, 1000);
+      return;
+    }
 
     try {
       // 1. Add message to OpenAI thread
@@ -147,35 +162,55 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-10 flex flex-col items-center bg-slate-50">
-      <div className="container max-w-6xl flex flex-col md:flex-row gap-6">
-        {/* Chat Interface */}
-        <div className="w-full flex flex-col gap-4">
-          <Card>
+    <div className="min-h-screen w-full bg-slate-50">
+      <Helmet>
+        <title>HealthProAssist - AI Health Assistant</title>
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              AI Health Assistant
+            </h1>
+            <p className="text-gray-600 text-sm md:text-base">
+              Get personalized health guidance and support
+            </p>
+          </div>
+
+          {/* Chat Interface */}
+          <Card className="w-full">
             <CardHeader>
-              <CardTitle>AI Health Assistant</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Chat with Your Assistant</CardTitle>
             </CardHeader>
-            <CardContent className="h-[400px] overflow-y-auto">
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">
-                    Start a conversation with your health assistant
-                  </div>
-                ) : (
-                  messages.map((message, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-lg ${
-                        message.role === 'user' 
-                          ? 'bg-primary text-primary-foreground ml-12' 
-                          : 'bg-muted mr-12'
-                      }`}
-                    >
-                      {message.content}
+            <CardContent>
+              <div className="h-64 md:h-96 overflow-y-auto border rounded-lg p-4 bg-white">
+                <div className="space-y-4">
+                  {messages.length === 0 ? (
+                    <div className="text-center text-muted-foreground py-8">
+                      <p className="text-sm md:text-base">
+                        Start a conversation with your health assistant
+                      </p>
                     </div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
+                  ) : (
+                    messages.map((message, index) => (
+                      <div 
+                        key={index} 
+                        className={`p-3 rounded-lg max-w-[80%] ${
+                          message.role === 'user' 
+                            ? 'bg-primary text-primary-foreground ml-auto' 
+                            : 'bg-muted'
+                        }`}
+                      >
+                        <p className="text-sm md:text-base break-words">
+                          {message.content}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
               </div>
             </CardContent>
             <CardFooter>
@@ -186,27 +221,43 @@ const Index = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
                   disabled={isLoading}
+                  className="flex-1"
                 />
-                <Button onClick={handleSendMessage} disabled={isLoading}>
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+                <Button 
+                  onClick={handleSendMessage} 
+                  disabled={isLoading}
+                  className="px-4 py-2"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="hidden sm:inline">Send</span>
+                  )}
+                  {!isLoading && <span className="sm:hidden">→</span>}
                 </Button>
               </div>
             </CardFooter>
           </Card>
           
-          <Card>
+          {/* Widget Section */}
+          <Card className="w-full">
             <CardHeader>
-              <CardTitle>External Widget</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Health Pro Assist Widget</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Button 
                 onClick={() => setShowWidget(!showWidget)}
-                className="mb-4"
+                variant="outline"
+                className="w-full sm:w-auto"
               >
                 {showWidget ? 'Hide Widget' : 'Show Health Pro Assist Widget'}
               </Button>
               
-              {showWidget && <HealthProAssistWidget />}
+              {showWidget && (
+                <div className="border rounded-lg p-4 bg-white">
+                  <HealthProAssistWidget />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

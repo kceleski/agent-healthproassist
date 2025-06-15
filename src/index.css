@@ -4,13 +4,31 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    height: 100%;
+    width: 100%;
+  }
+  
   body {
-    @apply bg-white text-foreground min-w-full overflow-x-hidden;
+    @apply bg-white text-foreground min-h-screen w-full overflow-x-hidden;
     background-image: 
       radial-gradient(circle at 50% 50%, rgba(86, 137, 249, 0.03) 0%, rgba(255, 255, 255, 0) 80%),
       radial-gradient(circle at 80% 20%, rgba(86, 137, 249, 0.02) 0%, rgba(255, 255, 255, 0) 70%);
     background-size: 100% 100%;
     background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .container-soft-blue {
@@ -20,6 +38,13 @@
   /* Ensure all containers respect viewport width */
   .container {
     @apply w-full max-w-full px-4 sm:px-6 md:px-8 lg:mx-auto lg:max-w-7xl;
+  }
+  
+  /* Mobile-first responsive breakpoints */
+  @media (max-width: 640px) {
+    .container {
+      @apply px-2;
+    }
   }
 }
 
@@ -46,5 +71,25 @@
 @media (min-width: 768px) {
   .google-maps-container {
     height: 600px !important;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .elevenlabs-convai-widget {
+    bottom: 10px !important;
+    right: 10px !important;
+    transform: scale(0.9) !important;
+  }
+}
+
+/* Ensure proper scrolling on mobile */
+@media (max-width: 640px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
   }
 }
