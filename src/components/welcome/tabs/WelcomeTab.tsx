@@ -7,7 +7,7 @@ interface WelcomeTabProps {
 
 const WelcomeTab = ({ onContinue }: WelcomeTabProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-10">
       <h2 className="text-2xl font-semibold">Welcome to HealthProAssist!</h2>
       <p>
         HealthProAssist is your AI-powered health assistant that helps you find, compare, 
