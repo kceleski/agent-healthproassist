@@ -1,11 +1,11 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WelcomeTab from "./components/welcome/tabs/WelcomeTab";
-import LocationTab from "./components/welcome/tabs/LocationTab";
-import NotificationsTab from "./components/welcome/tabs/NotificationsTab";
-import BioTab from "./components/welcome/tabs/BioTab";
-import FinishTab from "./components/welcome/tabs/FinishTab";
+import WelcomeTab from "@/components/welcome/tabs/WelcomeTab";
+import LocationTab from "@/components/welcome/tabs/LocationTab";
+import NotificationsTab from "@/components/welcome/tabs/NotificationsTab";
+import BioTab from "@/components/welcome/tabs/BioTab";
+import FinishTab from "@/components/welcome/tabs/FinishTab";
 import { Progress } from "@/components/ui/progress";
 import { WelcomeTabsProps } from "@/types/profile";
 

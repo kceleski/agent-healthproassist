@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { WelcomeTab } from "@/components/welcome/tabs/WelcomeTab";
+import WelcomeTabs from "@/components/welcome/WelcomeTabs";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
