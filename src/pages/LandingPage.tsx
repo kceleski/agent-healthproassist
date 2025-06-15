@@ -1,543 +1,156 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  Building, 
-  Contact, 
-  DollarSign, 
-  Search, 
-  ShieldCheck, 
-  UserCheck, 
-  Users, 
-  Home, 
-  Heart, 
-  Star, 
-  ArrowUpRight, 
-  Calendar, 
-  FileText,
-  Sparkles,
-  CreditCard,
-  UserPlus
-} from "lucide-react";
-import { useState, useEffect } from "react";
+import { Users, Search, Building, DollarSign, Star } from "lucide-react";
+import { useState } from "react";
+
+// Placeholder for future images
+const heroImg =
+  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=900&q=80";
+
+const features = [
+  {
+    icon: <Search className="w-7 h-7 text-healthcare-500" />,
+    title: "Advanced Facility Search",
+    description: "Powerful filters help you match clients with ideal care communities."
+  },
+  {
+    icon: <Building className="w-7 h-7 text-healthcare-500" />,
+    title: "Comprehensive Directory",
+    description: "Explore 500+ detailed listings and connect instantly."
+  },
+  {
+    icon: <Users className="w-7 h-7 text-healthcare-500" />,
+    title: "Contact Management",
+    description: "Keep track of clients, facilities, and families—all in one place."
+  },
+  {
+    icon: <DollarSign className="w-7 h-7 text-healthcare-500" />,
+    title: "Payment Tracking",
+    description: "Visualize commissions and fees, and stay on top of every invoice."
+  },
+  {
+    icon: <Star className="w-7 h-7 text-healthcare-500" />,
+    title: "Client Matching Engine",
+    description: "AI-powered recommendations tailored to your business."
+  },
+];
+
+const testimonials = [
+  {
+    quote: "HealthProAssist has streamlined my workflow beyond belief—client matches are now a breeze.",
+    author: "Sarah Johnson",
+    title: "Placement Advisor",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80"
+  },
+  {
+    quote: "Transparent pricing and fantastic support. My agency doubled placement speed.",
+    author: "David Martinez",
+    title: "Elder Care Consultant",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80"
+  }
+];
+
+const plans = [
+  {
+    name: "Basic",
+    price: "49",
+    period: "mo",
+    desc: "Perfect for independent advisors",
+    features: [
+      "Facility directory access",
+      "Client management",
+      "Calendar integration",
+      "Basic support",
+    ],
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Pro",
+    price: "250",
+    period: "mo",
+    desc: "For growing agencies & teams",
+    features: [
+      "Unlimited access",
+      "Advanced analytics",
+      "Commission tools",
+      "Priority support",
+      "Free updates"
+    ],
+    cta: "Start 14-Day Trial",
+    popular: true
+  },
+];
 
 const LandingPage = () => {
-  const [activeTab, setActiveTab] = useState<'monthly' | 'annual'>('monthly');
-  const [animationStarted, setAnimationStarted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimationStarted(true);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const features = [
-    {
-      icon: <Building className="w-10 h-10 text-healthcare-500" />,
-      title: "Facility Directory",
-      description: "Access a comprehensive database of senior living facilities with detailed information on services, amenities, and care types."
-    },
-    {
-      icon: <Contact className="w-10 h-10 text-healthcare-500" />,
-      title: "Contact Management",
-      description: "Organize and manage facility contacts and senior clients all in one place for efficient communication."
-    },
-    {
-      icon: <DollarSign className="w-10 h-10 text-healthcare-500" />,
-      title: "Payment Tracking",
-      description: "Keep track of commissions, fees, and payments with an intuitive financial management system."
-    },
-    {
-      icon: <Search className="w-10 h-10 text-healthcare-500" />,
-      title: "Advanced Search",
-      description: "Find the perfect facility match for your clients with powerful filtering and search capabilities."
-    },
-    {
-      icon: <ShieldCheck className="w-10 h-10 text-healthcare-500" />,
-      title: "Secure Platform",
-      description: "Your data is protected with enterprise-grade security and compliance with healthcare privacy standards."
-    },
-    {
-      icon: <UserCheck className="w-10 h-10 text-healthcare-500" />,
-      title: "Client Matching",
-      description: "Match your senior clients with appropriate facilities based on their needs, preferences, and budget."
-    }
-  ];
-
-  const plans = [
-    {
-      name: "Basic",
-      description: "Essential tools for placement agents",
-      monthlyPrice: 49,
-      annualPrice: 470,
-      features: [
-        "Limited facility directory access",
-        "Basic contact management",
-        "Calendar integration",
-        "Simplified facility cards",
-        "Client management",
-        "Email support"
-      ],
-      cta: "Get Started",
-      popular: false,
-      badge: "14-Day Pro Trial Included"
-    },
-    {
-      name: "Pro",
-      description: "Complete solution for growing agencies",
-      monthlyPrice: 250,
-      annualPrice: 2500,
-      features: [
-        "Full facility directory access",
-        "Advanced contact management",
-        "Detailed facility information",
-        "Client medical record cards",
-        "Revenue & invoicing tools",
-        "QuickBooks integration",
-        "Document generation (PDF/Email/Fax)",
-        "Priority support"
-      ],
-      cta: "Get Pro",
-      popular: true,
-      badge: "Most Popular"
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "HealthProAssist completely transformed how I manage my senior placement business. The facility directory alone saved me countless hours of research.",
-      author: "Sarah Johnson",
-      title: "Senior Placement Advisor",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80"
-    },
-    {
-      quote: "The payment tracking feature is a game-changer. I now have complete visibility into my commissions and never miss a payment.",
-      author: "David Martinez",
-      title: "Elder Care Consultant",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80"
-    },
-    {
-      quote: "As someone who works with dozens of facilities, having all my contacts in one secure place has made my job infinitely easier.",
-      author: "Michelle Wong",
-      title: "Senior Living Advisor",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80"
-    }
-  ];
-
-  const generateSparkles = (count: number) => {
-    const sparkles = [];
-    for (let i = 0; i < count; i++) {
-      sparkles.push({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        delay: Math.random() * 5
-      });
-    }
-    return sparkles;
-  };
-
-  const sparkles = generateSparkles(20);
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
 
   return (
-    <div className="flex flex-col">
-      <section className="pt-32 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-healthcare-50 to-white pointer-events-none" />
-        <div className="container relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="animate-fade-in">
-              <div className="inline-block bg-healthcare-100 text-healthcare-700 px-3 py-1 rounded-full text-sm font-medium mb-6">
-                The Platform for Healthcare Placement Professionals
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-                Streamline Senior Care Placement With Confidence
-              </h1>
-              <p className="text-xl text-muted-foreground mb-12">
-                HealthProAssist empowers placement agents with powerful tools to manage healthcare facilities,
-                track payments, and grow your business.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                <Link
-                  to="/register"
-                  className="group relative overflow-hidden rounded-lg bg-healthcare-600 p-6 hover:bg-healthcare-700 transition-all duration-300"
-                >
-                  <div className="flex flex-col items-start text-white">
-                    <h3 className="text-lg font-semibold mb-2">New to HealthProAssist?</h3>
-                    <p className="text-sm text-healthcare-100 mb-4">Create an account and start managing your healthcare placements today</p>
-                    <span className="inline-flex items-center text-sm font-medium">
-                      Get Started
-                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/login"
-                  className="group relative overflow-hidden rounded-lg bg-white border-2 border-healthcare-200 p-6 hover:border-healthcare-300 transition-all duration-300"
-                >
-                  <div className="flex flex-col items-start">
-                    <h3 className="text-lg font-semibold mb-2 text-healthcare-800">Already a Member?</h3>
-                    <p className="text-sm text-muted-foreground mb-4">Log in to your account to access your dashboard</p>
-                    <span className="inline-flex items-center text-sm font-medium text-healthcare-600 group-hover:text-healthcare-700">
-                      Sign In
-                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-16 relative max-w-6xl mx-auto">
-            <div className="glass-card rounded-xl p-4 md:p-8 shadow-xl overflow-hidden bg-white/90 animate-zoom-in">
-              <div className="health-placement-scene">
-                <div className="scene-background"></div>
-                
-                {sparkles.map((sparkle) => (
-                  <div 
-                    key={sparkle.id}
-                    className="sparkle"
-                    style={{
-                      left: sparkle.left,
-                      top: sparkle.top,
-                      animationDelay: `${sparkle.delay}s`
-                    }}
-                  ></div>
-                ))}
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{left: '10%', bottom: '25%', animationDelay: '0.3s'}}>
-                  
-                  <div className="burst-circle bg-healthcare-200" style={{width: '150px', height: '150px', left: '-35px', top: '-35px'}}></div>
-                  
-                  <div className="relative">
-                    <div className="bg-white p-3 rounded-full shadow-lg mb-3 floating">
-                      <div className="bg-healthcare-600 p-3 rounded-full">
-                        <Users className="w-10 h-10 text-white" />
-                      </div>
-                      
-                      <div className="absolute top-0 right-0">
-                        <div className="bg-healthcare-100 p-1 rounded-full">
-                          <CheckCircle className="w-5 h-5 text-healthcare-600" />
-                        </div>
-                        <div className="notification-ring" style={{left: '50%', top: '50%'}}></div>
-                      </div>
-                    </div>
-                    
-                    <div className="relative floating-delay-2">
-                      <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[150px]">
-                        <div className="bg-healthcare-50 rounded-md p-1 mb-2">
-                          <div className="flex items-center justify-between">
-                            <div className="w-4 h-4 rounded-full bg-healthcare-500"></div>
-                            <div className="w-10 h-1 bg-healthcare-200 rounded-full"></div>
-                          </div>
-                        </div>
-                        <div className="space-y-1 mb-1">
-                          <div className="w-full h-2 bg-healthcare-100 rounded-full"></div>
-                          <div className="w-3/4 h-2 bg-healthcare-100 rounded-full"></div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center">
-                            <Search className="w-3 h-3 text-healthcare-500" />
-                          </div>
-                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center">
-                            <Users className="w-3 h-3 text-healthcare-500" />
-                          </div>
-                          <div className="w-5 h-5 bg-healthcare-200 rounded-md flex items-center justify-center relative">
-                            <DollarSign className="w-3 h-3 text-healthcare-500" />
-                            <div className="notification-badge">3</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute top-8 right-[-110px] floating-delay-1">
-                      <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
-                        <p className="text-sm">Finding you the <span className="text-healthcare-600 font-medium">perfect match!</span></p>
-                      </div>
-                      <div className="w-3 h-3 bg-white border-l border-b border-healthcare-100 absolute -left-1 top-3 transform rotate-45"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{left: '50%', top: '5%', transform: 'translateX(-50%)', zIndex: 20, animationDelay: '0.5s'}}>
-                  <div className="bg-healthcare-600 text-white px-4 py-3 rounded-xl shadow-lg floating-delay-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Sparkles className="w-5 h-5 text-yellow-300" />
-                      <h3 className="font-bold">Warm Leads System</h3>
-                    </div>
-                    <p className="text-sm opacity-90 mb-2">Qualified prospects delivered straight to your dashboard</p>
-                    <div className="flex items-center gap-2 bg-white/20 rounded-lg p-2">
-                      <UserPlus className="w-5 h-5 text-healthcare-100" />
-                      <div className="text-xs">
-                        <div className="font-medium">New lead from <span className="text-yellow-300">San Francisco, CA</span></div>
-                        <div className="opacity-80">Memory care needed • High budget • Urgent</div>
-                      </div>
-                      <ArrowUpRight className="w-4 h-4 ml-auto" />
-                    </div>
-                  </div>
-                  <div className="h-24 w-2 bg-gradient-to-b from-healthcare-600 to-transparent mx-auto"></div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{right: '10%', bottom: '25%', animationDelay: '0.6s'}}>
-                  
-                  <div className="burst-circle bg-healthcare-100" style={{width: '180px', height: '180px', left: '-50px', top: '-30px'}}></div>
-                  
-                  <div className="relative">
-                    <div className="flex items-end space-x-2 mb-3">
-                      <div className="bg-white p-2 rounded-full shadow-lg floating-delay-1">
-                        <div className="bg-healthcare-400 p-2 rounded-full">
-                          <Users className="w-7 h-7 text-white" />
-                        </div>
-                      </div>
-                      <div className="bg-white p-3 rounded-full shadow-lg floating-delay-3 relative">
-                        <div className="bg-healthcare-300 p-2 rounded-full">
-                          <Users className="w-8 h-8 text-white" />
-                        </div>
-                        <div className="absolute -top-1 -right-1">
-                          <Heart className="w-6 h-6 text-healthcare-500 fill-healthcare-500" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute top-6 left-[-140px] floating-delay-2">
-                      <div className="bg-white rounded-lg px-3 py-2 shadow-md border border-healthcare-100">
-                        <p className="text-sm">We need <span className="text-healthcare-600 font-medium">compassionate care</span> for Mom.</p>
-                      </div>
-                      <div className="w-3 h-3 bg-white border-r border-b border-healthcare-100 absolute -right-1 top-3 transform rotate-45"></div>
-                    </div>
-                    
-                    <div className="bg-white rounded-lg shadow-lg p-2 border border-healthcare-100 max-w-[160px] floating-delay-4">
-                      <div className="text-xs font-semibold text-healthcare-700 mb-1 flex items-center">
-                        <FileText className="w-3 h-3 mr-1" />
-                        Care Preferences
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
-                          <span>Memory Care</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
-                          <span>Skilled Nursing</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
-                          <span>Near Family</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-healthcare-500" />
-                          <span>Activities</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{right: '20%', top: '15%', zIndex: 5, animationDelay: '0.8s'}}>
-                  <div className="flex flex-col items-center floating-delay-1">
-                    <div className="bg-white p-2 rounded-full shadow-lg">
-                      <div className="bg-healthcare-100 p-1 rounded-full">
-                        <Building className="w-8 h-8 text-healthcare-700" />
-                      </div>
-                    </div>
-                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
-                      Willow Springs
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{right: '30%', top: '5%', zIndex: 5, animationDelay: '0.9s'}}>
-                  <div className="flex flex-col items-center floating-delay-2">
-                    <div className="bg-white p-2 rounded-full shadow-lg">
-                      <div className="bg-healthcare-100 p-1 rounded-full">
-                        <Home className="w-6 h-6 text-healthcare-600" />
-                      </div>
-                    </div>
-                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
-                      Evergreen
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{right: '10%', top: '12%', zIndex: 5, animationDelay: '1s'}}>
-                  <div className="flex flex-col items-center floating-delay-3">
-                    <div className="bg-white p-2 rounded-full shadow-lg relative">
-                      <div className="bg-healthcare-100 p-1 rounded-full">
-                        <Building className="w-7 h-7 text-healthcare-600" />
-                      </div>
-                      <div className="absolute -top-1 -right-1">
-                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                      </div>
-                    </div>
-                    <div className="text-xs font-medium mt-1 bg-healthcare-50 px-2 py-1 rounded-full text-healthcare-700">
-                      Golden Oaks
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 15, animationDelay: '1.2s'}}>
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="relative">
-                      <div className="bg-healthcare-100 p-4 rounded-full shadow-lg pulsing">
-                        <div className="bg-healthcare-600 p-3 rounded-full relative spinning">
-                          <Users className="w-10 h-10 text-white" />
-                          <div className="absolute inset-0 rounded-full border-4 border-white border-dashed"></div>
-                        </div>
-                      </div>
-                      
-                      <div className="absolute -right-16 -top-16 floating-delay-1">
-                        <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
-                          <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
-                            <Calendar className="w-3 h-3" />
-                            <span>Tour</span>
-                          </div>
-                          <div className="text-[10px]">Tomorrow, 2PM</div>
-                          <div className="text-[10px] text-healthcare-600">Golden Oaks</div>
-                        </div>
-                      </div>
-                      
-                      <div className="absolute -left-20 -bottom-14 floating-delay-2">
-                        <div className="bg-white rounded-lg p-2 shadow-md border border-healthcare-100">
-                          <div className="flex items-center gap-1 text-xs font-medium text-healthcare-700 mb-1">
-                            <CreditCard className="w-3 h-3" />
-                            <span>Commission</span>
-                          </div>
-                          <div className="text-xs font-bold text-healthcare-600">$2,400</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute" style={{left: '-120px', top: '50%', width: '120px', height: '2px'}}>
-                      <div className="connector w-full">
-                        <div className="connector-dot"></div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute" style={{right: '-120px', top: '50%', width: '120px', height: '2px'}}>
-                      <div className="connector w-full">
-                        <div className="connector-dot"></div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute" style={{left: '50%', top: '-100px', height: '100px', width: '2px'}}>
-                      <div className="connector-vertical h-full">
-                        <div className="connector-dot-vertical"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className={`animated-placement-element ${animationStarted ? 'pop-in' : 'opacity-0'}`} 
-                    style={{left: '50%', bottom: '5%', transform: 'translateX(-50%)', zIndex: 25, animationDelay: '1.5s'}}>
-                  <div className="bg-white rounded-xl shadow-lg border border-healthcare-100 p-3 max-w-xs mx-auto text-center bouncing">
-                    <div className="bg-healthcare-50 p-2 rounded-lg mb-2">
-                      <div className="text-healthcare-700 font-medium">Successful Placement!</div>
-                      <div className="text-xs text-healthcare-600">Mrs. Johnson → Golden Oaks</div>
-                    </div>
-                    <div className="flex justify-around">
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground">Family</div>
-                        <div className="text-healthcare-600 font-medium">Happy</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground">Facility</div>
-                        <div className="text-healthcare-600 font-medium">Perfect Fit</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground">Agent</div>
-                        <div className="text-healthcare-600 font-medium">Paid</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="w-full font-sans">
+      {/* HERO */}
+      <div className="bg-gradient-to-b from-healthcare-50 to-white min-h-[60vh] flex flex-col md:flex-row items-center justify-between px-6 sm:px-12 pt-16 md:pt-28 pb-16 gap-10 md:gap-0">
+        <div className="max-w-xl md:w-1/2 text-center md:text-left mx-auto md:mx-0">
+          <span className="inline-block px-3 py-1 rounded-full bg-healthcare-100 text-healthcare-700 text-xs font-semibold mb-4 tracking-wide">
+            Built for Placement Pros
+          </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 leading-tight text-healthcare-800">
+            Modern Senior Care Placement, <span className="text-healthcare-600">Reimagined</span>
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8">
+            Grow your agency with HealthProAssist—AI-powered facility search, client tools, and payments in one secure platform.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <Button asChild size="lg" className="bg-healthcare-600 hover:bg-healthcare-700 w-full sm:w-auto">
+              <Link to="/register">Get Started Free</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="border-healthcare-300 text-healthcare-800 w-full sm:w-auto">
+              <Link to="/login">Sign In</Link>
+            </Button>
           </div>
         </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="text-4xl font-bold text-healthcare-600 mb-2">500+</div>
-              <p className="text-muted-foreground">Senior Living Facilities</p>
-            </div>
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="text-4xl font-bold text-healthcare-600 mb-2">2,500+</div>
-              <p className="text-muted-foreground">Successful Placements</p>
-            </div>
-            <div className="glass-card p-8 rounded-xl text-center">
-              <div className="text-4xl font-bold text-healthcare-600 mb-2">98%</div>
-              <p className="text-muted-foreground">Client Satisfaction</p>
-            </div>
-          </div>
+        <div className="flex-1 hidden md:flex items-center justify-center">
+          <img
+            src={heroImg}
+            alt="Care placement workflow"
+            className="rounded-xl shadow-2xl w-full max-w-md object-cover border-4 border-white"
+            style={{ maxHeight: 380 }}
+          />
         </div>
-      </section>
+      </div>
 
-      <section id="features" className="py-20 bg-gradient-to-b from-white to-healthcare-50">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4">Powerful Features for Placement Professionals</h2>
-            <p className="text-muted-foreground">Our comprehensive platform streamlines every aspect of senior care placement, saving you time and helping you provide better service.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div 
-                key={index} 
-                className="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-              >
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+      {/* FEATURES */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-center text-3xl font-bold mb-2 text-healthcare-800">Why HealthProAssist?</h2>
+          <p className="text-center text-md text-muted-foreground mb-10 max-w-2xl mx-auto">
+            Everything you need for faster, smarter, and more human-centered senior care placements.
+          </p>
+          <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-5">
+            {features.map((f, i) => (
+              <div key={i} className="flex flex-col items-center p-6 bg-healthcare-50 border border-healthcare-100 rounded-xl shadow-sm hover:shadow-md transition-all">
+                <div className="mb-3">{f.icon}</div>
+                <h3 className="text-lg font-medium text-healthcare-600 mb-1">{f.title}</h3>
+                <p className="text-xs text-muted-foreground text-center">{f.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="testimonials" className="py-20 bg-white">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4">Trusted by Placement Professionals</h2>
-            <p className="text-muted-foreground">Don't just take our word for it. Here's what our users have to say about HealthProAssist.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="glass-card p-8 rounded-xl">
-                <div className="mb-6">
-                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.667 13.333V18.667H16.0003V24.0003H5.33366V13.333H10.667Z" fill="#0ea5e9" />
-                    <path d="M26.6667 13.333V18.667H21.333V24.0003H32.0003V13.333H26.6667Z" fill="#0ea5e9" />
-                  </svg>
-                </div>
-                <p className="text-muted-foreground mb-6">{testimonial.quote}</p>
-                <div className="flex items-center">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.author} 
-                    className="w-12 h-12 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <div className="font-medium">{testimonial.author}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.title}</div>
+      {/* TESTIMONIALS */}
+      <section className="py-12 bg-gradient-to-b from-white to-healthcare-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-center text-2xl font-bold mb-6 text-healthcare-800">Loved by Professionals</h2>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center">
+            {testimonials.map((t, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 max-w-md border mx-auto text-center">
+                <p className="italic text-md text-healthcare-700 mb-4">&ldquo;{t.quote}&rdquo;</p>
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  <img src={t.image} alt={t.author} className="h-11 w-11 rounded-full object-cover border-2 border-healthcare-100" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t.author}</div>
+                    <div className="text-xs text-muted-foreground">{t.title}</div>
                   </div>
                 </div>
               </div>
@@ -546,104 +159,84 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section id="pricing" className="py-20 bg-healthcare-50">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-muted-foreground mb-8">Choose the plan that's right for your business needs.</p>
-            
-            <div className="inline-flex items-center bg-white p-1 rounded-full border mb-8">
+      {/* PRICING */}
+      <section className="py-16 bg-healthcare-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-6 text-healthcare-800">Simple, All-Inclusive Pricing</h2>
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex rounded-full border bg-white p-1 overflow-hidden">
               <button
-                onClick={() => setActiveTab('monthly')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeTab === 'monthly'
-                    ? 'bg-healthcare-600 text-white'
-                    : 'bg-transparent text-muted-foreground'
+                onClick={() => setBilling("monthly")}
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+                  billing === "monthly"
+                    ? "bg-healthcare-600 text-white"
+                    : "bg-transparent text-healthcare-700"
                 }`}
               >
                 Monthly
               </button>
               <button
-                onClick={() => setActiveTab('annual')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeTab === 'annual'
-                    ? 'bg-healthcare-600 text-white'
-                    : 'bg-transparent text-muted-foreground'
+                onClick={() => setBilling("annual")}
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+                  billing === "annual"
+                    ? "bg-healthcare-600 text-white"
+                    : "bg-transparent text-healthcare-700"
                 }`}
               >
-                Annual (Save 20%)
+                Annual <span className="ml-1 text-xs text-healthcare-500">(Save 20%)</span>
               </button>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {plans.map((plan, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            {plans.map((plan, i) => (
               <div
-                key={index}
-                className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
+                key={i}
+                className={`bg-white rounded-2xl shadow-xl relative p-8 flex flex-col items-center border-2 ${
                   plan.popular
-                    ? 'ring-2 ring-healthcare-500 shadow-xl scale-105 md:scale-110'
-                    : 'border shadow-soft hover:shadow-md'
+                    ? "border-healthcare-500 scale-105 z-10"
+                    : "border-healthcare-200"
                 }`}
               >
-                {plan.badge && (
-                  <div className={`text-white text-center py-2 text-sm font-medium ${plan.popular ? 'bg-healthcare-500' : 'bg-healthcare-600'}`}>
-                    {plan.badge}
+                {plan.popular && (
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-healthcare-500 text-white text-xs px-4 py-1 rounded-full font-bold tracking-wide shadow">
+                    Most Popular
                   </div>
                 )}
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-muted-foreground mb-4">{plan.description}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">
-                      ${activeTab === 'monthly' ? plan.monthlyPrice : plan.annualPrice}
-                    </span>
-                    <span className="text-muted-foreground">
-                      /{activeTab === 'monthly' ? 'month' : 'year'}
-                    </span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-healthcare-500 mr-2 shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    asChild
-                    variant={plan.popular ? 'default' : 'outline'}
-                    className={`w-full ${plan.popular ? 'bg-healthcare-600 hover:bg-healthcare-700' : ''}`}
-                  >
-                    <Link to="/register">{plan.cta}</Link>
-                  </Button>
+                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                <div className="mb-4 text-muted-foreground">{plan.desc}</div>
+                <div className="text-4xl font-extrabold text-healthcare-700 mb-3">
+                  ${billing === "monthly" ? plan.price : Math.round(Number(plan.price) * (12 * 0.8))}
+                  <span className="text-base font-medium text-muted-foreground">/{billing === "monthly" ? "mo" : "yr"}</span>
                 </div>
+                <ul className="mb-8 mt-2 space-y-3 w-full text-left">
+                  {plan.features.map((feature, i2) => (
+                    <li key={i2} className="flex items-center gap-2 text-healthcare-700 text-sm">
+                      <span className="rounded-full bg-healthcare-50 p-1 mr-1">
+                        <Star className="w-4 h-4 text-healthcare-600" />
+                      </span>{" "}
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild size="lg" className="w-full mt-auto bg-healthcare-600 hover:bg-healthcare-700">
+                  <Link to="/register">{plan.cta}</Link>
+                </Button>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* CALL TO ACTION */}
       <section className="py-16 bg-white">
-        <div className="container">
-          <div className="glass-card bg-gradient-to-r from-healthcare-600 to-healthcare-800 text-white rounded-xl p-12 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h2 className="text-3xl font-bold mb-4">Ready to transform your placement business?</h2>
-                <p className="mb-0 text-healthcare-100">
-                  Join thousands of placement professionals who trust HealthProAssist to grow their business.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-end">
-                <Button asChild size="lg" className="bg-white text-healthcare-800 hover:bg-healthcare-50 text-md">
-                  <Link to="/register">Get Started</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-md">
-                  <Link to="/login">Sign In</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="container mx-auto max-w-3xl px-4 bg-gradient-to-r from-healthcare-600 to-healthcare-700 rounded-xl shadow-2xl p-10 text-center text-white">
+          <h2 className="text-3xl font-bold mb-3">Ready for a better placement experience?</h2>
+          <p className="mb-6 text-md">
+            Start your free trial or sign in to revolutionize the way you place senior clients!
+          </p>
+          <Button asChild size="lg" className="bg-white text-healthcare-800 hover:bg-healthcare-50">
+            <Link to="/register">Get Started</Link>
+          </Button>
         </div>
       </section>
     </div>
