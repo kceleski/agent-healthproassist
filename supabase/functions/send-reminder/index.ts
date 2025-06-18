@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -36,12 +35,12 @@ serve(async (req) => {
     // Initialize Supabase client with service role key for admin access
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get due reminders
+    // Get due reminders from the new agent_appointment_reminders table
     const { data: reminders, error: reminderError } = await supabase
-      .from("appointment_reminders")
+      .from("agent_appointment_reminders") // UPDATED
       .select(`
         *,
-        users:user_id (email, phone)
+        user:user_id (email, phone)
       `)
       .eq("sent", false);
 
@@ -54,8 +53,7 @@ serve(async (req) => {
     // Process each reminder
     for (const reminder of reminders) {
       try {
-        // Get appointment details (in a real implementation, this would fetch from an appointments table)
-        // This is just a placeholder since we don't have an actual appointments table yet
+        // This part remains a placeholder as there's no appointments table yet
         const appointment = {
           id: reminder.appointment_id,
           title: "Sample Appointment",
@@ -64,7 +62,9 @@ serve(async (req) => {
           location: "123 Healthcare Ave"
         };
 
-        const user = reminder.users;
+        const user = reminder.user; // Note: alias is 'user' now
+        if (!user) continue;
+
         const message = `Reminder: You have an appointment "${appointment.title}" at ${appointment.time} on ${appointment.date.toLocaleDateString()}. Location: ${appointment.location}`;
 
         let result;
@@ -83,7 +83,7 @@ serve(async (req) => {
         // If successfully sent, mark as sent in the database
         if (result.success) {
           await supabase
-            .from("appointment_reminders")
+            .from("agent_appointment_reminders") // UPDATED
             .update({ sent: true })
             .eq("id", reminder.id);
         }
@@ -117,5 +117,3 @@ serve(async (req) => {
     });
   }
 });
-
-// This function would be triggered by a cron job in a production environment
