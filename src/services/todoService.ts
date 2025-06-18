@@ -5,15 +5,14 @@ import { TodoItem } from '@/types/todo';
 export const createTodoItem = async (todo: Omit<TodoItem, 'completed' | 'created_at'>): Promise<TodoItem | null> => {
   try {
     const { data, error } = await supabase
-      .from('tasks')
+      .from('agent_todo_items') // Updated table name
       .insert([{ 
         ...todo, 
-        status: 'active',
         completed: false 
       }])
       .select()
       .single();
-
+    
     if (error) throw error;
     
     // Transform the data to match TodoItem interface
