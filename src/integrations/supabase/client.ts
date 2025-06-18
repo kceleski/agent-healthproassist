@@ -2,7 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://fktcmikrsgutyicluegr.supabase.co";
+// Using the project details from your supabase/config.toml
+const SUPABASE_URL = "https://fktcmikrsgutyicluegr.supabase.co"; 
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrdGNtaWtyc2d1dHlpY2x1ZWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxNjY3MjEsImV4cCI6MjA2MDc0MjcyMX0.JW9mbH8H38aAi2JOycemGsd-Tv_RtgViREaOcctJpR4";
 
 // Import the supabase client like this:
