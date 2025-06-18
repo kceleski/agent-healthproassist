@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 
 export type CalendarProvider = 'google' | 'outlook' | 'apple';
@@ -15,7 +14,7 @@ export interface CalendarSync {
 export const connectCalendarProvider = async (userId: string, provider: CalendarProvider): Promise<boolean> => {
   try {
     const { error } = await supabase
-      .from('calendar_connections')
+      .from('agent_calendar_connections') // Updated table name
       .insert({
         user_id: userId, 
         provider, 
@@ -30,15 +29,6 @@ export const connectCalendarProvider = async (userId: string, provider: Calendar
     return false;
   }
 };
-
-export const getConnectedCalendars = async (userId: string): Promise<CalendarSync[]> => {
-  try {
-    const { data, error } = await supabase
-      .from('calendar_connections')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (error) throw error;
     
     // Ensure each item conforms to CalendarSync interface
     const validProviders: CalendarProvider[] = ['google', 'outlook', 'apple'];
