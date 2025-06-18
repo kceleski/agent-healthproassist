@@ -16,7 +16,7 @@ export interface Reminder {
 export const createReminder = async (reminder: Omit<Reminder, 'sent'>): Promise<Reminder | null> => {
   try {
     const { data, error } = await supabase
-      .from('appointment_reminders')
+      .from('agent_appointment_reminders') // Updated table name
       .insert({
         ...reminder,
         sent: false
