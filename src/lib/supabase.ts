@@ -1,10 +1,11 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './database.types';
 
-// Use hardcoded values to ensure the client is always initialized correctly
-const supabaseUrl = "https://zpfaojrmcozacnsnwmra.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmFvanJtY296YWNuc253bXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDI1NjYsImV4cCI6MjA1Nzg3ODU2Nn0.p6zCt1HzmKCkBHbairGysWtWo22d6m2rJY3q3yE58gc";
+// Use the consistent project details
+const supabaseUrl = "https://fktcmikrsgutyicluegr.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrdGNtaWtyc2d1dHlpY2x1ZWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxNjY3MjEsImV4cCI6MjA2MDc0MjcyMX0.JW9mbH8H38aAi2JOycemGsd-Tv_RtgViREaOcctJpR4";
+import { createClient } from '@supabase/supabase-js';
+import { Database } from './database.types';
 
 // Singleton pattern to prevent multiple instances
 let supabaseInstance: ReturnType<typeof createClient<Database>>;
