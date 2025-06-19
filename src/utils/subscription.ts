@@ -9,12 +9,12 @@ function isSupabaseUser(user: User | AuthUser | null): user is User {
 }
 
 // Asynchronously get user tier from the database
-export const getUserTier = async (user: User | AuthUser | null): Promise<'basic' | 'premium'> => {
-  if (!user) return 'basic';
+export const getUserTier = async (user: User | AuthUser | null): Promise<'standard' | 'premium'> => {
+  if (!user) return 'standard';
   
   // Handle demo users with predefined subscription
   if ('isDemo' in user && user.isDemo) {
-    return user.subscription as 'basic' | 'premium' || 'basic';
+    return user.subscription as 'standard' | 'premium' || 'standard';
   }
   
   try {
@@ -38,10 +38,10 @@ export const getUserTier = async (user: User | AuthUser | null): Promise<'basic'
     if (subscription?.plan === 'premium') return 'premium';
     
     // If no premium subscription found, return basic
-    return 'basic';
+    return 'standard';
   } catch (error) {
     console.error('Error checking user tier:', error);
-    return 'basic';
+    return 'standard';
   }
 };
 
