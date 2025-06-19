@@ -7,11 +7,6 @@ export interface SeniorClientData {
   last_name: string;
   email?: string;
   phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
-  veteran_status?: boolean;
 }
 
 export async function getSeniorClients(userId: string, agencyId?: string | null) {
@@ -26,7 +21,7 @@ export async function getSeniorClients(userId: string, agencyId?: string | null)
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('Error fetching senior clients:', error);
+    console.error('Error fetching clients:', error);
     return [];
   }
 }
@@ -41,7 +36,7 @@ export async function createSeniorClient(userId: string, agencyId: string | null
     toast.success('Client added successfully.');
     return data;
   } catch (error) {
-    console.error('Error creating senior client:', error);
+    console.error('Error creating client:', error);
     toast.error('Failed to add client.');
     return null;
   }
