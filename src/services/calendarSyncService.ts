@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 
 export type CalendarProvider = 'google' | 'outlook' | 'apple';
