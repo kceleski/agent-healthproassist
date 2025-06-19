@@ -9,6 +9,7 @@ export async function getFullUserProfile(userId: string) {
       .eq('id', userId)
       .single();
     if (error) throw error;
+    // Combine nested profile and agency data for easier UI access
     return { ...data, ...data.profile, agency_name: data.agency?.agency_name };
   } catch (error) {
     console.error('Error fetching full user profile:', error);
@@ -17,10 +18,10 @@ export async function getFullUserProfile(userId: string) {
 }
 
 export async function updateUserProfile(userId: string, profileData: any) {
-    const { data, error } = await supabase.from('agent_profiles').update(profileData).eq('user_id', userId).select();
-    if (error) {
-        console.error('Error updating profile:', error);
-        return null;
-    }
+    const { data, error } = await supabase
+        .from('agent_profiles')
+        .update(profileData)
+        .eq('user_id', userId);
+    if (error) console.error('Error updating profile:', error);
     return data;
 }
