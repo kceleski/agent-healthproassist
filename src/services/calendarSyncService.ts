@@ -9,7 +9,7 @@ export interface CalendarSync {
   connected: boolean;
   last_synced?: string;
   calendar_id?: string;
-}
+});
 
 export const connectCalendarProvider = async (userId: string, provider: CalendarProvider): Promise<boolean> => {
   try {
