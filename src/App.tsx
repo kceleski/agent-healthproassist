@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +28,7 @@ import Index from "./pages/Index";
 import SavedSearchesPage from "./pages/SavedSearchesPage";
 import ClientMedicalRecordsPage from "./pages/ClientMedicalRecordsPage";
 import WelcomePage from "./pages/WelcomePage";
+import DirectoryPage from "./pages/DirectoryPage"; // Import the DirectoryPage
 
 // Layout
 import MainLayout from "./components/layouts/MainLayout";
@@ -70,66 +70,22 @@ const App = () => (
               
               {/* Protected routes */}
               <Route element={<DashboardLayout />}>
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/search" element={
-                  <ProtectedRoute>
-                    <SearchPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/map" element={
-                  <ProtectedRoute>
-                    <MapPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/favorites" element={
-                  <ProtectedRoute>
-                    <FavoritesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/saved-searches" element={
-                  <ProtectedRoute>
-                    <SavedSearchesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/facilities" element={
-                  <ProtectedRoute>
-                    <FacilitiesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/facilities/:id" element={
-                  <ProtectedRoute>
-                    <FacilityDetailPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/contacts" element={
-                  <ProtectedRoute>
-                    <ContactsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/payments" element={
-                  <ProtectedRoute>
-                    <PaymentsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/calendar" element={
-                  <ProtectedRoute>
-                    <CalendarPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/medical-records" element={
-                  <ProtectedRoute>
-                    <ClientMedicalRecordsPage />
-                  </ProtectedRoute>
-                } />
+                <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+                
+                {/* ADD THIS ROUTE FOR YOUR DIRECTORY */}
+                <Route path="/directory" element={<ProtectedRoute><DirectoryPage /></ProtectedRoute>} />
+
+                <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
+                <Route path="/saved-searches" element={<ProtectedRoute><SavedSearchesPage /></ProtectedRoute>} />
+                <Route path="/facilities" element={<ProtectedRoute><FacilitiesPage /></ProtectedRoute>} />
+                <Route path="/facilities/:id" element={<ProtectedRoute><FacilityDetailPage /></ProtectedRoute>} />
+                <Route path="/contacts" element={<ProtectedRoute><ContactsPage /></ProtectedRoute>} />
+                <Route path="/payments" element={<ProtectedRoute><PaymentsPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+                <Route path="/medical-records" element={<ProtectedRoute><ClientMedicalRecordsPage /></ProtectedRoute>} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
