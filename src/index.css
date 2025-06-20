@@ -1,95 +1,82 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* This :root block defines the color variables for the default (light) theme.
+  I have replaced the old colors with your new brand palette.
+*/
+:root {
+  --background: 248 250 252; /* #f8fafc - Almost white */
+  --foreground: 30 41 59; /* #1e293b - Dark gray for text */
+  --card: 255 255 255; /* #ffffff - White */
+  --card-foreground: 30 41 59; /* #1e293b */
+
+  --popover: 255 255 255; /* #ffffff */
+  --popover-foreground: 30 41 59; /* #1e293b */
+
+  --primary: 37 99 235; /* #2563eb - Your Primary Blue */
+  --primary-foreground: 255 255 255; /* White text on blue buttons */
+
+  --secondary: 241 245 249; /* #f1f5f9 - Light gray for secondary elements */
+  --secondary-foreground: 30 41 59; /* #1e293b */
+
+  --muted: 241 245 249; /* #f1f5f9 */
+  --muted-foreground: 100 116 139; /* #64748b - A lighter gray for muted text */
+
+  --accent: 147 51 234; /* #9333ea - Your Purple for tools/apps */
+  --accent-foreground: 255 255 255; /* White text on purple accents */
+
+  --destructive: 220 38 38; /* #dc2626 - Your Error Red */
+  --destructive-foreground: 255 255 255; /* White text on red elements */
+
+  --success: 22 163 74; /* #16a34a - Your Success Green */
+  --warning: 234 88 12; /* #ea580c - Your Warning Orange */
+
+  --border: 226 232 240; /* #e2e8f0 */
+  --input: 226 232 240; /* #e2e8f0 */
+  --ring: 37 99 235; /* #2563eb - The focus ring color, matches primary blue */
+
+  --radius: 0.75rem;
+}
+
+/* This .dark block defines the colors for the dark theme.
+  These are inverted and adjusted for a dark background.
+*/
+.dark {
+  --background: 30 41 59; /* #1e293b */
+  --foreground: 248 250 252; /* #f8fafc */
+  --card: 15 23 42; /* #0f172a - A very dark blue/gray */
+  --card-foreground: 248 250 252; /* #f8fafc */
+
+  --popover: 15 23 42; /* #0f172a */
+  --popover-foreground: 248 250 252; /* #f8fafc */
+
+  --primary: 59 130 246; /* A slightly lighter blue for better contrast in dark mode */
+  --primary-foreground: 15 23 42; /* #0f172a */
+
+  --secondary: 51 65 85; /* #334155 */
+  --secondary-foreground: 248 250 252; /* #f8fafc */
+
+  --muted: 51 65 85; /* #334155 */
+  --muted-foreground: 148 163 184; /* #94a3b8 */
+
+  --accent: 167 139 250; /* A lighter purple for dark mode */
+  --accent-foreground: 15 23 42; /* #0f172a */
+
+  --destructive: 239 68 68; /* A brighter red for dark mode */
+  --destructive-foreground: 15 23 42; /* #0f172a */
+
+  --border: 51 65 85; /* #334155 */
+  --input: 51 65 85; /* #334155 */
+  --ring: 59 130 246;
+}
+
+/* Base styles for the app */
 @layer base {
   * {
-    box-sizing: border-box;
+    @apply border-border;
   }
-  
-  html {
-    height: 100%;
-    width: 100%;
-  }
-  
   body {
-    @apply bg-white text-foreground min-h-screen w-full overflow-x-hidden;
-    background-image: 
-      radial-gradient(circle at 50% 50%, rgba(86, 137, 249, 0.03) 0%, rgba(255, 255, 255, 0) 80%),
-      radial-gradient(circle at 80% 20%, rgba(86, 137, 249, 0.02) 0%, rgba(255, 255, 255, 0) 70%);
-    background-size: 100% 100%;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 0;
-  }
-
-  #root {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .container-soft-blue {
-    @apply bg-softblue-50 border border-softblue-100 rounded-xl shadow-soft-glow transition-all duration-300 hover:shadow-soft-glow-hover;
-  }
-  
-  /* Ensure all containers respect viewport width */
-  .container {
-    @apply w-full max-w-full px-4 sm:px-6 md:px-8 lg:mx-auto lg:max-w-7xl;
-  }
-  
-  /* Mobile-first responsive breakpoints */
-  @media (max-width: 640px) {
-    .container {
-      @apply px-2;
-    }
-  }
-}
-
-/* Soft Blue Card Effect */
-.glass-card {
-  @apply container-soft-blue backdrop-blur-lg;
-}
-
-/* Responsive utility classes */
-.responsive-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
-}
-
-.responsive-flex {
-  @apply flex flex-col md:flex-row;
-}
-
-/* Fix Google Maps container */
-.google-maps-container {
-  width: 100% !important;
-  height: 400px !important;
-}
-
-@media (min-width: 768px) {
-  .google-maps-container {
-    height: 600px !important;
-  }
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .elevenlabs-convai-widget {
-    bottom: 10px !important;
-    right: 10px !important;
-    transform: scale(0.9) !important;
-  }
-}
-
-/* Ensure proper scrolling on mobile */
-@media (max-width: 640px) {
-  body {
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
+    @apply bg-background text-foreground;
   }
 }
