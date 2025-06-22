@@ -73,7 +73,6 @@ Before getting started, ensure you have:
 1. **Node.js** (v18+ recommended)
 2. **API Keys** for:
     - **OpenAI** (Assistant API): [OpenAI Platform](https://platform.openai.com/)
-    - **D-ID** (Avatar API): [D-ID Developer Portal](https://www.d-id.com/)
     - **Supabase** (Project URL & ANON Key): [Supabase Dashboard](https://supabase.com/)
 
 ---
