@@ -9,6 +9,65 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      agencies: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
+      agency_members: {
+        Row: {
+          agency_id: string
+          id: string
+          invited_at: string | null
+          joined_at: string | null
+          role: Database["public"]["Enums"]["agency_role"]
+          status: string
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["agency_role"]
+          status?: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["agency_role"]
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_members_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_agencies: {
         Row: {
           address: string | null
@@ -508,6 +567,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          agency_id: string | null
           care_needs: string[] | null
           created_at: string | null
           diagnosis: string | null
@@ -520,6 +580,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          agency_id?: string | null
           care_needs?: string[] | null
           created_at?: string | null
           diagnosis?: string | null
@@ -532,6 +593,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          agency_id?: string | null
           care_needs?: string[] | null
           created_at?: string | null
           diagnosis?: string | null
@@ -543,7 +605,15 @@ export type Database = {
           referral_source?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clients_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       "Combined Data": {
         Row: {
@@ -1632,6 +1702,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_line_items: {
+        Row: {
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          unit_price: number
+        }
+        Update: {
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
             columns: ["invoice_id"]
             isOneToOne: false
             referencedRelation: "invoices"
@@ -3234,6 +3336,24 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_search_requests: {
         Row: {
           agent_id: string | null
@@ -3395,6 +3515,21 @@ export type Database = {
         }
         Returns: undefined
       }
+      has_agency_role: {
+        Args: {
+          _user_id: string
+          _agency_id: string
+          _role: Database["public"]["Enums"]["agency_role"]
+        }
+        Returns: boolean
+      }
+      has_app_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       insert_serperapi_raw_result: {
         Args: {
           user_search_request_id: string
@@ -3428,6 +3563,8 @@ export type Database = {
       }
     }
     Enums: {
+      agency_role: "owner" | "admin" | "agent" | "viewer"
+      app_role: "admin" | "moderator" | "user"
       appointment_type: "consultation" | "tour" | "follow_up"
       budget_range:
         | "$2,000 - $4,000"
@@ -3585,6 +3722,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      agency_role: ["owner", "admin", "agent", "viewer"],
+      app_role: ["admin", "moderator", "user"],
       appointment_type: ["consultation", "tour", "follow_up"],
       budget_range: [
         "$2,000 - $4,000",
