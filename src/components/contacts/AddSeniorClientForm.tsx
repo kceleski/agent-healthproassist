@@ -41,7 +41,18 @@ export const AddSeniorClientForm = ({ userId, agencyId, onClientAdded }: AddSeni
 
   // This function is called when the form is submitted
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const newClient = await createSeniorClient(values);
+    // Transform the values to ensure required fields are present
+    const clientData = {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email || undefined,
+      phone: values.phone || undefined,
+      city: values.city || undefined,
+      state: values.state || undefined,
+      veteran_status: values.veteran_status,
+    };
+
+    const newClient = await createSeniorClient(clientData);
     if (newClient) {
         onClientAdded(newClient); // This updates the UI on the ContactsPage
         form.reset(); // This clears the form fields
