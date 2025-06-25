@@ -1,3 +1,4 @@
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -40,7 +41,7 @@ export const AddSeniorClientForm = ({ userId, agencyId, onClientAdded }: AddSeni
 
   // This function is called when the form is submitted
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const newClient = await createSeniorClient(userId, agencyId, values);
+    const newClient = await createSeniorClient(values);
     if (newClient) {
         onClientAdded(newClient); // This updates the UI on the ContactsPage
         form.reset(); // This clears the form fields

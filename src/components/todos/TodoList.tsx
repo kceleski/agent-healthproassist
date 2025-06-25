@@ -25,7 +25,7 @@ const TodoList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null);
-  const [newTodo, setNewTodo] = useState<Omit<TodoItem, 'id' | 'completed' | 'created_at'>>({
+  const [newTodo, setNewTodo] = useState<Partial<TodoItem>>({
     user_id: user?.id || '',
     title: '',
     description: '',
@@ -66,9 +66,11 @@ const TodoList = () => {
       }
 
       const todoItem = await createTodoItem({
-        ...newTodo,
         user_id: user.id,
-        priority: newTodo.priority,
+        title: newTodo.title,
+        description: newTodo.description || '',
+        priority: newTodo.priority || 'medium',
+        due_date: newTodo.due_date,
       });
 
       if (todoItem) {
@@ -105,11 +107,9 @@ const TodoList = () => {
 
   const handleDeleteTodo = async (id: string) => {
     try {
-      const success = await deleteTodoItem(id);
-      if (success) {
-        setTodos(todos.filter(todo => todo.id !== id));
-        toast.success("Task deleted");
-      }
+      await deleteTodoItem(id);
+      setTodos(todos.filter(todo => todo.id !== id));
+      toast.success("Task deleted");
     } catch (error) {
       console.error("Error deleting todo:", error);
       toast.error("Failed to delete task");
@@ -136,8 +136,11 @@ const TodoList = () => {
       if (!user?.id) return;
       
       const todoItem = await createTodoItem({
-        ...recommendation,
         user_id: user.id,
+        title: recommendation.title,
+        description: recommendation.description || '',
+        priority: recommendation.priority,
+        due_date: recommendation.due_date,
       });
 
       if (todoItem) {
@@ -394,7 +397,7 @@ const TodoList = () => {
               <Label htmlFor="title">Task Title</Label>
               <Input 
                 id="title" 
-                value={newTodo.title} 
+                value={newTodo.title || ''} 
                 onChange={(e) => setNewTodo({...newTodo, title: e.target.value})}
                 placeholder="Enter task title"
               />
@@ -412,7 +415,7 @@ const TodoList = () => {
               <div className="space-y-2">
                 <Label htmlFor="priority">Priority</Label>
                 <Select 
-                  value={newTodo.priority} 
+                  value={newTodo.priority || 'medium'} 
                   onValueChange={(value) => setNewTodo({...newTodo, priority: value as 'low' | 'medium' | 'high'})}
                 >
                   <SelectTrigger id="priority">

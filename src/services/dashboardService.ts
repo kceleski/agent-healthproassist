@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 
 export interface DashboardStats {
@@ -22,7 +21,7 @@ export interface NotificationItem {
   read: boolean;
 }
 
-export const getDashboardStats = async (userId: string): Promise<DashboardStats> => {
+export const fetchDashboardStats = async (userId: string): Promise<DashboardStats> => {
   try {
     // Get total clients
     const { count: clientCount } = await supabase
@@ -61,7 +60,7 @@ export const getDashboardStats = async (userId: string): Promise<DashboardStats>
   }
 };
 
-export const getRecentActivity = async (userId: string): Promise<ActivityItem[]> => {
+export const fetchRecentActivity = async (userId: string): Promise<ActivityItem[]> => {
   try {
     const { data: interactions } = await supabase
       .from('interactions')
@@ -82,7 +81,7 @@ export const getRecentActivity = async (userId: string): Promise<ActivityItem[]>
   }
 };
 
-export const getNotifications = async (userId: string): Promise<NotificationItem[]> => {
+export const fetchDashboardNotifications = async (userId: string): Promise<NotificationItem[]> => {
   try {
     // For now, return mock data since there's no notifications table
     // This can be updated when the notifications system is implemented
@@ -107,6 +106,11 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
     return [];
   }
 };
+
+// Keep backward compatibility
+export const getDashboardStats = fetchDashboardStats;
+export const getRecentActivity = fetchRecentActivity;
+export const getNotifications = fetchDashboardNotifications;
 
 export const getContacts = async (userId: string) => {
   try {

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getSeniorClients, SeniorClientData } from '@/services/clientService';
@@ -25,7 +26,7 @@ const ContactsPage = () => {
         const profile = await getFullUserProfile(user.id);
         setCurrentUserProfile(profile);
         
-        const clientData = await getSeniorClients(user.id, profile?.agency_id);
+        const clientData = await getSeniorClients();
         setClients(clientData);
         if (clientData.length > 0) {
           setSelectedClient(clientData[0]);

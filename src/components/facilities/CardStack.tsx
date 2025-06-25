@@ -102,12 +102,12 @@ const Card = ({ card, index, removeCard, getIconComponent, totalCards }: CardPro
   );
 };
 
-interface CardStackProps {
-  cards: FacilityCard[];
-  onRemoveCard: (id: string) => void;
+export interface CardStackProps {
+  cards?: FacilityCard[];
+  onRemoveCard?: (id: string) => void;
 }
 
-const CardStack = ({ cards, onRemoveCard }: CardStackProps) => {
+const CardStack = ({ cards = [], onRemoveCard = () => {} }: CardStackProps) => {
   const getIconComponent = (iconName: string): React.ComponentType<any> => {
     const IconComponent = (LucideIcons as any)[iconName];
     return IconComponent || LucideIcons.HelpCircle;

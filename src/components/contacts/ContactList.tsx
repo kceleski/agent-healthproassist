@@ -5,30 +5,15 @@ import { getSeniorClients, SeniorClientData } from "@/services/clientService";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-const ContactList = () => {
-  const [contacts, setContacts] = useState<SeniorClientData[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ContactListProps {
+  contacts: SeniorClientData[];
+  selectedContact: SeniorClientData | null;
+  onSelectContact: (contact: SeniorClientData) => void;
+}
+
+const ContactList = ({ contacts, selectedContact, onSelectContact }: ContactListProps) => {
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchContacts();
-  }, []);
-
-  const fetchContacts = async () => {
-    try {
-      const data = await getSeniorClients();
-      setContacts(data || []);
-    } catch (error) {
-      console.error('Error fetching contacts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load contacts",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -49,7 +34,18 @@ const ContactList = () => {
   return (
     <div className="grid gap-4">
       {contacts.map((contact) => (
-        <ContactCard key={contact.id} contact={contact} onUpdate={fetchContacts} />
+        <ContactCard 
+          key={contact.id} 
+          contact={{
+            id: contact.id,
+            name: `${contact.first_name} ${contact.last_name}`,
+            email: contact.email,
+            phone: contact.phone,
+            location: `${contact.city || ''}, ${contact.state || ''}`.trim().replace(/^,|,$/, ''),
+            lastUpdated: contact.updated_at ? new Date(contact.updated_at).toLocaleDateString() : 'recently'
+          }} 
+          onViewDetails={onSelectContact}
+        />
       ))}
     </div>
   );

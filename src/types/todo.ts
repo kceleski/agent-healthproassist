@@ -13,4 +13,5 @@ export interface TodoItem {
   ai_generated?: boolean;
   tags?: string[];
   created_at?: string;
+  updated_at?: string;
 }
