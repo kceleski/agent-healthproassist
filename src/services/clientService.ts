@@ -1,43 +1,68 @@
+
 import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
 
 export interface SeniorClientData {
-  id?: string;
+  id: string;
   first_name: string;
   last_name: string;
   email?: string;
   phone?: string;
+  city?: string;
+  state?: string;
+  veteran_status?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export async function getSeniorClients(userId: string, agencyId?: string | null) {
-  try {
-    let query = supabase.from('agent_senior_clients').select('*');
-    if (agencyId) {
-      query = query.eq('agency_id', agencyId);
-    } else {
-      query = query.eq('created_by_user_id', userId);
-    }
-    const { data, error } = await query.order('last_name', { ascending: true });
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching clients:', error);
-    return [];
-  }
-}
+export const createSeniorClient = async (clientData: Omit<SeniorClientData, 'id' | 'created_at' | 'updated_at'>) => {
+  const { data, error } = await supabase
+    .from('seniors')
+    .insert([clientData])
+    .select()
+    .single();
 
-export async function createSeniorClient(userId: string, agencyId: string | null, clientData: Omit<SeniorClientData, 'id'>) {
-  try {
-    const { data, error } = await supabase
-      .from('agent_senior_clients')
-      .insert({ created_by_user_id: userId, agency_id: agencyId, ...clientData })
-      .select().single();
-    if (error) throw error;
-    toast.success('Client added successfully.');
-    return data;
-  } catch (error) {
-    console.error('Error creating client:', error);
-    toast.error('Failed to add client.');
-    return null;
-  }
-}
+  if (error) throw error;
+  return data;
+};
+
+export const getSeniorClients = async () => {
+  const { data, error } = await supabase
+    .from('seniors')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
+
+export const getSeniorClientById = async (id: string) => {
+  const { data, error } = await supabase
+    .from('seniors')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateSeniorClient = async (id: string, updates: Partial<SeniorClientData>) => {
+  const { data, error } = await supabase
+    .from('seniors')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const deleteSeniorClient = async (id: string) => {
+  const { error } = await supabase
+    .from('seniors')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+};

@@ -1,134 +1,140 @@
-// src/components/facilities/CardStack.tsx
-"use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ArrowUpRight, Bed, Users, DollarSign } from "lucide-react"
-import ColorThief from "colorthief"
-import { supabase } from "@/lib/supabase" // Import Supabase client
+import { useState } from 'react';
+import { Card as UICard, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Phone, Globe, Star, X } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
-// This interface now matches our agent_facilities table
-interface CardData {
-  id: string
-  name: string
-  description: string | null
-  image_url: string | null
-  type: string | null
-  // We'll add the colors property dynamically
-  colors?: {
-    primary: string
-    secondary: string
-    text: string
-    shadow: string
-  }
+interface FacilityCard {
+  id: string;
+  name: string;
+  address: string;
+  rating?: number;
+  type: string;
+  amenities?: string[];
+  phone?: string;
+  website?: string;
 }
 
-// Map database types to an icon name
-const typeToIconMap: { [key: string]: string } = {
-    "Assisted Living & Memory Care": "bed",
-    "Assisted Living Community": "bed",
-    "Skilled Nursing Facility": "bed",
-    "Veteran Contracted Facility": "users",
-    "Hospice": "users",
-    "Home Health": "arrowUpRight"
+interface CardProps {
+  card: FacilityCard;
+  index: number;
+  removeCard: (id: string) => void;
+  getIconComponent: (iconName: string) => React.ComponentType<any>;
+  totalCards: number;
+}
+
+const Card = ({ card, index, removeCard, getIconComponent, totalCards }: CardProps): JSX.Element => {
+  return (
+    <UICard 
+      className={`absolute w-full transition-all duration-300 ${
+        index === 0 ? 'z-10 scale-100' : 
+        index === 1 ? 'z-9 scale-95 translate-y-2' : 
+        'z-8 scale-90 translate-y-4 opacity-50'
+      }`}
+      style={{
+        transform: `translateY(${index * 8}px) scale(${1 - index * 0.05})`,
+      }}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <CardTitle className="text-lg">{card.name}</CardTitle>
+            <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+              <MapPin className="h-4 w-4" />
+              <span>{card.address}</span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => removeCard(card.id)}
+            className="h-8 w-8"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Badge variant="secondary">{card.type}</Badge>
+          {card.rating && (
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-medium">{card.rating.toFixed(1)}</span>
+            </div>
+          )}
+        </div>
+        
+        {card.amenities && card.amenities.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {card.amenities.slice(0, 3).map((amenity, idx) => (
+              <Badge key={idx} variant="outline" className="text-xs">
+                {amenity}
+              </Badge>
+            ))}
+            {card.amenities.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{card.amenities.length - 3} more
+              </Badge>
+            )}
+          </div>
+        )}
+        
+        <div className="flex gap-2">
+          {card.phone && (
+            <Button variant="outline" size="sm" className="flex-1">
+              <Phone className="h-4 w-4 mr-1" />
+              Call
+            </Button>
+          )}
+          {card.website && (
+            <Button variant="outline" size="sm" className="flex-1">
+              <Globe className="h-4 w-4 mr-1" />
+              Website
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </UICard>
+  );
 };
 
+interface CardStackProps {
+  cards: FacilityCard[];
+  onRemoveCard: (id: string) => void;
+}
 
-export default function CardStack() {
-  const [cards, setCards] = useState<CardData[]>([])
-  const [loading, setLoading] = useState(true)
+const CardStack = ({ cards, onRemoveCard }: CardStackProps) => {
+  const getIconComponent = (iconName: string): React.ComponentType<any> => {
+    const IconComponent = (LucideIcons as any)[iconName];
+    return IconComponent || LucideIcons.HelpCircle;
+  };
 
-  // Fetch initial data from Supabase
-  useEffect(() => {
-    const fetchAndProcessFacilities = async () => {
-      setLoading(true);
-      const { data, error } = await supabase.from('agent_facilities').select('*').limit(10);
-
-      if (error) {
-        console.error("Error fetching facilities:", error);
-        setLoading(false);
-        return;
-      }
-
-      const colorThief = new ColorThief();
-      const processedCards = await Promise.all(
-        data.map(async (facility) => {
-          let colors = { primary: "#1a3a5f", secondary: "#2d5f8a", text: "#ffffff", shadow: "rgba(26, 58, 95, 0.6)"}; // Default colors
-          if (facility.image_url) {
-            try {
-              const img = new Image();
-              img.crossOrigin = "Anonymous";
-              img.src = facility.image_url;
-              await img.decode();
-              const palette = colorThief.getPalette(img, 3);
-              const primaryColor = `rgb(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]})`;
-              const secondaryColor = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
-              const shadowColor = `rgba(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]}, 0.6)`;
-              const brightness = (palette[0][0] * 299 + palette[0][1] * 587 + palette[0][2] * 114) / 1000;
-              const textColor = brightness < 128 ? "#ffffff" : "#000000";
-              colors = { primary: primaryColor, secondary: secondaryColor, text: textColor, shadow: shadowColor };
-            } catch (e) {
-              console.error("Could not process image for color extraction:", facility.image_url, e);
-            }
-          }
-          return { ...facility, colors };
-        })
-      );
-      
-      setCards(processedCards);
-      setLoading(false);
-    }
-    fetchAndProcessFacilities();
-  }, [])
-
-
-  const removeCard = (id: string) => {
-    setCards((prevCards) => prevCards.filter((card) => card.id !== id));
-    // In a real app, you might fetch a new card from the database here
-  }
-
-  const getIconComponent = (iconName: string) => {
-    switch (iconName) {
-      case "bed": return <Bed className="h-5 w-5" />
-      case "users": return <Users className="h-5 w-5" />
-      case "dollar": return <DollarSign className="h-5 w-5" />
-      default: return <ArrowUpRight className="h-5 w-5" />
-    }
-  }
-
-  if (loading) {
-    return <div className="flex h-[600px] w-full items-center justify-center text-muted-foreground">Loading facility cards...</div>
+  if (cards.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No facilities to display</p>
+      </div>
+    );
   }
 
   return (
-    <div className="relative h-[600px] w-full">
-      <AnimatePresence>
-        {cards.slice(0, 5).map((card, index) => (
-          <Card
-            key={card.id}
-            card={card}
-            index={index}
-            removeCard={removeCard}
-            getIconComponent={getIconComponent}
-            totalCards={Math.min(cards.length, 5)}
-          />
-        ))}
-      </AnimatePresence>
+    <div className="relative h-96 w-full max-w-md mx-auto">
+      {cards.slice(0, 3).map((card, index) => (
+        <Card
+          key={card.id}
+          card={card}
+          index={index}
+          removeCard={onRemoveCard}
+          getIconComponent={getIconComponent}
+          totalCards={cards.length}
+        />
+      ))}
     </div>
-  )
-}
+  );
+};
 
-// The individual Card component remains the same as in your provided code
-// Ensure it's in the same file or imported correctly
-interface CardProps {
-  card: CardData
-  index: number
-  removeCard: (id: string) => void
-  getIconComponent: (iconName: string) => JSX.Element
-  totalCards: number
-}
-
-function Card({ card, index, removeCard, getIconComponent, totalCards }: CardProps) {
-    // ... Paste the exact Card component code you provided here ...
-    // Make sure to update props from (id: number) to (id: string) in removeCard
-}
+export default CardStack;

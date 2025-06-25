@@ -1,6 +1,5 @@
 
 import { supabase } from '@/lib/supabase';
-import { AuthUser } from '@/types/auth';
 
 export interface DashboardStats {
   totalClients: number;
@@ -12,8 +11,7 @@ export interface ActivityItem {
   id: string;
   title: string;
   date: string;
-  type: 'placement' | 'appointment' | 'payment';
-  icon: string;
+  type: string;
 }
 
 export interface NotificationItem {
@@ -21,125 +19,115 @@ export interface NotificationItem {
   title: string;
   message: string;
   time: string;
-  type: 'info' | 'reminder' | 'warning';
+  read: boolean;
 }
 
-// Fetch dashboard statistics
-export async function fetchDashboardStats(userId: string): Promise<DashboardStats> {
+export const getDashboardStats = async (userId: string): Promise<DashboardStats> => {
   try {
-    // Get total clients count
-    const { count: clientsCount, error: clientsError } = await supabase
-      .from('contacts')
+    // Get total clients
+    const { count: clientCount } = await supabase
+      .from('clients')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
-
-    if (clientsError) {
-      console.error('Error fetching clients count:', clientsError);
-    }
+      .eq('agency_id', userId);
 
     // Get partner facilities count
-    const { count: facilitiesCount, error: facilitiesError } = await supabase
+    const { count: facilityCount } = await supabase
       .from('facility')
-      .select('*', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: true })
+      .eq('is_verified', true);
 
-    if (facilitiesError) {
-      console.error('Error fetching facilities count:', facilitiesError);
-    }
+    // Get revenue from placements
+    const { data: placements } = await supabase
+      .from('placements')
+      .select('commission_amount')
+      .eq('agent_id', userId)
+      .eq('commission_status', 'paid');
 
-    // Get revenue YTD from payments
-    const currentYear = new Date().getFullYear();
-    const { data: payments, error: paymentsError } = await supabase
-      .from('payments')
-      .select('amount')
-      .eq('user_id', userId)
-      .gte('created_at', `${currentYear}-01-01`)
-      .eq('status', 'completed');
-
-    if (paymentsError) {
-      console.error('Error fetching payments:', paymentsError);
-    }
-
-    const totalRevenue = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
+    const totalRevenue = placements?.reduce((sum, placement) => 
+      sum + (placement.commission_amount || 0), 0) || 0;
 
     return {
-      totalClients: clientsCount || 0,
-      partnerFacilities: facilitiesCount || 120, // Fallback to existing value if query fails
-      revenueYTD: `$${(totalRevenue / 1000).toFixed(0)}K`
+      totalClients: clientCount || 0,
+      partnerFacilities: facilityCount || 0,
+      revenueYTD: `$${totalRevenue.toLocaleString()}`
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    // Return fallback values in case of error
     return {
       totalClients: 0,
-      partnerFacilities: 120,
-      revenueYTD: '$0K'
+      partnerFacilities: 0,
+      revenueYTD: '$0'
     };
   }
-}
+};
 
-// Fetch recent activity
-export async function fetchRecentActivity(userId: string): Promise<ActivityItem[]> {
+export const getRecentActivity = async (userId: string): Promise<ActivityItem[]> => {
   try {
-    // Get recent interactions/activities
-    const { data: interactions, error } = await supabase
+    const { data: interactions } = await supabase
       .from('interactions')
-      .select(`
-        id,
-        subject,
-        interaction_date,
-        type,
-        content,
-        contacts!inner(full_name),
-        facility!inner(name)
-      `)
+      .select('id, type, subject, created_at')
       .eq('user_id', userId)
-      .order('interaction_date', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(5);
-
-    if (error) {
-      console.error('Error fetching activity:', error);
-      return [];
-    }
 
     return interactions?.map(interaction => ({
       id: interaction.id,
-      title: interaction.subject || `${interaction.type} with ${interaction.contacts?.full_name || 'client'}`,
-      date: new Date(interaction.interaction_date).toLocaleDateString(),
-      type: interaction.type as 'placement' | 'appointment' | 'payment',
-      icon: interaction.type
+      title: interaction.subject || `${interaction.type} interaction`,
+      date: new Date(interaction.created_at).toLocaleDateString(),
+      type: interaction.type
     })) || [];
   } catch (error) {
     console.error('Error fetching recent activity:', error);
     return [];
   }
-}
+};
 
-// Fetch notifications
-export async function fetchDashboardNotifications(userId: string): Promise<NotificationItem[]> {
+export const getNotifications = async (userId: string): Promise<NotificationItem[]> => {
   try {
-    // Get recent tasks as notifications
-    const { data: tasks, error } = await supabase
-      .from('tasks')
-      .select('id, title, description, due_date, priority, status')
-      .eq('user_id', userId)
-      .eq('status', 'pending')
-      .order('due_date', { ascending: true })
-      .limit(5);
-
-    if (error) {
-      console.error('Error fetching notifications:', error);
-      return [];
-    }
-
-    return tasks?.map(task => ({
-      id: task.id,
-      title: task.title,
-      message: task.description || 'Task pending completion',
-      time: task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date',
-      type: task.priority === 'high' ? 'warning' : 'info'
-    })) || [];
+    // For now, return mock data since there's no notifications table
+    // This can be updated when the notifications system is implemented
+    return [
+      {
+        id: '1',
+        title: 'New referral received',
+        message: 'You have a new client referral to review',
+        time: '2 hours ago',
+        read: false
+      },
+      {
+        id: '2',
+        title: 'Facility tour scheduled',
+        message: 'Tour scheduled for tomorrow at 2 PM',
+        time: '1 day ago',
+        read: false
+      }
+    ];
   } catch (error) {
     console.error('Error fetching notifications:', error);
     return [];
   }
-}
+};
+
+export const getContacts = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('id, full_name, email, phone, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+    
+    return data?.map(contact => ({
+      id: contact.id,
+      name: contact.full_name,
+      email: contact.email,
+      phone: contact.phone,
+      created_at: contact.created_at
+    })) || [];
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    return [];
+  }
+};
